@@ -1,0 +1,185 @@
+a                       { color:#3877b4; text-decoration:underline; }
+a:hover                 { color:#ea7601; text-decoration:underline; }
+a img                   { border:0; }
+:focus                  { outline:0; }
+
+/* Heading */
+h1 {font-size: 16px; margin: 12px 0 0 0;}
+h1, h2, h3, h4          { margin-bottom:.5em; line-height:1.4em; }
+h2                      { font-size:1.7em; }
+h3                      { margin-bottom:.5em; color:#253033; font-size:1.25em; }
+h4                      { margin-bottom:.6em; color:#494848; font-size:1.05em; }
+h5                      { font-size:1.05em; }
+h6                      { font-size:1em; }
+h1 a, h1 a:hover,
+h2 a, h2 a:hover,
+h3 a, h3 a:hover,
+h4 a, h4 a:hover        { font-weight:normal; }
+
+/* Table */
+th                      { padding:0; text-align:left; vertical-align:top; }
+td                      { padding:0; vertical-align:top; }
+
+/* Paragraph */
+p, address              { margin-bottom:.5em; }
+address                 { font-style:normal; }
+cite                    { font-style:normal; font-size:10px; }
+q:before,
+q:after                 { content:'';}
+
+/* Form */
+form                    { display:inline; }
+fieldset                { border:0; }
+legend                  { display:none; }
+label                   { color:#414d54; }
+input, select           { vertical-align:middle; }
+textarea                { overflow:auto; }
+
+/* Lists */
+dt                      { display:block; }
+
+/* Size */
+small                   { font-size:.9em; }
+big                     { font-size:1.25em; }
+
+
+
+
+
+/************** ALL LEVELS  *************/ /* Style consistent throughout all nav levels */
+
+
+
+/************ 1ST LEVEL  ***************/
+#nav li {
+  float:left;
+  margin: 0;
+  border-right: 1px solid #c0c0c2;
+  border-left: 1px solid #e3e4e6;
+  position:relative;
+}
+li.level0 {
+	cursor: auto;
+}
+#nav li:last-child:after {
+    border-right: 1px solid #e3e4e6;
+    clear: both;
+    content: "";
+    display: block;
+    font-size: 0;
+    height: 53px;
+    line-height: 0;
+    overflow: hidden;
+    position: absolute;
+    right: -2px;
+    top: 0;
+}
+#nav li a {
+    float:left;
+    padding:0 19px;
+}
+#nav li a span {
+	display: block;
+	height: 53px;
+	color: #3b3e44;
+	font-size: 12px;
+	line-height: 53px;
+	text-shadow: 1px 1px 1px #a3a3a7;
+	text-transform: uppercase;
+}  
+#nav li:hover a,  
+#nav li.active a {
+	background:url(../../images/admin/codeitadmin/menu_active.png) repeat;
+	cursor: pointer;
+}
+#nav li.over a { color:#d6e2e5; }
+
+
+/************ 1ST LEVEL RESET ************/
+#nav ul li, #nav ul li.active {
+    float:none;
+    height:auto;
+    background:none;
+    margin:0;
+    }
+#nav ul a, #nav ul a:hover {
+    float:none;
+    padding:0;
+    background:none;
+}
+#nav ul li.over a,
+#nav ul li.over a:hover
+#nav ul a,
+#nav li.active li { font-weight:normal; }
+
+
+/************ 2ND LEVEL ************/
+#nav ul {
+  position: absolute;
+  width:101%;
+  top:53px;
+  left:-10000px;
+}
+
+#nav ul ul  {
+    border-top:none;
+    
+}
+
+/* Show menu */
+#nav li.over ul { left:-1px; }
+#nav li.over ul ul { left:-10000px; }
+#nav li.over ul li.over ul { left:100px; }
+
+#nav ul li, #nav ul li.active {
+	border-bottom: 1px solid #dcdde1;
+	border-left:1px solid #dcdde1;
+  border-right:1px solid #dcdde1;
+	padding: 0 15px;	
+	margin-left: -2px;
+	background: #f9f9f9; /* Old browsers */
+	background: -moz-linear-gradient(top,  #f9f9f9 0%, #e9e8ed 47%, #fcfcfc 100%); /* FF3.6+ */
+	background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#f9f9f9), color-stop(47%,#e9e8ed), color-stop(100%,#fcfcfc)); /* Chrome,Safari4+ */
+	background: -webkit-linear-gradient(top,  #f9f9f9 0%,#e9e8ed 47%,#fcfcfc 100%); /* Chrome10+,Safari5.1+ */
+	background: -o-linear-gradient(top,  #f9f9f9 0%,#e9e8ed 47%,#fcfcfc 100%); /* Opera 11.10+ */
+	background: -ms-linear-gradient(top,  #f9f9f9 0%,#e9e8ed 47%,#fcfcfc 100%); /* IE10+ */
+	background: linear-gradient(to bottom,  #f9f9f9 0%,#e9e8ed 47%,#fcfcfc 100%); /* W3C */
+	filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#f9f9f9', endColorstr='#fcfcfc',GradientType=0 ); /* IE6-9 */
+}
+#nav ul li:hover {
+	background: #dbdadf; /* Old browsers */
+	background: -moz-linear-gradient(top,  #dbdadf 0%, #fefefe 100%); /* FF3.6+ */
+	background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#dbdadf), color-stop(100%,#fefefe)); /* Chrome,Safari4+ */
+	background: -webkit-linear-gradient(top,  #dbdadf 0%,#fefefe 100%); /* Chrome10+,Safari5.1+ */
+	background: -o-linear-gradient(top,  #dbdadf 0%,#fefefe 100%); /* Opera 11.10+ */
+	background: -ms-linear-gradient(top,  #dbdadf 0%,#fefefe 100%); /* IE10+ */
+	background: linear-gradient(to bottom,  #dbdadf 0%,#fefefe 100%); /* W3C */
+	filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#dbdadf', endColorstr='#fefefe',GradientType=0 ); /* IE6-9 */
+}
+#nav ul li a span {
+	font-size: 12px;
+}
+#nav ul li:hover a span, #nav ul li.active a span {
+	color: #466e98 !important;
+}
+#nav ul li:last-child:after {
+    border:0 none ;
+    clear: both;
+    content: "";
+    display: block;
+    font-size: 0;
+    height:0px;
+    line-height: 0;
+    overflow: hidden;
+    position: absolute;
+}
+#nav ul ul li a {
+	
+}
+#nav ul li a span {
+	height: 32px;
+	line-height: 32px;
+	text-transform: none;
+	text-shadow: 0 0 0;
+}
+

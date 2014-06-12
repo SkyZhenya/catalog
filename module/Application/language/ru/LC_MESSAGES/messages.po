@@ -1,0 +1,228 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: CodeIT project\n"
+"POT-Creation-Date: 2014-05-30 12:05+0200\n"
+"PO-Revision-Date: 2014-05-30 12:29+0200\n"
+"Last-Translator: Natali Ringel <natali.ringel@codeit.com.ua>\n"
+"Language-Team: Natali <natali.ringel@codeit.com.ua>\n"
+"Language: ru\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: Poedit 1.6.3\n"
+"X-Poedit-Basepath: ../../../../Application\n"
+"Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n"
+"%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
+"X-Poedit-SourceCharset: UTF-8\n"
+"X-Poedit-SearchPath-0: .\n"
+
+#: src/Application/Form/LoginForm.php:26
+msgid "The form submitted did not originate from the expected site"
+msgstr "Форма отправлена не от ожидаемого сайта"
+
+#: src/Application/Form/LoginForm.php:36
+msgid "Email"
+msgstr "Электронный адрес"
+
+#: src/Application/Form/LoginForm.php:48
+msgid "Password"
+msgstr "Пароль"
+
+#: src/Application/Form/LoginForm.php:61
+msgid "Log In"
+msgstr "Войти"
+
+#: src/Application/Form/LoginForm.php:82
+msgid "Value is required and can't be empty"
+msgstr "Поле обязательно для заплнения и не может оставаться незаполненным"
+
+#: src/Application/View/Helper/FormStylizedFile.php:23
+msgid "Browse"
+msgstr ""
+
+#: src/Application/Model/UserTable.php:154
+msgid "This E-mail is not found in our records"
+msgstr "Адрес электронной почты не найден в базе данных"
+
+#: src/Application/Model/UserTable.php:178
+msgid "Bad confirmation code"
+msgstr "Неправильной код подтверждения"
+
+#: src/Application/Model/UserTable.php:199
+msgid "Wrong activation code or account already activated"
+msgstr "Неправильный код активации или аккаунт уже активирован"
+
+#: src/Application/Lib/AppController.php:125
+msgid "Administration Panel"
+msgstr "Панель администрирования"
+
+#: src/Application/Lib/AppController.php:147
+msgid "This action is forbidden for your role"
+msgstr "Доступ к данной странице запрещен для вашего пользователя"
+
+#: src/Application/Lib/User.php:31
+msgid ""
+"Cannot log you in: your account is blocked or server error encountered. "
+"Please contact Support"
+msgstr ""
+"Ошибка авторизации: ваш аккаунт заблокирован или на сервере произошла "
+"ошибка. Свяжитесь с техподдержкой"
+
+#: src/Application/Lib/User.php:36
+msgid "Server requires you should be logged in to access this area"
+msgstr "Вы доложны быть авторизованы для доступа к данной странице"
+
+#: src/Application/Lib/User.php:52
+msgid "E-Mail is not set or is empty"
+msgstr "Адрес электронной почты не указан или пустой"
+
+#: src/Application/Lib/User.php:121
+msgid "Cannot log you in: your account is blocked. Please contact Support"
+msgstr ""
+"Ошибка авторизации: ваш аккаунт заблокирован. Пожалуйста, свяжитесь с "
+"техподдержкой"
+
+#: src/Application/Lib/Validator/CustomEmailValidator.php:18
+msgid "Email address doesn't appear to be valid."
+msgstr "Адрес электронной почты имеет неверный формат"
+
+#: src/Application/Controller/UserController.php:44
+msgid "Wrong login/password or your account is not activated"
+msgstr "Неправильно указаны данные авторизации или аккаунт не активен"
+
+#: view/layout/layout.phtml:13
+msgid "CodeIT"
+msgstr ""
+
+#: view/layout/layout.phtml:43
+msgid "Home"
+msgstr "Главная"
+
+#: view/layout/layout.phtml:45
+msgid "Logout"
+msgstr "Выйти"
+
+#: view/layout/layout.phtml:47 view/application/user/login.phtml:2
+msgid "Login"
+msgstr "Войти"
+
+#: view/layout/layout.phtml:50
+msgid "Admin panel"
+msgstr "Админ панель"
+
+#: view/layout/layout.phtml:60
+msgid "All rights reserved."
+msgstr "Все права защищены."
+
+#: view/application/index/index.phtml:2
+msgid "Welcome to base project by codeIT!"
+msgstr "Добро пожаловать в базовый проект компании codeIT!"
+
+#: view/application/index/index.phtml:10
+msgid "Solutions for Zend Framework 2"
+msgstr "Готовые решения для Zend Framework 2"
+
+#: view/application/index/index.phtml:13
+msgid ""
+"Base classes to inherite controllers and models: AppController and AppTable"
+msgstr ""
+"Базовые классы для наследования контроллеров и моделей: AppController и "
+"AppTable"
+
+#: view/application/index/index.phtml:14
+msgid "Read Wiki article"
+msgstr "Читать статью на Wiki"
+
+#: view/application/index/index.phtml:22
+msgid "Admin panel interface"
+msgstr "Интерфейс админ панели"
+
+#: view/application/index/index.phtml:25
+msgid "Company design, user friendly interface"
+msgstr "Корпоративный дизайн, удобный интерфейс"
+
+#: view/application/index/index.phtml:26
+msgid "Go to admin panel"
+msgstr "Перейти в админ панель"
+
+#: view/application/user/login.phtml:6
+msgid "Authorization page"
+msgstr "Страница авторизации"
+
+#: view/error/index.phtml:1 view/service/error.phtml:1
+msgid "An error occurred"
+msgstr "Возникла ошибка"
+
+#: view/error/index.phtml:8 view/error/404.phtml:54
+msgid "Additional information"
+msgstr ""
+
+#: view/error/index.phtml:11 view/error/index.phtml:35 view/error/404.phtml:57
+#: view/error/404.phtml:81
+msgid "File"
+msgstr ""
+
+#: view/error/index.phtml:15 view/error/index.phtml:39 view/error/404.phtml:61
+#: view/error/404.phtml:85
+msgid "Message"
+msgstr ""
+
+#: view/error/index.phtml:19 view/error/index.phtml:43 view/error/404.phtml:65
+#: view/error/404.phtml:89
+msgid "Stack trace"
+msgstr ""
+
+#: view/error/index.phtml:29 view/error/404.phtml:75
+msgid "Previous exceptions"
+msgstr ""
+
+#: view/error/index.phtml:58 view/error/404.phtml:104
+msgid "No Exception available"
+msgstr ""
+
+#: view/error/404.phtml:1
+msgid "A 404 error occurred"
+msgstr ""
+
+#: view/error/404.phtml:11
+msgid "The requested controller was unable to dispatch the request."
+msgstr ""
+
+#: view/error/404.phtml:14
+msgid ""
+"The requested controller could not be mapped to an existing controller class."
+msgstr ""
+
+#: view/error/404.phtml:17
+msgid "The requested controller was not dispatchable."
+msgstr ""
+
+#: view/error/404.phtml:20
+msgid "The requested URL could not be matched by routing."
+msgstr ""
+
+#: view/error/404.phtml:23
+msgid "We cannot determine at this time why a 404 was generated."
+msgstr ""
+
+#: view/error/404.phtml:35
+msgid "Controller"
+msgstr "Контроллер"
+
+#: view/error/404.phtml:42
+#, php-format
+msgid "resolves to %s"
+msgstr ""
+
+#: view/service/siteClosed.phtml:1
+msgid "Registration portal closed"
+msgstr ""
+
+#: view/service/siteClosed.phtml:2
+#, php-format
+msgid "We are sorry, but we only allow registration %d AM to %d PM"
+msgstr ""
+
+#: view/service/forbidden.phtml:1
+msgid "Forbidden"
+msgstr "Отказано в доступе"

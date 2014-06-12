@@ -1,0 +1,96 @@
+<?php
+	$this->headTitle(_('Manage Users'));
+	$this->headScript()->appendFile($this->basePath() . '/js/admin/chosen.jquery.js', 'text/javascript')
+											->appendFile($this->basePath(). '/js/changeabledata-checkbox.js');
+	$this->headLink()->prependStylesheet($this->basePath() . '/css/admin/chosen.css');?>
+
+
+<div class="clear"></div>
+<div id="gridbox" style="height:500px;background-color:white;"></div>
+<div style="display:none">
+	<div id="pid_flt_box"><input style="border:1px solid gray; width:100%" onclick="(arguments[0]||window.event).cancelBubble=true;" onkeyup="filterBy()"></div>
+	<div id="name_flt_box"><input style="border:1px solid gray; width:100%" onclick="(arguments[0]||window.event).cancelBubble=true;" onkeyup="filterBy()"></div>
+	<div id="email_flt_box"><input style="border:1px solid gray; width:100%" onclick="(arguments[0]||window.event).cancelBubble=true;" onkeyup="filterBy()"></div>
+	<div id="role_flt_box">
+	<?php $disabled = '';
+		$roles = array(
+				'0' =>  _('All'),
+				'user' => _('User'),
+				'admin' => _('Admin'),
+			);
+		?>
+		<select class="chosen-select" style="border:1px solid gray; width:100%" onclick="(arguments[0]||window.event).cancelBubble=true;" onchange="filterBy()" <?php echo $disabled;?>>
+			<?php foreach ($roles as $value=>$role){?>
+				<option value="<?php echo $value;?>"><?php echo $role;?></option>
+			<?php }?>
+		</select>
+	</div>
+	<div id="status_flt_box">
+		<select class="chosen-select" style="border:1px solid gray; width:100%" onclick="(arguments[0]||window.event).cancelBubble=true;" onchange="filterBy()">
+			<option value="-1"><?php echo _('All');?></option>
+			<option value="1"><?php echo _('Active');?></option>
+			<option value="0"><?php echo _('Inactive');?></option>
+		</select>
+	</div>
+</div>
+
+<script>
+	dhtmlx.CustomScroll.init();
+	gridSortOrder='desc';
+	gridSortOrderBy=1;
+	onpage = 30;
+	var getListLink = <?php echo json_encode($this->basePath('admin/user/list'));?>+"?action=list";
+	function doOnLoad(){
+		mygrid = new dhtmlXGridObject('gridbox');
+		mygrid.setImagePath("<?php echo $this->basePath('js/dhtmlxGrid/imgs/')?>");
+	  mygrid.setHeader("#,<?php echo _('User ID');?>,<?php echo _('Name');?>,<?php echo _('Email');?>,<?php echo _('User Type');?>,<?php echo _('Status');?>,<?php echo _('Actions');?><?php echo ($canDelete)? ',#cspan' : '';?>");
+		mygrid.setInitWidths("30,85,100,100,70,60,<?php echo ($canDelete)? '30,30' : '60';?>")
+		mygrid.setColAlign("center,center,center,center,center,center,center,center")
+		mygrid.setColTypes("ro,ro,ro,ro,ro,ro,ro,ro");
+		mygrid.setColSorting("na,int,str,str,na,na,na,na");
+		mygrid.enableResizing("false,false,false,false,false,false,false,false");
+		mygrid.init();
+		mygrid.setSkin("light")
+		mygrid.enableSmartRendering(true,onpage);
+		mygrid.enablePreRendering(onpage);
+		mygrid.setAwaitedRowHeight(35);
+	  mygrid.attachEvent("onBeforeSorting",function(ind,type,dir){
+	    gridSortOrderBy=ind;
+	    gridSortOrder=dir;
+	    filterBy();
+	    return false;
+	  });
+	  
+	  mygrid.attachEvent("onBeforeSelect", function(id,ind){
+	  	var rowNum = mygrid.cellById(id,0).getValue();
+	  	return common.selectItemInList(id, rowNum, <?=json_encode($this->basePath('admin/user/edit/'));?>);
+	  });
+		mygrid.attachHeader("#rspan,<div id='pid_flt'><\/div>,<div id='name_flt'><\/div>,<div id='email_flt'><\/div>,<div id='role_flt'><\/div>,<div id='status_flt'><\/div>,<?php echo ($canDelete)? ',' : '#rspan';?>");
+		//set filters fields
+		$('#pid_flt').append($("#pid_flt_box"));
+		$('#name_flt').append($("#name_flt_box"));
+		$('#role_flt').append($("#role_flt_box"));
+		$('#email_flt').append($("#email_flt_box"));
+		$('#status_flt').append($("#status_flt_box"));
+		mygrid.setSizes();
+		filterBy();
+	}
+	function filterBy(){
+		var pidVal=encodeURIComponent($('#pid_flt').find('input').val());
+		var nameVal=encodeURIComponent($('#name_flt').find('input').val());
+		var roleVal=encodeURIComponent($('#role_flt').find('select').val());
+		var emailVal = encodeURIComponent($('#email_flt').find('input').val());
+		var statusVal = encodeURIComponent($('#status_flt').find('select').val());
+		mygrid.clearAll();
+		mygrid.load(getListLink+"&order="+gridSortOrder+"&orderby="+gridSortOrderBy+"&flPid="+pidVal+"&flName="+nameVal+'&flRole='+roleVal+'&flEmail='+emailVal+'&flStatus='+statusVal, function() {
+			mygrid.setSortImgState(true,gridSortOrderBy,gridSortOrder);    //set a correct sorting image
+			$('.objbox').each(function () { dhtmlx.CustomScroll._mouse_out_timed.call(this); });
+		});
+	}
+	$(document).ready(function(){ 
+		common.setGridHeight();
+		doOnLoad();  
+		
+		$(".chosen-select").chosen({disable_search_threshold: 7});
+	});
+</script>

@@ -1,0 +1,41 @@
+.checkbox {
+	vertical-align: middle;
+	width: 44px;
+	height: 17px;
+	background: url(../../images/admin/codeitadmin/checkbox.png) no-repeat 0 -19px;
+	cursor: pointer;
+	margin-left: 2px;
+	float: left;
+}
+.checkbox.checked {
+	background-position: 0 0px;
+}
+.checkbox.disabled {
+	/*background-position: 0 -16px;*/
+}
+.checkbox.disabled {
+	/*background-position: -16px -16px;*/
+	opacity: 0.6;
+}
+.checkbox.focused {
+	background-position: 0 -32px;
+}
+.checkbox.checked.focused {
+	background-position: -16px -32px;
+}
+.checkbox.element {
+    display: block;
+    float: left;
+    margin-right:40px;
+    width: auto;
+    background: 0 none;
+    width: 210px;
+}
+.checkbox.element label {
+	line-height: 17px;
+  position: relative;
+  padding-left: 7px;
+}
+.checkbox.disabled {
+	cursor: auto;
+}

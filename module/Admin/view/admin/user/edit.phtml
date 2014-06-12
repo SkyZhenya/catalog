@@ -1,0 +1,49 @@
+<h1><?php echo $title;?></h1>
+<?php
+if (isset($error) && !empty($error)){
+	$this->headTitle(_('Error'));
+	echo $error;
+	return;
+}
+$id = $this->form->get('id')->getValue();
+
+$this->headTitle(htmlspecialchars($this->form->get('name')->getValue()));
+$this->headScript()->appendFile($this->basePath() . '/js/admin/chosen.jquery.js', 'text/javascript');
+$this->headLink()->prependStylesheet($this->basePath() . '/css/admin/chosen.css');
+?>
+<div class="user-wrap">
+	<?php
+			echo $this->wrappedForm($form);
+	?>
+
+<script>
+	<?php if (isset($canClosePage) && $canClosePage){?>
+		parent.common.needClose++;
+	<?}
+	if (isset($addAction)){
+		if (empty($form->getMessages())) {?>
+			parent.common.refreshGrid = 1;
+	<? }
+	else {?>
+			parent.common.refreshGrid = 0;
+			delete parent.common.refreshDataLink;
+	<?php }}
+	if (isset($wasAdded) && $wasAdded) { ?>
+		parent.common.changedForm = false;
+	<?php }?>
+	$(document).ready(function(){
+		<?php if (isset($canEdit) && !$canEdit){?>
+			common.readonlyForm();
+		<?php } ?>
+		$(".chosen-select").chosen({disable_search_threshold: 7});
+		$('input.styled').checkbox();
+	});
+</script>
+<div class="clear"></div>
+
+<?php if ($id>0){?>
+<script>
+	parent.common.refreshDataLink = parent.getListLink+"&flId="+<?php echo json_encode($id);?>;
+</script>
+<?php } ?>
+</div>

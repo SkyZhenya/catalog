@@ -1,0 +1,42 @@
+<?php
+	$this->myviewalias()->prepareControllerAction();
+	echo $this->doctype();
+	$controller = $this->controller;
+	$this->headTitle(_('Administration Panel'));
+	$titles = $this->headTitle();
+	$title = $titles[0];
+
+?>
+<html>
+  <head>
+		<meta http-equiv="content-type" content="text/html; charset=utf-8">
+    <?php echo $this->headTitle(SITE_NAME)->setSeparator(' | ')->setAutoEscape(false) ?>
+
+    <!-- Le styles -->
+    <?php echo $this->headLink(array('rel' => 'shortcut icon', 'type' => 'image/vnd.microsoft.icon', 'href' => $this->basePath() . '/favicon.ico'))
+                    ->prependStylesheet($this->basepath('css/admin/codeit-admin.css?time=2014-04-11-01'))
+                    ->prependStylesheet($this->basepath('css/admin/checkbox.css?time=2014-03-17-01'))
+                    ->prependStylesheet($this->basepath('css/admin/boxes.css'))
+                    ->prependStylesheet($this->basepath('css/admin/menu.css?time=2013-11-12-01'))
+		?>
+
+    <!-- Scripts -->
+    <?php echo $this->headScript()->prependFile($this->basePath() . '/js/html5.js', 'text/javascript', array('conditional' => 'lt IE 9',))
+                                  ->prependFile($this->basePath(). '/js/admin/common.js?time=2014-03-17-01')
+                                  ->appendFile($this->basePath(). '/js/changeabledata-checkbox.js')
+                                  ->prependFile($this->basePath(). '/js/admin/jquery.checkbox.min.js')
+                                  ->prependFile($this->basePath() . '/js/jquery-1.10.2.min.js')
+                                  ->appendScript('dir = "'.$this->basePath().'"') 
+                                  ->appendScript('siteurl = "'.URL.'";')                  
+    ?>
+
+  </head>
+
+	<body id="iframe">
+		<div class="wrap-iframe-<?php echo (isset($iframeClass))? $iframeClass : '';?>">
+			<div class="content-iframe">
+				<?php echo $this->content; ?>
+			</div>
+		</div>
+	</body>
+</html>

@@ -1,0 +1,19 @@
+<?php 
+	$this->headTitle(_('Login'));
+?>
+<div class="header-title ipadpages">
+	<div class="h-bg">	
+		<h1><?php echo _('Authorization page') ?></h1>
+	</div>
+</div>
+
+<div class="content-border login">
+	<div class="login-form">
+	<?php
+	if (isset($err) && !empty($err)){
+		echo '<div class="error top_error">'.$err.'</div>';
+	}
+	echo $this->wrappedForm($form);
+	?>
+	</div>
+</div>
