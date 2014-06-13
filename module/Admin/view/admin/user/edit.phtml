@@ -19,17 +19,12 @@ $this->headLink()->prependStylesheet($this->basePath() . '/css/admin/chosen.css'
 <script>
 	<?php if (isset($canClosePage) && $canClosePage){?>
 		parent.common.needClose++;
-	<?}
-	if (isset($addAction)){
-		if (empty($form->getMessages())) {?>
-			parent.common.refreshGrid = 1;
-	<? }
-	else {?>
-			parent.common.refreshGrid = 0;
-			delete parent.common.refreshDataLink;
-	<?php }}
-	if (isset($wasAdded) && $wasAdded) { ?>
+	<?} ?>
+	parent.common.refreshGrid = 0;
+	delete parent.common.refreshDataLink;
+	<?php if (isset($wasAdded) && $wasAdded) { ?>
 		parent.common.changedForm = false;
+		parent.common.refreshGrid = 1;
 	<?php }?>
 	$(document).ready(function(){
 		<?php if (isset($canEdit) && !$canEdit){?>
@@ -39,7 +34,6 @@ $this->headLink()->prependStylesheet($this->basePath() . '/css/admin/chosen.css'
 		$('input.styled').checkbox();
 	});
 </script>
-<div class="clear"></div>
 
 <?php if ($id>0){?>
 <script>

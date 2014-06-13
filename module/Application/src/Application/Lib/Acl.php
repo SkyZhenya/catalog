@@ -12,6 +12,7 @@ class Acl extends \Zend\Permissions\Acl\Acl {
 		$this->addResource('Application\Controller\User');
 		
 		$this->addResource('Admin\Controller\User');
+		$this->addResource('Admin\Controller\Template');
 
 		$guest = $this->addRole('guest');
 		$user = $this->addRole('user', 'guest');
@@ -25,6 +26,7 @@ class Acl extends \Zend\Permissions\Acl\Acl {
 			'list',
 			'edit',
 		));
+		$this->allow('admin', 'Admin\Controller\Template');
 	}
 
 }

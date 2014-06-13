@@ -1,10 +1,9 @@
 <div class="menu-btns">
-	<?php	if ($canAdd){
-	?>
-	<p class="content-buttons form-buttons add_item_btn">
-	  <a class="add form-button" onclick='initFancybox("<?=URL;?>admin/user/add");return false;' href="<?=URL;?>admin/user/add">
-	    <span><?php echo _('Create new account');?></span>
-	  </a>
-	</p>
+	<?php	if ($canAdd) { ?>
+		<p class="content-buttons form-buttons add_item_btn">
+		  <a class="add form-button" onclick='initFancybox("<?=URL;?>admin/user/add");return false;' href="<?=URL;?>admin/user/add">
+		    <span><?php echo _('Create new account');?></span>
+		  </a>
+		</p>
 	<?php }?>
 </div>

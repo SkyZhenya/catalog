@@ -56,6 +56,11 @@
 							 <a href="<?php echo $this->basepath('admin/user')?>" class=""><span><?echo _('Manage Users');?></span></a>
 						</li>
 						<?}?>
+						<? if ($this->getUser()->isAllowed($cpath.'Template', 'index')) {?>
+						<li class="<?=in_array($controller, array('Template'))?"active ":''?>parent level0">
+							 <a href="<?php echo $this->basepath('admin/template')?>" class=""><span><?echo _('Email templates');?></span></a>
+						</li>
+						<?}?>
 						<?php if ($this->getUser()->getId()) { ?>
               <li class="parent level0 last"><a href="<?php echo URL.'user/logout'; ?>" class=""><span><?echo _('Logout');?></span></a></li>
             <? } ?>
@@ -71,8 +76,8 @@
   				$title = $title_link;
 			  	if (isset($breadcrumbs)) {
 			  		echo '<div class="breadcrumps-div">';
-						foreach ($breadcrumbs as $url => $title) {
-							echo '<a href="'.$url.'">'.$title.'</a>'.' / ';
+						foreach ($breadcrumbs as $url => $link_title) {
+							echo '<a href="'.$url.'">'.$link_title.'</a>'.' / ';
 						}
 						echo $title.'</div>';
 			  	}?>

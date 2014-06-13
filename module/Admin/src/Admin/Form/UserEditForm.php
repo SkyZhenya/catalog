@@ -5,6 +5,9 @@ use Zend\InputFilter\Factory as InputFactory;
 use Zend\InputFilter\InputFilter;
 
 class UserEditForm extends \Zend\Form\Form {
+	/**
+	 * @var Zend\InputFilter\InputFilter;
+	 */
 	protected $inputFilter;
 	
 	/**

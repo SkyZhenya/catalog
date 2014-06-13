@@ -1,0 +1,45 @@
+<div class="temlates">
+	<h1><?php echo $title;?></h1>
+	<?php
+	if (isset($error) && !empty($error)){
+		$this->headTitle('Error');
+		echo $error;
+		return;
+	}
+	if (isset($langs)){
+	?>
+		<ul class='tabs-horiz' id='invTabsUl' style='height: 24px'>
+	    <? foreach ($langs as $i => $lang) { ?>
+	      <li><a class='tab-item-link invTabs<?php echo $lang->id;?> <?= ($lang->id == $activeLang) ? 'active' : '' ?>' onclick='return common.changeLang(<?= $lang->id; ?>, "invTabs");' href='#'><span><?= $lang->name; ?></span></a></li>
+	      <? } ?>
+	  </ul>
+	<?php }?>
+	<div class="invTabs">
+	<?php $id = $this->form->get('id')->getValue();
+		$this->headTitle(htmlspecialchars($this->form->get('name')->getValue()));
+		$this->headScript()->appendFile($this->basePath(). '/js/tiny_mce/tiny_mce_src.js');
+		echo $this->wrappedForm($form);
+	?>
+	</div>
+	<script>
+		var activeLang = <?php echo json_encode($activeLang);?>;
+		$('.locfields').parent().parent().hide();
+		$('.locfields'+activeLang).parent().parent().show();	
+		<?php if (isset($canClosePage) && $canClosePage){?>
+			parent.common.needClose++;
+		<?} ?>
+		parent.common.refreshGrid = 0;
+		delete parent.common.refreshDataLink;
+		<?php if (isset($wasAdded) && $wasAdded) { ?>
+			parent.common.changedForm = false;
+			parent.common.refreshGrid = 1;
+		<?php }?>
+		<?php if ($id>0){?>
+			parent.common.refreshDataLink = parent.getListLink+"&flPid="+<?php echo json_encode($id);?>;
+		<?php } ?>
+		$(document).ready(function(){
+			common.initTinyMCE();
+		});
+	</script>
+
+</div>

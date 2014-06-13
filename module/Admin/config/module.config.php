@@ -56,6 +56,7 @@ return array(
 	'controllers' => array(
 		'invokables' => array(
 			'Admin\Controller\User' => 'Admin\Controller\UserController',
+			'Admin\Controller\Template' => 'Admin\Controller\TemplateController',
 		),
 	),
 	'view_manager' => array(

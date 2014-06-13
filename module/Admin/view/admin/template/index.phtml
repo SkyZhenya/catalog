@@ -1,0 +1,51 @@
+<?php
+	$this->headTitle(_('Email templates'));
+?>
+
+<div id="gridbox"></div>
+
+<script>
+	dhtmlx.CustomScroll.init();
+	gridSortOrder='desc';
+	gridSortOrderBy=1;
+	onpage = 20;
+	var getListLink = <?php echo json_encode($this->basePath('admin/template/list'));?>+"?action=list";
+	function doOnLoad(){
+		mygrid = new dhtmlXGridObject('gridbox');
+		mygrid.setImagePath("<?php echo $this->basePath('js/dhtmlxGrid/imgs/')?>");
+	  mygrid.setHeader("#,<?php echo _('Id');?>,<?php echo _('Template slug');?>,<? echo _('Actions');?>,#cspan");
+		mygrid.setInitWidths("15,25,225,15,15")
+		mygrid.setColAlign("center,center,center,center,center")
+		mygrid.setColTypes("ro,ro,ro,ro,ro");
+		mygrid.setColSorting("na,int,str,na,na");
+		mygrid.init();
+		mygrid.setSkin("light")
+		mygrid.enableSmartRendering(true,onpage);
+		mygrid.setAwaitedRowHeight(28);
+	  mygrid.attachEvent("onBeforeSorting",function(ind,type,dir){
+	    gridSortOrderBy=ind;
+	    gridSortOrder=dir;
+	    filterBy();
+	    return false;
+	  });
+	  
+	  mygrid.attachEvent("onBeforeSelect", function(id,ind){
+	  	var rowNum = mygrid.cellById(id,0).getValue();
+	  	return common.selectItemInList(id, rowNum, <?=json_encode($this->basePath('admin/template/edit/'));?>);
+			return false;
+	  });
+
+		mygrid.setSizes();
+		filterBy();
+	}
+	function filterBy(){
+		mygrid.clearAll();
+		mygrid.load(getListLink+"&order="+gridSortOrder+"&orderby="+gridSortOrderBy, function() {
+			mygrid.setSortImgState(true,gridSortOrderBy,gridSortOrder);    //set a correct sorting image
+		});
+	}
+	$(document).ready(function(){ 
+			common.setGridHeight();
+			doOnLoad();
+	});
+</script>

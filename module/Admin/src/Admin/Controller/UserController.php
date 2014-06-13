@@ -115,7 +115,6 @@ class UserController extends AppController {
 						'canClosePage' => true,
 						'title' => _('Edit profile'),
 						'wasAdded' => true,
-						'addAction' => true,
 					));
 					$result->setTemplate('admin/user/edit');
 					return $result;
@@ -127,7 +126,6 @@ class UserController extends AppController {
 			'form' => $form,
 			'title' => _('Create new account'),
 			'canClosePage' => false,
-			'addAction' => true,
 		));
 		
 		$result->setTemplate('admin/user/edit');
