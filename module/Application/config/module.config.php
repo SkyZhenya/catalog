@@ -40,6 +40,21 @@ return array(
 								),
 								'may_terminate' => true,
             ),
+            'activeforgot' => array(
+							'type' => 'segment',
+							'options' => array(
+								'route' => '/user/activeforgot/:id/:code',
+								'defaults' => array(
+									'__NAMESPACE__' => 'Application\Controller',
+									'controller' => 'User',
+									'action' => 'activeforgot',
+								),
+								'constraints' => array(
+									'code' => '[a-zA-Z0-9_-]*',
+									'id' => '[0-9]*',
+								),
+							),
+						),
         ),
     ),
     'controllers' => array(

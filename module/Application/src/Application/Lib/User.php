@@ -76,20 +76,38 @@ class User extends UserTable {
 		$transport->send($m);
   }
 
+  /**
+   * save temporary password and send email to activate it
+   * 
+   * @param string $email
+   * @param string $newpass
+   */
 	public function forgotPass($email, $newpass) {
 		
 		parent::forgotPass($email, $newpass);
 		
 		$template =  new Template();
-		$tmplName = 'forgot_password';
+		$tmplName = 'Forgot password';
 		$tmplParams = array(
 			'newpass' => $newpass,		
 			'id' => $this->id,
 			'code' => $this->code,
+			'name' => $this->name,
 		);	
 		
 		$message = $template->prepareMessage($tmplName, $tmplParams);
 	  $this->sendMail($message['subject'], $message['text']);		
+	}
+	
+	/**
+	 * function makes all nesessary things on login
+	 * 
+	 * @param int $userId
+	 */
+	public function login($userId) {
+		$this->setId($userId);
+		
+		$_SESSION['id'] = $userId;
 	}
   
   /**

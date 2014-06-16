@@ -61,11 +61,9 @@ class UserTable extends AppTable {
 		* @param array $data
 		*/
 	public function set($data) {
-    if (isset($data['password'])){
-	    if (empty($data['password']))
-	    	unset($data['password']);
-	    else 
-	    	$data['password'] = $this->saltPass($data['password']);
+    if (isset($data['pass'])){
+	    if (!empty($data['pass'])) 
+	    	$data['password'] = $this->saltPass($data['pass']);
     }
     parent::set($data);
 	}
@@ -157,7 +155,7 @@ class UserTable extends AppTable {
 		return $this->insert(array(
 			'login'	=> $login,
 			'email'	=> $email,
-			'pass' => $this->saltPass($password),
+			'password' => $this->saltPass($password),
 			'code' => \Application\Lib\Utils::generatePassword(32),
 			'created' => TIME,
 		));
@@ -214,6 +212,7 @@ class UserTable extends AppTable {
 		//set new pass
 		$this->set(array(
 			'password' => $userRow->newpass,
+			'code' => '',
 		));
 	}
 

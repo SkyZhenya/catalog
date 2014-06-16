@@ -99,7 +99,7 @@ class UserEditForm extends \Zend\Form\Form {
 		));
 		
 		$this->add(array(
-			'name' => 'password',
+			'name' => 'pass',
 			'type' => 'password',
 			'options' => array(
 				'label' => _('Password'),
@@ -186,7 +186,7 @@ class UserEditForm extends \Zend\Form\Form {
 			)));
 			
 			$inputFilter->add($factory->createInput(array(
-				'name' => 'password',
+				'name' => 'pass',
 				'required' => ($action == 'edit')? false : true,
 				'filters' => array(
 					array('name' => 'StringTrim'),
