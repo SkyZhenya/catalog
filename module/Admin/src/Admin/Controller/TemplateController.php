@@ -111,7 +111,6 @@ class TemplateController extends AppController {
 		$result = new ViewModel(array(
 			'form' => $form,
 			'title' => _('New email template'),
-			'addAction' => true,
 			'langs' => $langs,
 			'activeLang' =>\Zend\Registry::get('lang'),
 		));
