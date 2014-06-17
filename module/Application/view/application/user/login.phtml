@@ -1,5 +1,8 @@
 <?php 
 	$this->headTitle(_('Login'));
+	//add specific css and js for this page as separate files
+	$this->headScript()->appendFile($this->basePath() . '/js/pages/login.js', 'text/javascript');
+	$this->headLink()->appendStylesheet($this->basePath() . '/css/pages/login.css');
 ?>
 <div class="header-title ipadpages">
 	<div class="h-bg">	
