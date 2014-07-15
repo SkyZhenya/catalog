@@ -49,14 +49,6 @@ class Module
     public function getViewHelperConfig() {
         return array(
             'factories' => array(
-                'wrappedElement' => function ($sm) {
-                    $viewHelper = new \Admin\Form\WrappedElement;
-                    return $viewHelper;
-                },
-                'wrappedForm' => function ($sm) {
-                    $viewHelper = new \Admin\Form\WrappedForm;
-                    return $viewHelper;
-                },
             ),
         );
 
