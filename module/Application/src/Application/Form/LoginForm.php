@@ -16,6 +16,7 @@ class LoginForm extends Form {
 
     $this->setName('login')
 			->setAttribute('method', 'post')
+			->setAttribute('class', 'form-horizontal auth-form')
 		    
 			->add(array(
 				'name' => 'csrf',
@@ -37,7 +38,7 @@ class LoginForm extends Form {
 			      ),
 			      'attributes' => array(
 			          'type'  => 'text',
-								'class' => 'input-big',
+								'class' => 'form-control',
 								'required' => 'required',
 			      ),
 			  ))
@@ -49,7 +50,7 @@ class LoginForm extends Form {
 			      ),
 			      'attributes' => array(
 			          'type'  => 'password',
-								'class' => 'input-big',
+								'class' => 'form-control',
 								'required' => 'required',
 			      ),
 			  ))
@@ -59,6 +60,7 @@ class LoginForm extends Form {
 			      'attributes' => array(
 			          'type'  => 'submit',
 			          'value' => _('Log In'),
+			          'class' => 'btn btn-primary',
 			      ),
 			  ));
 

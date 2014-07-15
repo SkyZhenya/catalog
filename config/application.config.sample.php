@@ -1,27 +1,23 @@
 <?php
 
-define('DATABASE_NAME', 'sstsafety');
+define('LOCALE', 'en_US'); // ru_RU for russian
+Zend\Registry::set('lang', 1); // 1 is English, 2 is Rissian
+
+define('DATABASE_NAME', 'codeit_adminka');
 define('DATABASE_HOST', 'dcodeit.net');
 define('DATABASE_SALT', 'jh^lP0)z,Zjw#4082lk<NxW');
-define('URL', 'http://dcodeit.net/sstsafety-natali/public/');
-define('MEMCACHE_ENABLED', true);
-define('MEMCACHE_NAMESPACE', 'sstsafety');
+define('URL', 'http://dcodeit.net/codeit-project/public/');
+define('MEMCACHE_ENABLED', false);
+define('MEMCACHE_NAMESPACE', 'codeit-project');
 define('MEMCACHE_HOST', '127.0.0.1');
 define('MEMCACHE_DEBUG', false);
-define('DOMAIN', 'registrera.sstnet.se');
 
 define('DEBUG', true);
 
-define('SUPPORT_EMAIL', 'sstsafety@null.dcodeit.net');
-define('ADMIN_EMAIL', 'natali.ringel@codeit.com.ua');
-define('SITE_NAME', 'SST Safety');
-
-define('API_URL', 'https://api.sstsafety.com/');
+define('SUPPORT_EMAIL', 'natali.ringel@codeit.com.ua');
+define('SITE_NAME', 'CodeIT Carcass');
 
 define('BASEDIR', dirname(__FILE__).'/../');
-
-//Should we send SMS and email to owner or not
-define('OWNER_NOTIFICATION_ENABLED', false );
 
 Zend\Registry::set('dbConfig', array(
 	'host' => DATABASE_HOST,
@@ -40,7 +36,8 @@ define('TIME', time());
 
 return array(
     'modules' => array(
-        'Application',				
+        'Application',		
+        'Admin',		
     ),
     'module_listener_options' => array(
         'config_glob_paths'    => array(
