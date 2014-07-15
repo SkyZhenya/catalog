@@ -27,22 +27,6 @@ class LangTable extends AppTable {
 	public function __construct($langId = null) {
 		parent::__construct('lang', $langId);
 	}
-
-	/**
-	* sets Id. Checks whether entry exists.
-	*
-	* @param int $id
-	* @returns item
-	*/
-	public function setId($id) {
-		$item = parent::setId($id);
-		$this->code = $item->code;
-		$this->locale = $item->locale;
-		$this->name = $item->name;
-		$this->main = $item->main;
-		
-		return $item;
-	}
 	
 	/**
 	* returns row from db for lang with code $code

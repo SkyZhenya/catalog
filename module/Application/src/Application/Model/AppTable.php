@@ -323,6 +323,13 @@ abstract class AppTable extends TableGateway {
 	public function setId($id) {
 		$this->id = $id;
 		$item = $this->get($id);
+		
+		foreach($item as $field => $value) {
+			if(property_exists($this, $field)) {
+				$this->$field = $value;
+			}
+		}
+		
 		return $item;
 	}
 

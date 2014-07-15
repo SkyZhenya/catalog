@@ -40,20 +40,6 @@ class UserTable extends AppTable {
 		parent::__construct('user', $userId);
 	}
 
-	/**
-	* sets Id of user. Checks whether user exists.
-	*
-	* @param int $id user id
-	*/
-	public function setId($id) {
-		$item = parent::setId($id);
-		foreach($this->goodFields as $fieldName) {
-			if(isset($item->$fieldName)) {
-				$this->$fieldName = $item->$fieldName;
-			}
-		}
-		return $item;
-	}
 	
 	/**
 		* sets data for current user; do not update password if don't need
