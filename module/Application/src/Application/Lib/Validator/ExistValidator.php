@@ -32,7 +32,7 @@ class ExistValidator extends AbstractValidator{
   	$where = array(array($this->field, '=', $value));
   	if($this->id)
   		$where[] = array($this->idFiledName, '!=', $this->id);
-  	if($this->model->find($where)->toArray()){
+  	if($this->model->find($where)){
 			$this->error(self::EXIST);
       return false;
   	}

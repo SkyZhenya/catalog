@@ -128,9 +128,9 @@ class UserTable extends AppTable {
 			array('email', '=', $email),
 			array('password', '=', $this->saltPass($pass)),
 			array('active', '=', '1'))
-		)->current();
+		);
     if($row){
-      return $row;
+      return array_pop($row);
     }
     else{
       return false;

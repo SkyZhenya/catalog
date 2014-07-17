@@ -126,7 +126,7 @@ class Authentication {
 			$cachedAcl = \Zend\Cache\PatternFactory::factory('object', array(
 			  'object'   => new \Application\Lib\Acl(),
 			  'storage' => 'memcached',
-			  'object_key' => MEMCACHE_NAMESPACE.'.objectCache.\Application\Lib\Acl',
+			  'object_key' => '.objectCache.\Application\Lib\Acl',
 			  'cache_by_default' => false,
 
 			  // the output don't need to be catched and cached

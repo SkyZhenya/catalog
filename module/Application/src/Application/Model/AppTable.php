@@ -17,9 +17,9 @@ abstract class AppTable extends TableGateway {
 	protected $lang=1;
 
 	/**
-	* @var \Application\Lib\Memcache
+	* @var \Application\Lib\Redis
 	*/
-	protected static $memCachedGlobal = null;
+	protected static $redis = null;
 
 	/**
 	* Table with local data
@@ -56,26 +56,48 @@ abstract class AppTable extends TableGateway {
 	*/
 	protected $localFields = array();
 
-	// creates table and sets id if neccessary
+	/**
+	 * creates table and sets id if neccessary
+	 * @param string $tableName
+	 * @param int $id
+	 * @param mixed $databaseSchema
+	 * @param ResultSet $selectResultPrototype
+	 * @return {\Zend\Db\TableGateway\TableGateway|ResultSet}
+	 */
 	public function __construct($tableName, $id=null, $databaseSchema = null, ResultSet $selectResultPrototype = null) {
 		try {
 			$adapter = \Zend\Registry::get('dbAdapter');
 		}
 		catch(\Exception $e) {
 			// create adapter
-			$adapter = new \Zend\Db\Adapter\Adapter(\Zend\Registry::get('dbConfig'));
+			if(defined('DEBUG_SQL') && DEBUG_SQL) {
+				$adapter = new \BjyProfiler\Db\Adapter\ProfilingAdapter(\Zend\Registry::get('dbConfig'));
+				$adapter->setProfiler(new \BjyProfiler\Db\Profiler\Profiler);
+				$adapter->injectProfilingStatementPrototype();
+			}
+			else {
+				$adapter = new \Zend\Db\Adapter\Adapter(\Zend\Registry::get('dbConfig'));
+			}
+
 			\Zend\Registry::set('dbAdapter', $adapter);
 		}
 
 		$result = parent::__construct($tableName, $adapter, $databaseSchema, $selectResultPrototype);
-		if($id) {
-			$this->setId($id);
-		}
-
 		$this->lang = \Zend\Registry::get('lang');
 
-		if(!self::$memCachedGlobal) {
-			self::$memCachedGlobal = new \Application\Lib\Memcache();
+		if(!self::$redis) {
+			try {
+				self::$redis = \Zend\Registry::get('redis');
+			}
+			catch(\Exception $e) {
+				self::$redis = new \Application\Lib\Redis();
+				\Zend\Registry::set('redis', self::$redis);
+			}
+		}
+
+		if(!$this->locTable) $this->locTable = $this->table.'local';
+		if($id) {
+			$this->setId($id);
 		}
 
 		return $result;
@@ -281,11 +303,14 @@ abstract class AppTable extends TableGateway {
 		if(!is_null($total)) {
 			$total = $this->query('select count(*) cnt from `'.$this->table.'` '.$this->findJoin.' '.$where)->current()->cnt;
 		}
-		return $this->query('select '.$this->findFields.' from `'.$this->table.'` '.$this->findJoin.' '.
+		$ids = $this->query('select id from `'.$this->table.'` '.$this->findJoin.' '.
 			$where.
 			($orderBy ? ' order by '.$orderBy : '').
 			($limit ? ' limit '.((int)$offset) .', '.((int)$limit) : '')
-		);
+		)->toArray();
+		
+		$ids = array_column($ids, 'id');
+		return $this->mget($ids);
 	}
 
 	/**
@@ -412,12 +437,15 @@ abstract class AppTable extends TableGateway {
 	* @param string $name
 	* @return string
 	*/
+	/**
+	* get cached value
+	*
+	* @param string $name
+	* @return string
+	*/
 	public function cacheGet($key) {
-		if(MEMCACHE_ENABLED) {
-			return self::$memCachedGlobal->get('table.'.$this->table.'.'.$key);
-		}
-
-		return false;
+		//\Application\Lib\Logger::write("AppTable::cacheGet($key [{$this->table}])");
+		return self::$redis->get('table.'.$this->table.'.'.$key);
 	}
 
 	/**
@@ -425,29 +453,32 @@ abstract class AppTable extends TableGateway {
 	*
 	* @param string $name param name
 	* @param string $value param value
-	* @param int $timeout
+	* @param int $timeout TTL in seconds
 	* @param int $try
 	* @return bool true on success, false on fail MAX_TRIES times
 	*/
-	public function cacheSet($key, $value, $flag = false, $timeout = 0,  $try=0) {
-		if(MEMCACHE_ENABLED) {
-			return self::$memCachedGlobal->set('table.'.$this->table.'.'.$key, $value, $flag, $timeout, $try);
-		}
-
-		return true;
+	public function cacheSet($key, $value, $timeout = 0, $try=0) {
+		//\Application\Lib\Logger::write("AppTable::cacheSet($key [{$this->table}])");
+		return self::$redis->set('table.'.$this->table.'.'.$key, $value, $timeout, $try);
 	}
 
 	/**
-	* deletes cached value
-	*
-	* @param string $name
-	*/
-	public function cacheDelete($key){
-		if(MEMCACHE_ENABLED) {
-			return self::$memCachedGlobal->deleteCache('table.'.$this->table.'.'.$key);
-		}
+	 * deletes cached value
+	 *
+	 * @param string $key
+	 */
+	public function cacheDelete($key) {
+		//\Application\Lib\Logger::write("AppTable::cacheDelete($key [{$this->table}])");
+		return self::$redis->deleteCache('table.'.$this->table.'.'.$key);
+	}
 
-		return true;
+	/**
+	 * deletes cached values with keys that start with name
+	 *
+	 * @param string $keyMask
+	 */
+	public function cacheDeleteByMask($keyMask) {
+		return self::$redis->deleteByMask('table.'.$this->table.'.'.$keyMask);
 	}
 
 	/**
@@ -504,104 +535,28 @@ abstract class AppTable extends TableGateway {
 		}
 		
 		/**
-		* get local data for localized items
-		* 
-		* @param mixed $data
-		*/
-		public function getLocalData($sets){
-			$resultSet = new \Zend\Db\Sql\Select;
-			$resultSet->columns(array('*'));
-			$resultSet->from(array('cl'=>$this->locTable)
-			);
-			//include all where settings
-			if (isset($sets['where']) && is_array($sets['where'])){
-					$resultSet->where($sets['where']);
-				}
-			//set user's limit if it's nessesary
-			$limit = NULL;
-			if (isset($sets['limit'])){
-				$limit = $sets['limit'];
-				$resultSet->limit($limit);
-			}
-			
-			//set user's offset if it's nessesary
-			$offset = NULL;
-			if (isset($sets['offset'])){
-				$offset = $sets['offset'];
-				$resultSet->offset($offset);
-			}
-			
-
-			$results = $this->execute($resultSet)->toArray();
-			return $results;
+	 * returns rows from db with specified id
+	 *
+	 * @param array $ids
+	 * @return \ArrayObject
+	 */
+	public function mget($ids) {
+		$keys = [];
+		foreach($ids as $id) {
+			$keys[]='table.'.$this->table.'.'.$id;
 		}
-		
-		/**
-		* update or insert local data for localized items
-		* 
-		* @param mixed $data
-		*/
-		public function updateLocData($data){
-			$id = $this->id;
-			foreach ($data as $catloc){
-				$sets = array(
-						'where'=>array(
-								'id'=>$id,
-								'lang'=>$catloc['lang']
-						)
-				);
-				$list = $this->getLocalData($sets);
-				$catloc['id']=$id;
-				if (count($list)){
-					$this->updateLocItem($catloc);
-				} else {
-					$this->insertLocItem($catloc);
-				}
-        $this->cacheDelete($id."_".$catloc['lang']);
+		$values = self::$redis->mget($keys);
+		$result = [];
+		foreach($ids as $num => $id) {
+			if(isset($values[$num]) && !empty($values[$num])) {
+				$result[$id] = $values[$num];
+			}
+			else {
+				$result[$id] = $this->get($id);
 			}
 		}
 
-		public function updateLocItem($data){
-			$update = new  \Zend\Db\Sql\Update;
-			$update->table($this->locTable);
-			$update->set($data);
-			$where_condition = array(
-					'id'=>$data['id'],
-					'lang'=>$data['lang']
-			);
-			$update->where($where_condition);
-			$results = $this->execute($update);
-		}
-
-		public function insertLocItem($data){
-			$sql = new  \Zend\Db\Sql\Insert;
-			$sql->into($this->locTable);
-			$sql->values($data);
-			$results = $this->execute($sql);
-		}
-		
-		/**
-		* Method returns just array of localized data
-		* 
-		* @param mixed $data
-		*/
-		protected function chooseLocalData(&$data){
-		$localFields = $this->localFields;
-		$localData = array();
-		foreach ($localFields as $field){
-			if (isset($data[$field]) && is_array($data[$field])){
-				foreach ($data[$field] as $lang=>$val){
-					if (!isset($localData[$lang])){
-						$localData[$lang] = array(
-							'lang' => $lang,
-						);
-					}
-					$localData[$lang][$field] = $val;
-				}
-				unset($data[$field]);
-			}
-		}
-		return $localData;
+		return $result;
 	}
 
 }

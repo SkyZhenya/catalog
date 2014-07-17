@@ -52,7 +52,7 @@ class TemplateController extends AppController {
 		
 		if ($id > 0) {
 			try {
-				$data = (array)$this->templateTable->fullLocalData($id);
+				$data = (array)$this->templateTable->getFullLocalData($id); 
 				$form->setData($data);
 			}
 			catch(\Exception $e) {

@@ -110,6 +110,18 @@ class TemplateForm extends \Application\Lib\Form\MultilanguageForm {
 					array('name' => 'StringTrim'),
 				),
 			)));
+			
+			$langsTable = new \Application\Model\LangTable();
+			$langs = $langsTable->getList();
+			foreach ($langs as $lang){
+				$inputFilter->add($factory->createInput(array(
+					'name' => 'subject['.$lang->id.']',
+					'required' => true,
+					'filters' => array(
+						array('name' => 'StringTrim'),
+					),
+				)));
+			}
 						
 			$this->inputFilter = $inputFilter;
 		}
