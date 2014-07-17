@@ -6,11 +6,11 @@ Zend\Registry::set('lang', 1); // 1 is English, 2 is Rissian
 define('DATABASE_NAME', 'codeit_adminka');
 define('DATABASE_HOST', 'dcodeit.net');
 define('DATABASE_SALT', 'jh^lP0)z,Zjw#4082lk<NxW');
-define('URL', 'http://dcodeit.net/codeit-project/public/');
-define('MEMCACHE_ENABLED', false);
-define('MEMCACHE_NAMESPACE', 'codeit-project');
-define('MEMCACHE_HOST', '127.0.0.1');
-define('MEMCACHE_DEBUG', false);
+define('URL', 'http://dcodeit.net/codeit-carcass/public/');
+define('REDIS_ENABLED', false);
+define('REDIS_NAMESPACE', 1); // database integer number
+define('REDIS_HOST', 'localhost');
+define('REDIS_DEBUG', false);
 
 define('DEBUG', true);
 
