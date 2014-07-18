@@ -275,23 +275,49 @@ abstract class AppTable extends TableGateway {
 	}
 
 	/**
-	* searches for items
-	* 
-	* @param array $params, e.g. arrat('id', '>=', '135')
-	* @param int $limit, set to 0 or false to no limit
-	* @param int $offset
-	* @param string $orderBy
-	* @param int &$total will be set to total count found
-	* @return \Zend\Db\ResultSet\ResultSet
-	*/
-	public function find($params, $limit=50, $offset=0, $orderBy=false, &$total=null) {
+	 * searches for items, fetching them by ::get()
+	 * 
+	 * @param array $params, e.g. arrat('id', '>=', '135')
+	 * @param int $limit, set to 0 or false to no limit
+	 * @param int $offset
+	 * @param string $orderBy
+	 * @param int &$total will be set to total count found
+	 * @return \Zend\Db\ResultSet\ResultSet
+	 */
+	public function find($params, $limit=0, $offset=0, $orderBy=false, &$total=null) {
+		$ids = $this->findSimple($params, $limit, $offset, $orderBy, $total, ['id'])->toArray();
+		$ids = array_column($ids, 'id');
+		return $this->mget($ids);
+	}
+
+	/**
+	 * searches for items and returns \Zend\Db\ResultSet\ResultSet
+	 * 
+	 * @param array $params, e.g. arrat('id', '>=', '135')
+	 * @param int $limit, set to 0 or false to no limit
+	 * @param int $offset
+	 * @param string $orderBy
+	 * @param int &$total will be set to total count found
+	 * @param array $columns fileds which should be inclued in the result
+	 * @return \Zend\Db\ResultSet\ResultSet
+	 */
+	public function findSimple($params, $limit=0, $offset=0, $orderBy=false, &$total=null, $columns=['id']) {
 		$platform = $this->getAdapter()->getPlatform();
 		$whereParams = array();
 		foreach($params as $param) {
-			$set = $platform->quoteIdentifierChain($param[0]) . $param[1];
-			if (isset($param[2])){
-				$set .= $this->quoteValue($param[2]);
+			if($param instanceof \Zend\Db\Sql\Expression) {
+				$set = $param->getExpression();
 			}
+			else {
+				$set = $platform->quoteIdentifierChain($param[0]) . ' ' . $param[1] . ' ';
+				if (isset($param[2])){
+					$set .= $this->quoteValue($param[2]);
+				}
+				else {
+					$set .= 'NULL';
+				}
+			}
+			
 			$whereParams []= $set ;
 		}
 
@@ -303,14 +329,25 @@ abstract class AppTable extends TableGateway {
 		if(!is_null($total)) {
 			$total = $this->query('select count(*) cnt from `'.$this->table.'` '.$this->findJoin.' '.$where)->current()->cnt;
 		}
-		$ids = $this->query('select id from `'.$this->table.'` '.$this->findJoin.' '.
+		$tColumns=[];
+		foreach($columns as $column) {
+			if (is_array($column)) {
+				$tColumns []= '`'.$column[0].'`.`'.$column[1].'`'; //to get columns from different tables when join
+			}
+			else{
+				if ($column == '*')
+					$tColumns []= '`'.$this->table.'`.*';//to get all table columns
+				else 
+					$tColumns []= '`'.$this->table.'`.`'.$column.'`';
+			}
+		}
+		$result = $this->query('select '.implode(', ', $tColumns).' from `'.$this->table.'` '.$this->findJoin.' '.
 			$where.
 			($orderBy ? ' order by '.$orderBy : '').
 			($limit ? ' limit '.((int)$offset) .', '.((int)$limit) : '')
-		)->toArray();
+		);
 		
-		$ids = array_column($ids, 'id');
-		return $this->mget($ids);
+		return $result;
 	}
 
 	/**

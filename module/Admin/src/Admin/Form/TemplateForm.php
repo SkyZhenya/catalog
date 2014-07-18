@@ -4,7 +4,7 @@ namespace Admin\Form;
 use Zend\InputFilter\Factory as InputFactory;
 use Zend\InputFilter\InputFilter;
 
-class TemplateForm extends \Application\Lib\Form\MultilanguageForm {
+class TemplateForm extends \Application\Form\MultilanguageForm {
 	/**
 	 * @var Zend\InputFilter\InputFilter;
 	 */
@@ -98,7 +98,7 @@ class TemplateForm extends \Application\Lib\Form\MultilanguageForm {
 		);
 	}
 	
-	public function getFormInputFilter() {
+	public function getInpFilter() {
 		if (!$this->inputFilter) {
 			$inputFilter = new InputFilter();
 			$factory = new InputFactory();

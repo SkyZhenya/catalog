@@ -1,7 +1,7 @@
 <?php
-namespace Application\Lib\Form;
+namespace Application\Form;
 
-class MultilanguageForm extends \Zend\Form\Form {
+abstract class MultilanguageForm extends \Application\Form\Form {
 	/**
      * Set data to validate and/or populate elements
      *

@@ -65,7 +65,7 @@ class TemplateController extends AppController {
 			$data = $this->request->getPost()->toArray();
 			$form->setData($data);
 			if(isset($data['submit'])) {
-				$form->setInputFilter($form->getFormInputFilter());
+
 				if ($form->isValid()) {
 					$data = $form->getData();
 					if ($id > 0){
