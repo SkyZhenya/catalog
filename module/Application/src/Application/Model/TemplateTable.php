@@ -4,7 +4,7 @@ namespace Application\Model;
 use Zend\Db\Adapter\Adapter;
 
 class TemplateTable extends LocalizableTable {
-	protected	$goodFields = array(
+	protected $goodFields = array(
 		'id',
 		'name',
 	);

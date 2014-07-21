@@ -10,50 +10,57 @@ abstract class AppTable extends TableGateway {
 	protected $id;
 
 	/**
-	* Language Id
-	*
-	* @var int
-	*/
+	 * Language Id
+	 *
+	 * @var int
+	 */
 	protected $lang=1;
 
 	/**
-	* @var \Application\Lib\Redis
-	*/
+	 * @var \Application\Lib\Redis
+	 */
 	protected static $redis = null;
 
 	/**
-	* Table with local data
-	*
-	* @var string
-	*/
+	 * Table with local data
+	 *
+	 * @var string
+	 */
 	protected $locTable;
 
 	/**
-	* Join clause for find() method, used for local tables
-	* 
-	* @var string
-	*/
+	 * Join clause for find() method, used for local tables
+	 * 
+	 * @var string
+	 */
 	protected $findJoin='';
-	
+
 	/**
-	* Join clause for findWithoutLangLimitation() method, used for search in local tables without language limitation
-	* 
-	* @var string
-	*/
+	 * Join clause for findWithoutLangLimitation() method, used for search in local tables without language limitation
+	 * 
+	 * @var string
+	 */
 	protected $baseJoin='';
-	
+
 	/**
-	* List of fields getting from join, used for avoid dublicated fields
-	* 
-	* @var string
-	*/
+	 * List of fields getting from join, used for avoid dublicated fields
+	 * 
+	 * @var string
+	 */
 	protected $findFields='*';
+
 	
 	/**
-	* List of fields for data with localized values
-	* 
-	* @var array()
-	*/
+	 * List of fields from DB table
+	 * 
+	 * @var array
+	 */
+	protected $goodFields = array();
+	/**
+	 * List of fields for data with localized values
+	 * 
+	 * @var array()
+	 */
 	protected $localFields = array();
 
 	/**
@@ -103,7 +110,7 @@ abstract class AppTable extends TableGateway {
 		return $result;
 	}
 
-  public function __get($property) {
+	public function __get($property) {
 		try {
 			return parent::__get($property);
 		}
@@ -118,35 +125,35 @@ abstract class AppTable extends TableGateway {
 				}
 			}
 		}
-		
+
 		return null;
-  }
+	}
 
 	public function __set($property, $value) {
-    if ($this->featureSet->canCallMagicSet($property)) {
-    	return $this->featureSet->callMagicSet($property, $value);
-    }
+		if ($this->featureSet->canCallMagicSet($property)) {
+			return $this->featureSet->callMagicSet($property, $value);
+		}
 
-    $this->member[$property] = $value;
+		$this->member[$property] = $value;
 	}
 
 	/**
-	* returns new \Zend\Db\Sql\Select
-	*
-	* @param null|string $table table name
-	* @return \Zend\Db\Sql\Select
-	*/
+	 * returns new \Zend\Db\Sql\Select
+	 *
+	 * @param null|string $table table name
+	 * @return \Zend\Db\Sql\Select
+	 */
 	protected function getSelect($table = null) {
 		return new \Zend\Db\Sql\Select($table);
 	}
 
 	/**
-	* runs SQL query
-	*
-	* @param \Zend\Db\Sql\AbstractSql $sql Select, Insert, Update etc.
-	* @param array $params
-	* @return ResultSet | last insert id | affected rows
-	*/
+	 * runs SQL query
+	 *
+	 * @param \Zend\Db\Sql\AbstractSql $sql Select, Insert, Update etc.
+	 * @param array $params
+	 * @return ResultSet | last insert id | affected rows
+	 */
 	protected function execute(\Zend\Db\Sql\AbstractSql $sql, $params=array()) {
 		try {
 			$statement = $this->adapter->createStatement();
@@ -180,12 +187,12 @@ abstract class AppTable extends TableGateway {
 	}
 
 	/**
-	* makes and executes SQL query
-	*
-	* @param string $query
-	* @param mixed $params
-	* @return ResultSet
-	*/
+	 * makes and executes SQL query
+	 *
+	 * @param string $query
+	 * @param mixed $params
+	 * @return ResultSet
+	 */
 	protected function query($query, $params=false) {
 		if(!$params) {
 			$params = \Zend\Db\Adapter\Adapter::QUERY_MODE_EXECUTE;
@@ -208,12 +215,12 @@ abstract class AppTable extends TableGateway {
 	}
 
 	/**
-	* Aquires lock (mutex)
-	*
-	* @param string $name
-	* @param array $params
-	* @param int $timeout
-	*/
+	 * Aquires lock (mutex)
+	 *
+	 * @param string $name
+	 * @param array $params
+	 * @param int $timeout
+	 */
 	protected function getLock($name, $params=false, $timeout=10) {
 		$resultSet = $this->query("select GET_LOCK('$name', $timeout) as res", $params);
 		$result = $resultSet->current()->res;
@@ -223,49 +230,49 @@ abstract class AppTable extends TableGateway {
 	}
 
 	/**
-	* releases lock (mutex) obtained by getLock
-	*
-	* @param string $name
-	* @param array $params
-	*/
+	 * releases lock (mutex) obtained by getLock
+	 *
+	 * @param string $name
+	 * @param array $params
+	 */
 	protected function releaseLock($name, $params=false) {
 		$this->query("select RELEASE_LOCK('$name')", $params);
 	}
 
 	/**
-	* starts transaction
-	*/
+	 * starts transaction
+	 */
 	public function startTransaction() {
 		$this->query('start transaction');
 	}
 
 	/**
-	* commits transaction
-	*/
+	 * commits transaction
+	 */
 	public function commit() {
 		$this->query('commit');
 	}
 
 	/**
-	* rollbacks transaction
-	*/
+	 * rollbacks transaction
+	 */
 	public function rollback() {
 		$this->query('rollback');
 	}
 
-  /**
-   * Inserts a record
-   *
-   * @param array $set
-   * @return int last insert Id
-   */
+	/**
+	 * Inserts a record
+	 *
+	 * @param array $set
+	 * @return int last insert Id
+	 */
 	public function insert($set) {
 		$set = $this->removeUnnecessaryFields($set);
 		if(parent::insert($set)) {
 			$this->cacheDelete('list');
 			return $this->lastInsertValue;
-    }
-    throw new \Exception('Insert to "'.$this->table.'" failed. Set was '.print_r($set, true));
+		}
+		throw new \Exception('Insert to "'.$this->table.'" failed. Set was '.print_r($set, true));
 	}
 
 	public function soaparray($param) {
@@ -317,7 +324,7 @@ abstract class AppTable extends TableGateway {
 					$set .= 'NULL';
 				}
 			}
-			
+
 			$whereParams []= $set ;
 		}
 
@@ -346,65 +353,65 @@ abstract class AppTable extends TableGateway {
 			($orderBy ? ' order by '.$orderBy : '').
 			($limit ? ' limit '.((int)$offset) .', '.((int)$limit) : '')
 		);
-		
+
 		return $result;
 	}
 
 	/**
-	* creates item, sets id.
-	*
-	* @param array $params
-	* @return id
-	*/
-  public function create($params) {
+	 * creates item, sets id.
+	 *
+	 * @param array $params
+	 * @return id
+	 */
+	public function create($params) {
 		foreach($params as $key => $field) {
 			if(!in_array($key, $this->goodFields)) {
 				unset($params[$key]);
 			}
 		}
-  	$id = $this->insert($params);
+		$id = $this->insert($params);
 		$this->setId($id);
 		return $id;
-  }
+	}
 
-  /**
-  * returns current id
-  *
-  * @return $id int
-  */
+	/**
+	 * returns current id
+	 *
+	 * @return $id int
+	 */
 	public function getId() {
 		return $this->id;
 	}
 
 	/**
-	* sets Id. Checks whether entry exists.
-	*
-	* @param int $id
-	* @returns item
-	*/
+	 * sets Id. Checks whether entry exists.
+	 *
+	 * @param int $id
+	 * @returns item
+	 */
 	public function setId($id) {
 		$this->id = $id;
 		$item = $this->get($id);
-		
+
 		foreach($item as $field => $value) {
 			if(property_exists($this, $field)) {
 				$this->$field = $value;
 			}
 		}
-		
+
 		return $item;
 	}
 
 	/**
-	* returns row from db with specified id
-	*
-	* @param int $id
-	* @return \ArrayObject
-	*/
+	 * returns row from db with specified id
+	 *
+	 * @param int $id
+	 * @return \ArrayObject
+	 */
 	public function get($id) {
 		$row = $this->cacheGet($id);
 		if(!$row) {
-	    $row = $this->getUncached($id);
+			$row = $this->getUncached($id);
 			$this->cacheSet($id, $row);
 		}
 
@@ -412,16 +419,16 @@ abstract class AppTable extends TableGateway {
 	}
 
 	/**
-	* returns row from db with specified id
-	*
-	* @param int $id
-	* @return \ArrayObject
-	*/
+	 * returns row from db with specified id
+	 *
+	 * @param int $id
+	 * @return \ArrayObject
+	 */
 	public function getUncached($id) {
-	  $row = $this->select(array('id' => $id))
-    				    ->current();
-  	//\Zend\Debug\Debug::dump($row);
-  	//die;
+		$row = $this->select(array('id' => $id))
+		->current();
+		//\Zend\Debug\Debug::dump($row);
+		//die;
 		if(!$row) {
 			throw new \Exception(ucfirst($this->table).' '.$id.' not found');
 		}
@@ -430,70 +437,70 @@ abstract class AppTable extends TableGateway {
 	}
 
 	/**
-	* sets data for current id
-	*
-	* @param array $data
-	*/
+	 * sets data for current id
+	 *
+	 * @param array $data
+	 */
 	public function set($data) {
-    $this->update($data, array('id' => $this->id));
-    $this->cacheDelete($this->id);
-    $this->setId($this->id);
+		$this->update($data, array('id' => $this->id));
+		$this->cacheDelete($this->id);
+		$this->setId($this->id);
 	}
 
-  /**
-   * Update
-   *
-   * @param  array $params
-   * @param  string|array|closure $where
-   * @return int
-   */
+	/**
+	 * Update
+	 *
+	 * @param  array $params
+	 * @param  string|array|closure $where
+	 * @return int
+	 */
 	public function update($params, $where = null) {
 		$params = $this->removeUnnecessaryFields($params);
 		parent::update($params, $where);
 		$this->cacheDelete('list');
 	}
 
-	
+
 	/**
-	* deletes record by id, removes cached data
-	* 
-	* @param mixed $id
-	* @returns altered rows
-	*/
+	 * deletes record by id, removes cached data
+	 * 
+	 * @param mixed $id
+	 * @returns altered rows
+	 */
 	public function deleteById($id) {
 		$rowsAffected = $this->delete(array('id' => $id));
 		$this->cacheDelete($id);
 		$this->cacheDelete('list');
-		
+
 		return $rowsAffected;
 	}
-	
+
 	/**
-	* get cached value
-	*
-	* @param string $name
-	* @return string
-	*/
+	 * get cached value
+	 *
+	 * @param string $name
+	 * @return string
+	 */
 	/**
-	* get cached value
-	*
-	* @param string $name
-	* @return string
-	*/
+	 * get cached value
+	 *
+	 * @param string $name
+	 * @return string
+	 */
 	public function cacheGet($key) {
 		//\Application\Lib\Logger::write("AppTable::cacheGet($key [{$this->table}])");
 		return self::$redis->get('table.'.$this->table.'.'.$key);
 	}
 
 	/**
-	* assigns a value to a specified cached param
-	*
-	* @param string $name param name
-	* @param string $value param value
-	* @param int $timeout TTL in seconds
-	* @param int $try
-	* @return bool true on success, false on fail MAX_TRIES times
-	*/
+	 * assigns a value to a specified cached param
+	 *
+	 * @param string $name param name
+	 * @param string $value param value
+	 * @param int $timeout TTL in seconds
+	 * @param int $try
+	 * @return bool true on success, false on fail MAX_TRIES times
+	 */
 	public function cacheSet($key, $value, $timeout = 0, $try=0) {
 		//\Application\Lib\Logger::write("AppTable::cacheSet($key [{$this->table}])");
 		return self::$redis->set('table.'.$this->table.'.'.$key, $value, $timeout, $try);
@@ -519,16 +526,16 @@ abstract class AppTable extends TableGateway {
 	}
 
 	/**
-	* returns full items list
-	*
-	* @param int $limit
-	* @param int $offset
-	* @return ResultSet
-	*/
+	 * returns full items list
+	 *
+	 * @param int $limit
+	 * @param int $offset
+	 * @return ResultSet
+	 */
 	public function getList($limit=false, $offset=0) {
 		$res = $this->cacheGet('list');
 		if(!$res) {
-	    $select = $this->getSelect($this->table);
+			$select = $this->getSelect($this->table);
 			if($limit !== false) {
 				$select->limit($limit);
 			}
@@ -545,33 +552,33 @@ abstract class AppTable extends TableGateway {
 		}
 		return $res;
 	}
-	
+
 	public function getColumn($query, $params=array()){
 		$q = (array)$this->query($query, $params)->current();
 		return current($q);
 	}
 
-		/**
-		* replace for bad platform function
-		* 
-		* @param string $value
-		*/
-		function quoteValue($value) {
-			$res = str_replace('\\', '\\\\', $value);
-			$res = str_replace('\'', '\\\'', $res);
-			return '\'' . $res . '\'';
-		}
-		
-		protected function removeUnnecessaryFields($params){
-			foreach($params as $key => $field) {
-				if(!in_array($key, $this->goodFields)) {
-					unset($params[$key]);
-				}
+	/**
+	 * replace for bad platform function
+	 * 
+	 * @param string $value
+	 */
+	function quoteValue($value) {
+		$res = str_replace('\\', '\\\\', $value);
+		$res = str_replace('\'', '\\\'', $res);
+		return '\'' . $res . '\'';
+	}
+
+	protected function removeUnnecessaryFields($params){
+		foreach($params as $key => $field) {
+			if(!in_array($key, $this->goodFields)) {
+				unset($params[$key]);
 			}
-			return $params;
 		}
-		
-		/**
+		return $params;
+	}
+
+	/**
 	 * returns rows from db with specified id
 	 *
 	 * @param array $ids

@@ -24,7 +24,7 @@ class UserTable extends AppTable {
 	public $password;
 	public $phone;
 	
-	protected	$goodFields = array(
+	protected $goodFields = array(
 		'id',
 		'name',
 		'email',

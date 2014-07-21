@@ -47,10 +47,10 @@ abstract class LocalizableTable extends AppTable {
 			}
 			$this->cacheSet($id.'.'.$this->lang, $item);
 		}
-		
+
 		return $item;
 	}
-	
+
 	/**
 	 * returns rows from db with specified id
 	 *
@@ -84,7 +84,7 @@ abstract class LocalizableTable extends AppTable {
 	public function cacheDelete($key) {
 		return parent::cacheDeleteByMask($key);
 	}
-	
+
 	/**
 	 * get local data for localized items
 	 * 
@@ -99,7 +99,7 @@ abstract class LocalizableTable extends AppTable {
 		if($this->id) {
 			$select->where(['id' => $this->id]);
 		}
-		
+
 		//include all where settings
 		if (isset($params) && is_array($params)){
 			$select->where($params);
@@ -107,7 +107,7 @@ abstract class LocalizableTable extends AppTable {
 		//set user's limit if it's nessesary
 		if (isset($limit)){
 			$select->limit($limit);
-			
+
 			//set user's offset if it's nessesary
 			if (isset($offset)){
 				$select->offset($offset);
@@ -122,39 +122,39 @@ abstract class LocalizableTable extends AppTable {
 		return $res;
 	}
 
-		/**
-		* returns row from db with specified id and localData
-		* in apropriate structure to fill form
-		*
-		* @param int $id
-		* @return \ArrayObject
-		*/
-		public function getFullLocalData($id) {
-		  $row = $this->getUncached($id);
-		  //get translations
-			foreach($row->localData as $locItem){
-				foreach ( $this->localFields as $field){
-					if (!isset($row->{$field}) || !is_array($row->{$field})){
-						//echo 'array';
-						$row->{$field} = array();
-					}
-					//var_dump($row->{$field});
-					$row->{$field}[$locItem->lang] = $locItem->$field;
-				}
-			}
-			return $row;
-		}
-		
 	/**
-	* sets data for current id
-	*
-	* @param array $data
-	*/
-	public function set($data) {
-    $this->updateLocData($data);
-    return parent::set($data);
+	 * returns row from db with specified id and localData
+	 * in apropriate structure to fill form
+	 *
+	 * @param int $id
+	 * @return \ArrayObject
+	 */
+	public function getFullLocalData($id) {
+		$row = $this->getUncached($id);
+		//get translations
+		foreach($row->localData as $locItem){
+			foreach ( $this->localFields as $field){
+				if (!isset($row->{$field}) || !is_array($row->{$field})){
+					//echo 'array';
+					$row->{$field} = array();
+				}
+				//var_dump($row->{$field});
+				$row->{$field}[$locItem->lang] = $locItem->$field;
+			}
+		}
+		return $row;
 	}
-	
+
+	/**
+	 * sets data for current id
+	 *
+	 * @param array $data
+	 */
+	public function set($data) {
+		$this->updateLocData($data);
+		return parent::set($data);
+	}
+
 	/**
 	 * update or insert local data for localized items
 	 * 
@@ -169,7 +169,7 @@ abstract class LocalizableTable extends AppTable {
 				}
 			}
 		}
-		
+
 		foreach($updateData as $lang => $data) {
 			$tValues = []; $fields = [];
 			$data['id'] = $this->id;
@@ -180,22 +180,22 @@ abstract class LocalizableTable extends AppTable {
 			}
 			$this->query('replace into `'.$this->locTable.'` ('.implode(', ', $fields).') values ('.implode(', ', $tValues).')', $data);
 		}
-		
+
 		$this->cacheDelete($this->id);
 	}
 
-	
+
 	/**
-   * Inserts a record
-   *
-   * @param array $set
-   * @return int last insert Id
-   */
+	 * Inserts a record
+	 *
+	 * @param array $set
+	 * @return int last insert Id
+	 */
 	public function insert($set) {
 		$id = parent::insert($set);
 		$this->setId($id);
 		$this->updateLocData($set);
-		
+
 		return $id;
 	}
 

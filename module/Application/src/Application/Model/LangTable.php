@@ -16,7 +16,7 @@ class LangTable extends AppTable {
 	public $name=null;
 	public $main=null;
 
-	protected	$goodFields = array(
+	protected $goodFields = array(
 		'id',
 		'name',
 		'code',
