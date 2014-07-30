@@ -39,43 +39,6 @@ class User extends UserTable {
 		return false;
 	}
 
-	
-	/**
-	* Send message to current user
-	* 
-	* @param string $subject
-	* @param string|\Zend\Mime\Message|object $text
-	*/
-	public function sendMail($subject, $text, $emailTo=null, $nameTo='') {
-		if(!isset($emailTo) || empty($emailTo)) {
-			if(!isset($this->email) || empty($this->email)) {
-				throw new \Exception(_('E-Mail is not set or is empty'));
-			}
-			else {
-				$emailTo = $this->email;
-				$nameTo = $this->name;
-			}
-		}
-
-    $m = new \Zend\Mail\Message();
-    $m->addFrom(SUPPORT_EMAIL, SITE_NAME)
-      ->addTo($emailTo, $nameTo)
-      ->setSubject($subject);
-
-    $bodyPart = new \Zend\Mime\Message();
-
-    $bodyMessage = new \Zend\Mime\Part($text);
-    $bodyMessage->type = 'text/html; charset=utf-8';
-
-    $bodyPart->setParts(array($bodyMessage));
-
-    $m->setBody($bodyPart);
-    $m->setEncoding('UTF-8');
-    
-    $transport = new \Zend\Mail\Transport\Sendmail();
-		$transport->send($m);
-  }
-
   /**
    * save temporary password and send email to activate it
    * 
@@ -86,17 +49,14 @@ class User extends UserTable {
 		
 		parent::forgotPass($email, $newpass);
 		
-		$template =  new Template();
-		$tmplName = 'Forgot password';
-		$tmplParams = array(
+		//send email
+		$emailLib = new \Application\Lib\Email();
+		$emailLib->sendTemplate('Forgot password', $this, [
 			'newpass' => $newpass,		
 			'id' => $this->id,
 			'code' => $this->code,
 			'name' => $this->name,
-		);	
-		
-		$message = $template->prepareMessage($tmplName, $tmplParams);
-	  $this->sendMail($message['subject'], $message['text']);		
+		]);
 	}
 	
 	/**
