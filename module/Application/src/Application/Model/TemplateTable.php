@@ -4,11 +4,22 @@ namespace Application\Model;
 use Zend\Db\Adapter\Adapter;
 
 class TemplateTable extends LocalizableTable {
+	
+	/**
+	 * List of fields from DB table
+	 * 
+	 * @var array
+	 */
 	protected $goodFields = array(
 		'id',
 		'name',
 	);
 	
+	/**
+	 * List of fields for data with localized values
+	 * 
+	 * @var array()
+	 */
 	protected $localFields = array(
 		'subject',
 		'text',

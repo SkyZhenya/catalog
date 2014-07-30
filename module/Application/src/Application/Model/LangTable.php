@@ -9,13 +9,40 @@ use Zend\Db\Sql\Where;
 use Application\Model\AppTable;
 
 class LangTable extends AppTable {
-	
-	public $id=null;
-	public $code=null;
-	public $locale=null;
-	public $name=null;
-	public $main=null;
 
+	/**
+	 * Language shortcode
+	 * 
+	 * @var string
+	 */
+	public $code;
+	
+	/**
+	 * Locale name for this language
+	 * 
+	 * @var mixed
+	 */
+	public $locale;
+	
+	/**
+	 * Language title
+	 * 
+	 * @var string
+	 */
+	public $name;
+	
+	/**
+	 * Is language main and default
+	 * 
+	 * @var integer
+	 */
+	public $main;
+	
+	/**
+	 * List of fields from DB table
+	 * 
+	 * @var array
+	 */
 	protected $goodFields = array(
 		'id',
 		'name',

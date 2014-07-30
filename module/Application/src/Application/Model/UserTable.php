@@ -12,18 +12,88 @@ use Zend\InputFilter\InputFilter;
 use Zend\InputFilter\Factory as InputFactory;
 
 class UserTable extends AppTable {
+	/**
+	 * user Id
+	 * 
+	 * @var integer
+	 */
 	public $id;
+	
+	/**
+	 * Role in the system
+	 * 
+	 * @var string
+	 */
 	public $level;
+	
+	/**
+	 * User name
+	 * 
+	 * @var string
+	 */
 	public $name = 'Guest';
+	
+	/**
+	 * Whether user is active
+	 * 
+	 * @var integer
+	 */
 	public $active;
+	
+	/**
+	 * Contact email
+	 * 
+	 * @var string
+	 */
 	public $email;
+	
+	/**
+	 * Nickname for login
+	 * 
+	 * @var mixed
+	 */
 	public $login;
+	
+	/**
+	 * Country
+	 * 
+	 * @var mixed
+	 */
 	public $country;
+	
+	/**
+	 * Verification code
+	 * 
+	 * @var string
+	 */
 	public $code;
+	
+	/**
+	 * new password value for reset password flow
+	 * 
+	 * @var string
+	 */
 	public $newpass;
+	
+	/**
+	 * hash of user password
+	 * 
+	 * @var string
+	 */
 	public $password;
+	
+	/**
+	 * Contact phone
+	 * 
+	 * @var string
+	 */
 	public $phone;
 	
+	/**
+	 * List of fields from DB table
+	 * 
+	 * @var array
+	 */
 	protected $goodFields = array(
 		'id',
 		'name',
