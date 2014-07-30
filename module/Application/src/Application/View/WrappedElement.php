@@ -26,10 +26,6 @@ class WrappedElement extends AbstractHelper {
 		elseif($element instanceof \Zend\Form\Element\Button && $type == 'submit') {
 			$input = $view->formButton($element, $element->getAttribute('label'));
 		}
-		elseif($element instanceof \Application\Lib\Form\StylizedFile) {
-			$helper = new \Application\View\Helper\FormStylizedFile();
-			$input = $helper($element);
-		}
 		else {
 			$input  = 'form'.ucfirst($type);
 			$input = $view->$input($element);
