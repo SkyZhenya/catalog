@@ -15,7 +15,7 @@ class CustomEmailValidator extends EmailAddress
       $result = parent::getMessages();
       if (!empty($result)) {
 				$result = array(
-					_("Email address doesn't appear to be valid."),
+					self::INVALID => _("Email address doesn't appear to be valid."),
 				);
       }
        return $result;
