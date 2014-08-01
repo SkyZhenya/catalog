@@ -2,7 +2,7 @@
 namespace Application\Lib;
 
 class Utils {
-	function generatePassword($length = 8) {
+	static function generatePassword($length = 8) {
 		$chars = 'abcdefghijkmnoprqstuvwxyzABCDEFGHIJKLMNPRQSTUVWXYZ23456789';
 		$numChars = strlen($chars);
 
