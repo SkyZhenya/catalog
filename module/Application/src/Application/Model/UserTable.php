@@ -119,7 +119,7 @@ class UserTable extends AppTable {
 	public function set($data) {
     if (isset($data['pass'])){
 	    if (!empty($data['pass'])) 
-	    	$data['password'] = $this->saltPass($data['pass']);
+	    	$data['password'] = $this->passwordHash($data['pass']);
     }
     parent::set($data);
 	}
@@ -132,7 +132,7 @@ class UserTable extends AppTable {
    */
 	public function insert($set) {
 		if (isset($set['password'])){
-	    	$set['password'] = $this->saltPass($set['password']);
+	    	$set['password'] = $this->passwordHash($set['password']);
     }
     $id = parent::insert($set);
     return $id;
@@ -196,22 +196,36 @@ class UserTable extends AppTable {
 
 		$row = $this->find(array(
 			array('email', '=', $email),
-			array('password', '=', $this->saltPass($pass)),
-			array('active', '=', '1'))
-		);
-    if($row){
-      return array_pop($row);
-    }
-    else{
-      return false;
-    }
+			array('active', '=', '1')
+		), 1 );
+		
+		if($row) {
+			$row = array_pop($row);
+			if ( password_verify($pass, $row->password)) {
+				if (password_needs_rehash($row->password, PASSWORD_DEFAULT, ['cost' => PASSWORD_HASH_COST])) {
+					$this->set([
+						'password' =>  $this->saltPass($pass),
+					]);
+				}
+				return $row;
+			}
+		}
+		return false;
 	}
-
+	
+	/**
+	 * for registration via rigistration form
+	 * 
+	 * @param string $login
+	 * @param string $email
+	 * @param string $password
+	 * @return int user id
+	 */
 	public function createUser($login, $email, $password){
 		return $this->insert(array(
 			'login'	=> $login,
 			'email'	=> $email,
-			'password' => $this->saltPass($password),
+			'password' => $this->passwordHash($password),
 			'code' => \Application\Lib\Utils::generatePassword(32),
 			'created' => TIME,
 		));
@@ -222,8 +236,8 @@ class UserTable extends AppTable {
 	 * 
 	 * @param string $pass
 	 */
-	public function saltPass($pass){
-  	return hash('sha256', DATABASE_SALT.$pass);
+	public function passwordHash($pass){
+  	return password_hash($pass, PASSWORD_DEFAULT, ['cost' => PASSWORD_HASH_COST]);
 	}
 
 	/**
@@ -241,7 +255,7 @@ class UserTable extends AppTable {
 
 		$this->setId($UserRow->id);
 		$this->code = \Application\Lib\Utils::generatePassword(32);
-		$this->newpass = $this->saltPass($newpass);
+		$this->newpass = $this->passwordHash($newpass);
 
 		$this->set(array(
 			'newpass' => $this->newpass,

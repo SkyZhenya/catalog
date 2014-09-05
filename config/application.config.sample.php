@@ -5,7 +5,6 @@ Zend\Registry::set('lang', 1); // 1 is English, 2 is Rissian
 
 define('DATABASE_NAME', 'codeit_adminka');
 define('DATABASE_HOST', 'dcodeit.net');
-define('DATABASE_SALT', 'jh^lP0)z,Zjw#4082lk<NxW');
 define('URL', 'http://dcodeit.net/codeit-carcass/public/');
 define('REDIS_ENABLED', false);
 define('REDIS_NAMESPACE', 1); // database integer number
@@ -18,6 +17,8 @@ define('SUPPORT_EMAIL', 'natali.ringel@codeit.com.ua');
 define('SITE_NAME', 'CodeIT Carcass');
 
 define('BASEDIR', dirname(__FILE__).'/../');
+
+define('PASSWORD_HASH_COST', 12); //algorithmic cost that should be used while hashing password
 
 Zend\Registry::set('dbConfig', array(
 	'host' => DATABASE_HOST,
