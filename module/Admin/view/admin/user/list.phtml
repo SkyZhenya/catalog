@@ -1,0 +1,26 @@
+<?php
+echo "<?xml version=\"1.0\" encoding=\"UTF-8\"?>";
+?>
+<rows pos="<?php echo $pos;?>" total_count="<?php echo $total;?>">
+	<?php
+	$i=$pos;
+
+	foreach($list as $item) {
+		$i++;
+		$editActions = "<a class='edit' onclick='initFancybox(\"".$this->basePath("admin/user/edit/{$item->id}")."\"); (arguments[0]||window.event).cancelBubble=true; return false;' href='".$this->basePath('admin/user/edit')."?id={$item->id}'>"._("Edit")."</a> ";
+		if ($isAllowedDelete)
+			$deleteActions = "<a class='del' href='#' onclick='common.confdel(\"".URL."admin/user/delete/\",{$item->id}, common.removeItem); (arguments[0]||window.event).cancelBubble=true; return false;'>"._('Delete')."</a>";
+
+		?>
+		<row id='<?php echo $item->id;?>'>\n
+			<cell><?php echo $i;?></cell>
+			<cell><?php echo $item->id;?></cell>
+			<cell><?php echo htmlspecialchars($item->name);?></cell>
+			<cell><?php echo htmlspecialchars($item->email);?></cell>
+			<cell><?php echo htmlspecialchars(\Application\Model\UserTable::$roleDescriptions[$item->level]);?></cell>
+			<cell><?php echo (($item->active)? 'Active' : 'Inactive')?></cell>
+			<cell><?php echo htmlspecialchars($editActions);?></cell>
+			<?php echo (($deleteActions)? "<cell>".htmlspecialchars($deleteActions)."</cell>" : "");?>
+		</row>
+		<?php } ?>
+</rows>
