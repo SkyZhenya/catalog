@@ -105,6 +105,16 @@ class UserTable extends AppTable {
 		'code',
 		'phone',
 	);
+	
+	/**
+	* list of user roles
+	* 
+	* @var array
+	*/
+	public static $roleDescriptions = array(
+		'user' => 'User',
+		'admin' => 'Admin',
+	);
 
 	public function __construct($userId = null) {
 		parent::__construct('user', $userId);
@@ -203,8 +213,9 @@ class UserTable extends AppTable {
 			$row = array_pop($row);
 			if ( password_verify($pass, $row->password)) {
 				if (password_needs_rehash($row->password, PASSWORD_DEFAULT, ['cost' => PASSWORD_HASH_COST])) {
+					$this->setId($row->id);
 					$this->set([
-						'password' =>  $this->saltPass($pass),
+						'password' =>  $this->passwordHash($pass),
 					]);
 				}
 				return $row;

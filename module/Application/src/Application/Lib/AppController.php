@@ -183,7 +183,7 @@ abstract class AppController extends AbstractActionController {
 		               ->setVariables($variables);
 
 		  $viewRender = $this->getServiceLocator()->get('ViewRenderer');
-			return $viewRender->render($view);
+			return $viewRender->render($htmlViewPart);
 		}	
 		
 		/**

@@ -141,44 +141,72 @@ class UserController extends AppController {
 
 
 	public function listAction() {
-		
 		header("Content-Type: text/xml");
-		$count=50;
-		if (isset($_GET['count']))
-			$count=(int)$_GET['count'];
-		$pos = 0;
-		if (isset($_GET['posStart']))
-			$pos=(int)$_GET['posStart'];
+		$count = (int)$this->params()->fromQuery('count', 50);
+		$pos = (int)$this->params()->fromQuery('posStart', 0);
+		$params = $this->resolveParams();
+		$orderby = $this->resolveOrderby();
+
+		$total = 0;
+		$list = $this->userTable->find($params, $count, $pos, $orderby, $total);
+		$xmlResult = new ViewModel(array(
+			'pos' => $pos,
+			'total' => $total,
+			'list' => $list,
+			'isAllowedDelete' => $this->user->isAllowed('Admin\Controller\User', 'delete'),
+		));
+		$xmlResult->setTerminal(true);
+		return $xmlResult;
+	}
+	
+	/**
+	 * apply filters
+	 * 
+	 * @return array
+	 */
+	protected function resolveParams() {
+		$params = array();
+
+		$flPid = $this->params()->fromQuery('flPid');
+		if(!empty($flPid)) {
+			$params []= array('id', 'LIKE', "{$flPid}%");
+		}
+		$flId = $this->params()->fromQuery('flId');
+		if(!empty($flId)) {
+			$params []= array('id', '=', "{$flId}");
+		}
+		
+		$flName = $this->params()->fromQuery('flName');
+		if(!empty($flName)) {
+			$params []= array('name', 'LIKE', "{$flName}%");
+		}
+		
+		$flEmail = $this->params()->fromQuery('flEmail');
+		if(!empty($flEmail)) {
+			$params []= array('email', 'LIKE', "{$flEmail}%");
+		}
+		
+		$flRole = $this->params()->fromQuery('flRole');
+		if(!empty($flRole)) {
+			$params []= array('level', '=', $flRole);
+		}
+		
+		$flStatus = $this->params()->fromQuery('flStatus');
+		if($flStatus >= 0) {
+			$params []= array('active', '=', $flStatus);
+		}
+			
+		return $params;
+	}
+	
+/**
+	 * return orderby rule for list ordering
+	 * 
+	 * @return string
+	 */
+	protected function resolveOrderby() {
 		$orderby='id';
-
-		$params = array(
-		);
-
-		//apply filters
-		
-		if(isset($_GET['flPid'])&&!empty($_GET['flPid'])) {
-			$params []= array('id','like', "{$_GET['flPid']}%");
-		}
-		//strict rule for Id to update only one item
-		if(isset($_GET['flId'])&&!empty($_GET['flId'])) {
-			$params []= array('id', '=', $_GET['flId']);
-		}
-		if(isset($_GET['flName'])&&!empty($_GET['flName'])) {
-			$params []= array('name', 'like', "%{$_GET['flName']}%");
-		}
-		$selectedRole = '';
-		if (isset($_GET['flRole'])&&!empty($_GET['flRole'])){
-			$params []= array('level', '=', $_GET['flRole']);
-		}
-
-		if(isset($_GET['flEmail']) && trim($_GET['flEmail'])!==''){
-			$params []= array('email', 'like ', "%{$_GET['flEmail']}%");
-		}
-		
-		if (isset($_GET['flStatus']) && (int)$_GET['flStatus']>=0) {
-			$params []= array('active', '=', (int)$_GET['flStatus']);
-		}
-		
+			
 		if(isset($_GET['orderby'])) {
 			switch($_GET['order']) {
 				case 'asc': $orderdir='asc'; break;
@@ -192,38 +220,8 @@ class UserController extends AppController {
 			}
 			$orderby.=' '.$orderdir;
 		}
-
-		$total = 0;
-		$list = $this->userTable->find($params, $count, $pos, $orderby, $total);
-		echo "<?xml version=\"1.0\" encoding=\"UTF-8\"?>
-		<rows pos='$pos' total_count='$total'>\n";
-		$i=$pos;
-		$levelText = array(
-			"admin" => _('Admin'),
-			"user" => _('User'),
-		);
 		
-		foreach($list as $item) {
-			$i++;
-	    $userActions='';
-			$userActions .= "<a class='edit' onclick='initFancybox(\"".$this->basePath("admin/user/edit/{$item->id}")."\"); (arguments[0]||window.event).cancelBubble=true; return false;' href='".$this->basePath('admin/user/edit')."?id={$item->id}'>"._("Edit Profile")."</a> ";
-			$deleteActions = '';
-			if ($this->user->isAllowed('Admin\Controller\User', 'delete'))
-      	$deleteActions = "<a class='del' href='#' onclick='common.confdel(\"".URL."admin/user/delete?\",{$item->id}, common.removeItem); (arguments[0]||window.event).cancelBubble=true; return false;'>"._('Delete Profile')."</a>";
-
-			echo "<row id='{$item->id}' >\n
-				<cell>{$i}</cell>
-				<cell>{$item->id}</cell>
-				<cell>".htmlspecialchars($item->name)."</cell>
-				<cell>".htmlspecialchars($item->email)."</cell>
-				<cell>".htmlspecialchars($levelText[$item->level])."</cell>
-				<cell>".(($item->active)? 'Active' : 'Inactive')."</cell>
-				<cell>".htmlspecialchars($userActions)."</cell>".
-				(($deleteActions)? "<cell>".htmlspecialchars($deleteActions)."</cell>" : "").
-			"</row>\n";
-		}
-		echo "</rows>\n";
-		exit();
+		return $orderby;
 	}
 
 }
