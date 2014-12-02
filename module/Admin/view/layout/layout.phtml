@@ -24,14 +24,11 @@
     <!-- Scripts -->
     <?php echo $this->headScript()->prependFile($this->basePath() . '/js/html5.js', 'text/javascript', array('conditional' => 'lt IE 9',))
                                   ->prependFile($this->basePath(). '/js/admin/jWindows.js')//custom alert/confirm messages
-                                  ->prependFile($this->basePath() . '/js/dhtmlxGrid/customscroll.js', 'text/javascript')
                                   ->prependFile($this->basePath(). '/js/admin/common.js?time=2014-03-17-01')
                                   ->prependFile($this->basePath(). '/js/admin/jquery.fancybox.js')
                                   /* dhtmlxgrid */
-                                  ->prependFile($this->basePath() . '/js/dhtmlxGrid/dhtmlxgridcell.js?time=2013-10-17-01')
-                                  ->prependFile($this->basePath() . '/js/dhtmlxGrid/ext/dhtmlxgrid_srnd.js?time=2013-10-17-01')
-                                  ->prependFile($this->basePath() . '/js/dhtmlxGrid/dhtmlxgrid.js?time=2013-11-15-01')
-                                  ->prependFile($this->basePath() . '/js/dhtmlxGrid/dhtmlxcommon.js?time=2013-10-17-01')
+                                  ->prependFile($this->basePath() . '/js/dhtmlxGrid/customscroll.js', 'text/javascript')
+                                  ->prependFile($this->basePath() . '/js/dhtmlxGrid/dhtmlxgrid.js?t=2014111301')
                                   
                                   ->prependFile($this->basePath() . '/js/jquery-2.1.1.min.js')
                                   
