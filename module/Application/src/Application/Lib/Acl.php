@@ -8,25 +8,27 @@ class Acl extends \Zend\Permissions\Acl\Acl {
   const DEFAULT_ROLE = 'guest';	
 
 	public function __construct() {
-		$this->addResource('Application\Controller\Index');
-		$this->addResource('Application\Controller\User');
-		
-		$this->addResource('Admin\Controller\User');
-		$this->addResource('Admin\Controller\Template');
-
+		//user roles
 		$guest = $this->addRole('guest');
 		$user = $this->addRole('user', 'guest');
 		$user = $this->addRole('admin', 'user');
 		
+		//Application module
+		$this->addResource('Application\Controller\Index');
+		
 		$this->allow('guest', 'Application\Controller\Index');
-		$this->allow('guest', 'Application\Controller\User');
+		
+		//Admin module
+		$this->addResource('Admin\Controller\User');
+		$this->addResource('Admin\Controller\Template');
+		
 		$this->allow('admin', 'Admin\Controller\User');
-		$this->allow('user', 'Admin\Controller\User', array(
-			'index',
-			'list',
-			'edit',
-		));
 		$this->allow('admin', 'Admin\Controller\Template');
+		
+		//Auth module
+		$this->addResource('Auth\Controller\Index');
+		
+		$this->allow('guest', 'Auth\Controller\Index');
 	}
 
 }

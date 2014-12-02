@@ -18,77 +18,77 @@ class UserTable extends AppTable {
 	 * @var integer
 	 */
 	public $id;
-	
+
 	/**
 	 * Role in the system
 	 * 
 	 * @var string
 	 */
 	public $level;
-	
+
 	/**
 	 * User name
 	 * 
 	 * @var string
 	 */
 	public $name = 'Guest';
-	
+
 	/**
 	 * Whether user is active
 	 * 
 	 * @var integer
 	 */
 	public $active;
-	
+
 	/**
 	 * Contact email
 	 * 
 	 * @var string
 	 */
 	public $email;
-	
+
 	/**
 	 * Nickname for login
 	 * 
 	 * @var mixed
 	 */
 	public $login;
-	
+
 	/**
 	 * Country
 	 * 
 	 * @var mixed
 	 */
 	public $country;
-	
+
 	/**
 	 * Verification code
 	 * 
 	 * @var string
 	 */
 	public $code;
-	
+
 	/**
 	 * new password value for reset password flow
 	 * 
 	 * @var string
 	 */
 	public $newpass;
-	
+
 	/**
 	 * hash of user password
 	 * 
 	 * @var string
 	 */
 	public $password;
-	
+
 	/**
 	 * Contact phone
 	 * 
 	 * @var string
 	 */
 	public $phone;
-	
+
 	/**
 	 * List of fields from DB table
 	 * 
@@ -104,13 +104,14 @@ class UserTable extends AppTable {
 		'newpass',
 		'code',
 		'phone',
+		'birthdate'
 	);
-	
+
 	/**
-	* list of user roles
-	* 
-	* @var array
-	*/
+	 * list of user roles
+	 * 
+	 * @var array
+	 */
 	public static $roleDescriptions = array(
 		'user' => 'User',
 		'admin' => 'Admin',
@@ -120,71 +121,71 @@ class UserTable extends AppTable {
 		parent::__construct('user', $userId);
 	}
 
-	
+
 	/**
-		* sets data for current user; do not update password if don't need
-		*
-		* @param array $data
-		*/
+	 * sets data for current user; do not update password if don't need
+	 *
+	 * @param array $data
+	 */
 	public function set($data) {
-    if (isset($data['pass'])){
-	    if (!empty($data['pass'])) 
-	    	$data['password'] = $this->passwordHash($data['pass']);
-    }
-    parent::set($data);
-	}
-	
-	/**
-   * Inserts a record; set password value as hash
-   *
-   * @param array $set
-   * @return int last insert Id
-   */
-	public function insert($set) {
-		if (isset($set['password'])){
-	    	$set['password'] = $this->passwordHash($set['password']);
-    }
-    $id = parent::insert($set);
-    return $id;
+		if (isset($data['pass'])){
+			if (!empty($data['pass'])) 
+				$data['password'] = $this->passwordHash($data['pass']);
+		}
+		parent::set($data);
 	}
 
- 
-  /**
-  * returns random user ids
-  *
-  * @param int $limit
-  * @param array $excludeUsers
-  * @return array
-  */
-  public function findRandomUsers($limit=10, $excludeUsers=array()) {
-  	if(!empty($excludeUsers)) {
+	/**
+	 * Inserts a record; set password value as hash
+	 *
+	 * @param array $set
+	 * @return int last insert Id
+	 */
+	public function insert($set) {
+		if (isset($set['password'])){
+			$set['password'] = $this->passwordHash($set['password']);
+		}
+		$id = parent::insert($set);
+		return $id;
+	}
+
+
+	/**
+	 * returns random user ids
+	 *
+	 * @param int $limit
+	 * @param array $excludeUsers
+	 * @return array
+	 */
+	public function findRandomUsers($limit=10, $excludeUsers=array()) {
+		if(!empty($excludeUsers)) {
 			$exclude = ' where id not in ('.implode(',', $excludeUsers).')';
-  	}
-  	$result = $this->query('select id from user'.$exclude.' order by rand() limit '.$limit);
+		}
+		$result = $this->query('select id from user'.$exclude.' order by rand() limit '.$limit);
 		$users = array();
 		foreach($result as $user) {
 			$users []= $user->id;
 		}
 
 		return $users;
-  }
+	}
 
 	/**
-	* deletes user
-	*
-	* @param int $id
-	* @return bool: true on OK, false on user not found
-	*/
-  public function delete($id){
-    return (bool)parent::delete(array('id' => $id));
-  }
- 	
+	 * deletes user
+	 *
+	 * @param int $id
+	 * @return bool: true on OK, false on user not found
+	 */
+	public function delete($id){
+		return (bool)parent::delete(array('id' => $id));
+	}
+
 	/**
-	* returns name or login
-	* 
-	* @param mixed $id
-	* @param default return name
-	*/
+	 * returns name or login
+	 * 
+	 * @param mixed $id
+	 * @param default return name
+	 */
 	public function getUserName($id,$login=false) {
 		$row = $this->select(array('id' => $id))->current();
 		if($login)
@@ -206,9 +207,8 @@ class UserTable extends AppTable {
 
 		$row = $this->find(array(
 			array('email', '=', $email),
-			array('active', '=', '1')
-		), 1 );
-		
+			), 1 );
+
 		if($row) {
 			$row = array_pop($row);
 			if ( password_verify($pass, $row->password)) {
@@ -223,32 +223,40 @@ class UserTable extends AppTable {
 		}
 		return false;
 	}
-	
+
 	/**
-	 * for registration via rigistration form
+	 * create new user with not full data
 	 * 
-	 * @param string $login
-	 * @param string $email
-	 * @param string $password
-	 * @return int user id
+	 * @param mixed $data { email, pass } - required
 	 */
-	public function createUser($login, $email, $password){
-		return $this->insert(array(
-			'login'	=> $login,
-			'email'	=> $email,
-			'password' => $this->passwordHash($password),
-			'code' => \Application\Lib\Utils::generatePassword(32),
+	public function create($data, &$code = null) {
+
+		$this->startTransaction();
+		$code = \Application\Lib\Utils::generatePassword(32);
+
+		$uid = parent::create([
+			'name' => $data['name'],
+			'password' => isset($data['password']) ? $this->passwordHash($data['password']) : '',
+			'level' => isset($data['level']) ? $data['level'] : 'user',
+			'email' => $data['email'],
 			'created' => TIME,
-		));
+			'gender' => isset($data['gender'])? $data['gender'] : null,
+			'country' => isset($data['country'])? $data['country'] : '',
+			'birthdate' => isset($data['birthdate'])? $data['birthdate'] : null,
+		]);
+
+		$this->commit();
+
+		return $uid;
 	}
-	
+
 	/**
 	 * create hash code for password
 	 * 
 	 * @param string $pass
 	 */
 	public function passwordHash($pass){
-  	return password_hash($pass, PASSWORD_DEFAULT, ['cost' => PASSWORD_HASH_COST]);
+		return password_hash($pass, PASSWORD_DEFAULT, ['cost' => PASSWORD_HASH_COST]);
 	}
 
 	/**
@@ -287,7 +295,7 @@ class UserTable extends AppTable {
 		if(!$userRow) {
 			throw new \Exception(_('Bad confirmation code'));
 		}
-		
+
 		$this->setId($userRow->id);
 
 		//set new pass
@@ -298,23 +306,42 @@ class UserTable extends AppTable {
 	}
 
 	/**
-	* activates user.
-	* 
-	* @param string $code
-	* @throws Exception on code not found
-	*/
+	 * activates user.
+	 * 
+	 * @param string $code
+	 * @throws Exception on code not found
+	 */
 	public function activate($code) {
 		$user = $this->find(array(array('code', '=', $code)))->current();
-		
+
 		if(!$user) {
 			throw new \Exception(_('Wrong activation code or account already activated'));
 		}
-		
+
 		$this->setId($user->id);
 		$this->set(array(
 			'active' => 1,
 			'code' => '',
 		));
+	}
+
+	/**
+	 * find user account by email
+	 * 
+	 * @param string $email
+	 * @return {\ArrayObject|bool}
+	 */
+	public function getByEmail($email = false){
+		if($email == false) return false;
+		$row = $this->find(array(
+			array('email', '=', $email),
+			), 1 );
+
+		if($row) {
+			$row = array_pop($row);
+			return $row;
+		}
+		return false;
 	}
 
 }

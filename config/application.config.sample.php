@@ -20,6 +20,14 @@ define('BASEDIR', dirname(__FILE__).'/../');
 
 define('PASSWORD_HASH_COST', 12); //algorithmic cost that should be used while hashing password
 
+define('FACEBOOK_APP_ID', 1474956179385717);
+define('FACEBOOK_SECRET', '1c04d56fb1175ef42ca12730fce45255');
+
+define('GA_APP_ID', '928400678967-5phs21q39knkqavk6qi2234unm04gav4.apps.googleusercontent.com');
+define('GA_SECRET', 'jmJuDR4spQmHNJ70fldJB-Jj');
+
+define('REMEMBER_ME_PERIOD', 2592000);
+
 Zend\Registry::set('dbConfig', array(
 	'host' => DATABASE_HOST,
 	'dbname' => DATABASE_NAME,

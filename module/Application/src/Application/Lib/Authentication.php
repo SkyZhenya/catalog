@@ -65,7 +65,7 @@ class Authentication {
 				
 		if (!$acl->call('isAllowed', array($role, $params['controller'], $params['action']))) {
 			if($role == 'guest') {
-					$url = URL.'user/login?r='.urlencode($_SERVER['REQUEST_URI']);
+					$url = URL.'auth/login?r='.urlencode($_SERVER['REQUEST_URI']);
 					header('HTTP/1.1 302 Found');
 					header('Location: '.$url);
 					exit;

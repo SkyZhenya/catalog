@@ -19,6 +19,7 @@ class AppViewHelper extends AbstractHelper {
 		preg_match('#(\w+)$#', $action, $mA);
 		$this->view->controller = $mC[1];
 		$this->view->action = $mA[1];
+		$this->view->namespace = $namespace;
 		$this->view->current_lang = $lang;
 		
 		
