@@ -6,6 +6,6 @@
 .project
 config/application.config.php
 composer.*
-vendor
+vendor/Zend
 nbproject
 .htaccess
