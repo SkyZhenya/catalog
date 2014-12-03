@@ -121,35 +121,6 @@ class UserTable extends AppTable {
 		parent::__construct('user', $userId);
 	}
 
-
-	/**
-	 * sets data for current user; do not update password if don't need
-	 *
-	 * @param array $data
-	 */
-	public function set($data) {
-		if (isset($data['pass'])){
-			if (!empty($data['pass'])) 
-				$data['password'] = $this->passwordHash($data['pass']);
-		}
-		parent::set($data);
-	}
-
-	/**
-	 * Inserts a record; set password value as hash
-	 *
-	 * @param array $set
-	 * @return int last insert Id
-	 */
-	public function insert($set) {
-		if (isset($set['password'])){
-			$set['password'] = $this->passwordHash($set['password']);
-		}
-		$id = parent::insert($set);
-		return $id;
-	}
-
-
 	/**
 	 * returns random user ids
 	 *
