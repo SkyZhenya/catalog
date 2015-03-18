@@ -9,15 +9,29 @@ use Zend\EventManager\StaticEventManager;
 class Module implements AutoloaderProviderInterface {
 	public function onBootstrap(MvcEvent $e) {
 		$eventManager        = $e->getApplication()->getEventManager();
-    $moduleRouteListener = new ModuleRouteListener();
-    $moduleRouteListener->attach($eventManager);
+		$moduleRouteListener = new ModuleRouteListener();
+		$moduleRouteListener->attach($eventManager);
         
 		$app = $e->getApplication();
 		$serviceManager = $app->getServiceManager();
 		$serviceManager->get('viewhelpermanager')->setFactory('myviewalias', function($sm) use ($e) {
 			return new \Application\View\AppViewHelper($e->getRouteMatch());
 		});
-  }
+
+		$sharedManager = $app->getEventManager()->getSharedManager();
+		$sharedManager->attach('Zend\Mvc\Application', 'dispatch.error',
+			function($e) use ($serviceManager) {
+				if ($exception = $e->getParam('exception')) {
+					$error = 'Error 500 (Code '.$exception->getCode().'): '.$exception->getMessage().
+						"\nURI is ".$e->getRequest()->getRequestUri()."\n".$exception->getTraceAsString();
+					$error = explode("\n", $error);
+					foreach($error as $line) {
+						error_log($line);
+					}
+				}
+			}
+		);
+	}
 
 	public function getConfig()	{
 		return include __DIR__ . '/config/module.config.php';
