@@ -25,6 +25,13 @@ abstract class AppController extends AbstractActionController {
 	protected $user;
 	
 	/**
+	 * Json Format
+	 * 
+	 * @var string
+	 */
+	public $jsonFormat = null;
+	
+	/**
 	* Construct default controller, create lang table
 	* 
 	* @param mixed $forceAuth
@@ -32,6 +39,8 @@ abstract class AppController extends AbstractActionController {
 	*/
 	public function __construct($forceAuth = false) {
 		$this->forceAuth = $forceAuth;
+		$this->jsonFormat = \JSON_UNESCAPED_UNICODE;
+		if(DEBUG) $this->jsonFormat |= \JSON_PRETTY_PRINT;
 	}
 
 	public function ready() {	
@@ -176,17 +185,28 @@ abstract class AppController extends AbstractActionController {
 		 * @param array $variables
 		 * @return string
 		 */
-		protected function renderView($template, $variables = array()) {
+		protected function renderViewByTemplate($template, $variables = array()) {
 			$htmlViewPart = new ViewModel();
-		  $htmlViewPart->setTerminal(true)
-		               ->setTemplate($template)
-		               ->setVariables($variables);
+			$htmlViewPart->setTerminal(true)
+			->setTemplate($template)
+			->setVariables($variables);
 
-		  $viewRender = $this->getServiceLocator()->get('ViewRenderer');
+			$viewRender = $this->getServiceLocator()->get('ViewRenderer');
 			return $viewRender->render($htmlViewPart);
-		}	
-		
+		}
+
 		/**
+		 * function return text from view
+		 * 
+		 * @param \Zend\View\Model\ViewModel $view
+		 * @return string
+		 */
+		protected function renderView($view) {
+			$viewRender = $this->getServiceLocator()->get('ViewRenderer');
+			return $viewRender->render($view);
+		}
+
+	/**
 		 * render html template into layout with $layoutVariable name
 		 * 
 		 * @param string $layoutVariable
@@ -198,4 +218,89 @@ abstract class AppController extends AbstractActionController {
 			$controls->setTemplate($viewTemplate);
 			$this->layout()->addChild($controls, $layoutVariable);
 		}
-}
+
+		/**
+		 * return unified json responce (use it for all ajax actions)
+		 * 
+		 * @param mixed $data - any data for js processor
+		 * @param string $view - ViewModel object or string to be placed on frontend
+		 * @param string $action - (values: none, redirect, alert, content, error)
+		 * @param string $status - (values: succes, error)
+		 * @param boolean $exit - echo data and die
+		 * @return ViewModel 
+		 * 
+		 */
+		public function sendJSONResponse($data = [], $view = false, $action = 'content', $status = 'success', $exit = false) {
+
+			$statusList = [
+				'success',
+				'error'
+			];
+
+			$actionList = [
+				'none',
+				'redirect',
+				'login', // display sign in/sign up form
+				'alert',
+				'content',
+				'replaceContent',
+			];
+
+			if (!in_array($status, $statusList))
+				throw new \Exception('prepareJSONResponse: Wrong response status');
+			if (!in_array($action, $actionList))
+				throw new \Exception('prepareJSONResponse: Wrong action');
+
+			if ($view instanceof ViewModel) {
+				$view->setTerminal(true);
+				$content = $this->renderView($view);
+			} else {
+				$content = $view;
+			}
+
+			$result = [
+				'status' => $status,
+				'action' => $action,
+				'content' => $content,
+				'data' => $data
+			];
+
+			$jsonView = new ViewModel([
+				'json' => $result,
+				'jsonFormat' => $this->jsonFormat,
+			]);
+			$jsonView->setTerminal(true);
+			$jsonView->setTemplate('service/json');
+
+			if ($exit) {
+				echo $this->renderView($jsonView);
+				exit;
+			} else
+				return $jsonView;
+		}
+
+		/**
+		 * send json error to client
+		 * 
+		 * @param string $text
+		 * @param int $code
+		 * @return \Zend\View\Model\ViewModel
+		 */
+		public function sendJSONError($text = '', $code = false) {
+			return $this->sendJSONResponse(['code' => $code, 'message' => $text], false, 'none', 'error', true);
+		}
+
+		public function sendJSONAlert($text) {
+			return $this->sendJSONResponse(['content' => $text], false, 'alert', 'success');
+		}
+
+		/**
+		 * retunrns json responce with error status
+		 * 
+		 * @param string $url
+		 */
+		public function sendJSONRedirect($url) {
+			return $this->sendJSONResponse([$url], false, 'redirect', 'success');
+		}
+
+	}
