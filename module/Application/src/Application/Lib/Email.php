@@ -22,7 +22,17 @@ class Email {
 	 * @param mixed $sender (int - ID or array - from user table or string - email or User object)
 	 * @param string $layout
 	 */
-	public function sendTemplate($templateName, User $recipient, $data = [], $sender = false) {
+	public function sendTemplate($templateName, User $recipient, $data = [], $sender = false, $checkSettings = false) {
+		if($checkSettings) {
+			$allowedList = $recipient->getEmailNotifications();
+			if(!in_array($checkSettings, $allowedList)) return false;
+		}
+		$file = null;
+		if (isset($data['file'])) {
+			$file = $data['file'];
+			unset($data['file']);
+		}
+		
 		$templateTable = new \Application\Lib\Template();
 		try {
 			$template = $templateTable->prepareMessage($templateName, $data);
@@ -37,7 +47,7 @@ class Email {
 		//render layout with content
 		$content = $this->renderTemplate($template['text']);
 
-		$this->sendMail($template['subject'], $content, $this->recipient->email, $this->recipient->name, $sender->email, $sender->name); 
+		$this->sendMail($template['subject'], $content, $this->recipient->email, $this->recipient->name, $sender->email, $sender->name, $file); 
 		
 		return true;
 	}
@@ -90,7 +100,7 @@ class Email {
 	 * @param string $fromEmail
 	 * @param string $fromName
 	 */
-	public function sendMail($subject, $content, $toEmail, $toName = null, $fromEmail = false, $fromName = false) {
+	public function sendMail($subject, $content, $toEmail, $toName = null, $fromEmail = false, $fromName = false, $file = array()) {
 		if(!isset($toEmail) || empty($toEmail)) {
 			throw new \Exception(_('E-Mail is not set or is empty'));
 		}
@@ -114,6 +124,19 @@ class Email {
 		$bodyMessage->type = 'text/html; charset=utf-8';
 
 		$bodyPart->setParts(array($bodyMessage));
+		
+		if (!empty($file)) {
+			$bodyFile = new \Zend\Mime\Part($file['content']);
+			$bodyFile->type = (isset($file['type']) ? $file['type'] : 'application/octet-stream');
+			$bodyFile->encoding = \Zend\Mime\Mime::ENCODING_BASE64;
+			$bodyFile->disposition = (isset($file['disposition']) ? $file['disposition'] : 'attachment');
+			$bodyFile->filename = $file['name'];
+			if (isset($file['id'])) {
+				$bodyFile->id = $file['id'];
+			}
+
+			$bodyPart->addPart($bodyFile);
+		}
 
 		$m->setBody($bodyPart);
 		$m->setEncoding('UTF-8');

@@ -104,10 +104,6 @@ abstract class AppController extends AbstractActionController {
 		 return URL.$path;
 	 }
 
-	 public function getParam($param){
-	 	return $this->getEvent()->getRouteMatch()->getParam($param);
-	 }
-
   /**
   * returnes error view template with current message
   *
