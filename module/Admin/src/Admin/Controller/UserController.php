@@ -191,7 +191,7 @@ class UserController extends AppController {
 			$params []= array('level', '=', $flRole);
 		}
 		
-		$flStatus = $this->params()->fromQuery('flStatus');
+		$flStatus = $this->params()->fromQuery('flStatus', -1);
 		if($flStatus >= 0) {
 			$params []= array('active', '=', $flStatus);
 		}
