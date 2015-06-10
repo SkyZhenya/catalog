@@ -4,11 +4,23 @@ use Application\Lib\User;
 use Zend\InputFilter\Factory as InputFactory;
 use Zend\InputFilter\InputFilter;
 
-class UserEditForm extends \Zend\Form\Form {
+class UserEditForm extends \Application\Form\Form {
 	/**
 	 * @var Zend\InputFilter\InputFilter;
 	 */
 	protected $inputFilter;
+	
+	/**
+	 * 
+	 * @var string
+	 */
+	private $action;
+	
+	/**
+	 * 
+	 * @var int
+	 */
+	private $userId;
 	
 	/**
 	* constructor
@@ -16,11 +28,12 @@ class UserEditForm extends \Zend\Form\Form {
 	* @param string $level
 	* @return UserEditForm
 	*/
-	public function __construct() {
+	public function __construct($action = 'edit') {
 		parent::__construct('useredit');
 
 		$this->setAttribute('method', 'post');
 		$this->setAttribute('class', 'line-form');
+		$this->action = $action;
 
 		$this->add(array(
 			'name' => 'csrf',
@@ -156,7 +169,7 @@ class UserEditForm extends \Zend\Form\Form {
 	}
 	
   	
-	public function getFormInputFilter($action = 'edit') {
+	public function getInpFilter() {
 		if (!$this->inputFilter) {
 			$inputFilter = new InputFilter();
 
@@ -172,7 +185,7 @@ class UserEditForm extends \Zend\Form\Form {
 				),
 				'validators' => array(
 					new \Application\Lib\Validator\CustomEmailValidator(),
-					new \Application\Lib\Validator\ExistValidator(new \Application\Model\UserTable(), 'email', $this->get('id')->getValue(), 'id', "E-mail already exists"),
+					new \Application\Lib\Validator\ExistValidator(new \Application\Model\UserTable(), 'email', $this->userId, 'id', "E-mail already exists"),
 				),
 			)));
 
@@ -187,7 +200,7 @@ class UserEditForm extends \Zend\Form\Form {
 			
 			$inputFilter->add($factory->createInput(array(
 				'name' => 'pass',
-				'required' => ($action == 'edit')? false : true,
+				'required' => ($this->action == 'edit')? false : true,
 				'filters' => array(
 					array('name' => 'StringTrim'),
 				),
@@ -202,5 +215,9 @@ class UserEditForm extends \Zend\Form\Form {
 		}
 
 		return $this->inputFilter;
+	}
+	
+	public function setUserId($userId) {
+		$this->userId = $userId;
 	}
 }

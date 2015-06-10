@@ -90,6 +90,8 @@ class User extends UserTable {
 		}
 		//verify user activity
 		if (!$user->active){
+			$user->id = null;
+			$user->level = \Application\Lib\Acl::DEFAULT_ROLE;
 			throw new \Exception(_('Your account was blocked by Administration'));
 		}
 
