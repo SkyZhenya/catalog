@@ -16,7 +16,6 @@
     <?php echo $this->headLink(array('rel' => 'shortcut icon', 'type' => 'image/vnd.microsoft.icon', 'href' => $this->basePath() . '/favicon.ico'))
                     ->prependStylesheet($this->basepath('css/admin/codeit-admin.css'))
                     ->prependStylesheet($this->basepath('css/jquery.fancybox.css'))
-                    ->prependStylesheet($this->basepath('css/admin/boxes.css'))
                     ->prependStylesheet($this->basepath('css/admin/menu.css?time=2013-11-14-01'))
                     ->prependStylesheet($this->basePath() . '/js/dhtmlxGrid/customscroll.css')
 		?>
@@ -29,6 +28,7 @@
                                   /* dhtmlxgrid */
                                   ->prependFile($this->basePath() . '/js/dhtmlxGrid/customscroll.js', 'text/javascript')
                                   ->prependFile($this->basePath() . '/js/dhtmlxGrid/dhtmlxgrid.js?t=2014111301')
+                                  ->prependFile($this->basePath() . '/js/dhtmlxGrid/dhtmlxcommon.js?t=2014111301')
                                   
                                   ->prependFile($this->basePath() . '/js/jquery-2.1.1.min.js')
                                   

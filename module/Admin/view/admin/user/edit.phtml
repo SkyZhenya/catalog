@@ -9,12 +9,29 @@ $id = $this->form->get('id')->getValue();
 
 $this->headTitle(htmlspecialchars($this->form->get('name')->getValue()));
 $this->headScript()->appendFile($this->basePath() . '/js/admin/chosen.jquery.js', 'text/javascript');
-$this->headLink()->prependStylesheet($this->basePath() . '/css/admin/chosen.css');
 ?>
 <div class="user-wrap">
-	<?php
-			echo $this->wrappedForm($form);
-	?>
+	<?= $this->form()->openTag($form) ?>
+	<?= $this->wrappedElement($form->get('csrf')) ?> 
+	<?= $this->wrappedElement($form->get('id')) ?> 
+	<div class="clearfix"></div>
+	<div class="clearfix">
+		<div class="halfWidthBlock"><?= $this->wrappedElement($form->get('name')) ?> </div>
+		<div class="halfWidthBlock">	<?= $this->wrappedElement($form->get('email')) ?> </div>
+	</div>
+	<div class="clearfix">
+		<div class="halfWidthBlock"><?= $this->wrappedElement($form->get('phone')) ?> </div>
+		<div class="halfWidthBlock"><?= $this->wrappedElement($form->get('level')) ?> 	</div>
+	</div>
+	<div class="clearfix">
+		<div class="halfWidthBlock"><?= $this->wrappedElement($form->get('pass')) ?></div>
+		<div class="halfWidthBlock"><span class="label">&nbsp;</span><?= $this->wrappedElement($form->get('active'), 'element margTop8') ?></div>
+	</div>
+	<div class="clearfix btnsWrapp">
+		<?= $this->wrappedElement($form->get('submit')) ?> 
+		<?= $this->wrappedElement($form->get('cancel')) ?> 
+	</div>
+	<?= $this->form()->closeTag($form) ?>
 
 <script>
 	<?php if (isset($canClosePage) && $canClosePage){?>

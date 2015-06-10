@@ -1,9 +1,12 @@
 <?php
 	$this->headTitle(_('Manage Users'));
 	$this->headScript()->appendFile($this->basePath() . '/js/admin/chosen.jquery.js', 'text/javascript')
-											->appendFile($this->basePath(). '/js/changeabledata-checkbox.js');
-	$this->headLink()->prependStylesheet($this->basePath() . '/css/admin/chosen.css');?>
-
+					->appendFile($this->basePath() . '/js/changeabledata-checkbox.js')
+					->appendFile(URL . 'js/tools/jquery-ui-1.10.4.custom.min.js');
+	$this->headLink()->prependStylesheet($this->basePath() . '/css/admin/chosen.css')
+					->prependStylesheet(URL . 'css/tools/ui/jquery-ui-1.10.4.custom.css')
+;
+?>
 
 <div class="clear"></div>
 <div id="gridbox" style="height:500px;background-color:white;"></div>
@@ -33,8 +36,53 @@
 		</select>
 	</div>
 </div>
-
+<div id="date_flt_box">
+	<div  class="clearfix">
+		<div class="singleDP">
+			<input id="created" readonly="readonly" style="border:1px solid gray; width:100%" onclick="(arguments[0]||window.event).cancelBubble=true;" onchange="filterBy()">
+		</div>
+		<div class="rangeDP">
+			<input id="created_from" readonly="readonly"  style="border:1px solid gray; width:48%" onclick="(arguments[0]||window.event).cancelBubble=true;" onchange="filterBy()">-<input id="created_to" readonly="readonly"  style="border:1px solid gray; width:48%" onclick="(arguments[0]||window.event).cancelBubble=true;" onchange="filterBy()">
+		</div>
+		<a  href="javascript:void(0);" class="clearDate"  onclick="clearDate(this); return false;">&nbsp;</a>
+	</div>
+	<p class="showDatepickersWrapp">
+		<?php echo _('Date') ?>
+		<span class="datepickersToggle showDatepickersLeft" onclick="toggleCust(this);"> </span>
+		<?php echo _('Date Range') ?>
+	</p>
+</div>
 <script>
+			$(function() {
+		$("#created").datepicker({
+			"dateFormat": 'dd.mm.yy',
+			changeMonth: true,
+			changeYear: true,
+			maxDate: 0,
+			onClose: function( selectedDate ) {
+				$("#created_from").val("");
+				$("#created_to").val("");
+				$("#endActive").datepicker( "option", "minDate", selectedDate);}
+		});
+		$("#created_to").datepicker({
+			"dateFormat": 'dd.mm.yy',
+			changeMonth: true,
+			changeYear: true,
+			maxDate: 0,
+			onClose: function( selectedDate ) {
+				$("#created").val("");
+				$("#created_from").datepicker( "option", "maxDate", selectedDate);}
+		});
+		$("#created_from").datepicker({
+			"dateFormat": 'dd.mm.yy',
+			changeMonth: true,
+			changeYear: true,
+			maxDate: 0,
+			onClose: function( selectedDate ) {
+				$("#created").val("");
+        $("#created_to").datepicker( "option", "minDate", selectedDate);}
+		});
+	});
 	dhtmlx.CustomScroll.init();
 	gridSortOrder='desc';
 	gridSortOrderBy=1;
@@ -43,12 +91,12 @@
 	function doOnLoad(){
 		mygrid = new dhtmlXGridObject('gridbox');
 		mygrid.setImagePath("<?php echo $this->basePath('js/dhtmlxGrid/imgs/')?>");
-	  mygrid.setHeader("#,<?php echo _('User ID');?>,<?php echo _('Name');?>,<?php echo _('Email');?>,<?php echo _('User Type');?>,<?php echo _('Status');?>,<?php echo _('Actions');?><?php echo ($canDelete)? ',#cspan' : '';?>");
-		mygrid.setInitWidths("30,85,100,100,70,60,<?php echo ($canDelete)? '30,30' : '60';?>")
-		mygrid.setColAlign("center,center,center,center,center,center,center,center")
-		mygrid.setColTypes("ro,ro,ro,ro,ro,ro,ro,ro");
-		mygrid.setColSorting("na,int,str,str,na,na,na,na");
-		mygrid.enableResizing("false,false,false,false,false,false,false,false");
+	  mygrid.setHeader("#,<?php echo _('User ID');?>,<?php echo _('Name');?>,<?php echo _('Email');?>,<?php echo _('User Type');?>,<?php echo _('Status');?>, <?php echo _('Registration date') ?>,<?php echo _('Actions');?><?php echo ($canDelete)? ',#cspan' : '';?>");
+		mygrid.setInitWidths("30,85,120,120,100,70,80,<?php echo ($canDelete)? '30,30' : '60';?>")
+		mygrid.setColAlign("center,center,center,center,center,center,center,center,center")
+		mygrid.setColTypes("ro,ro,ro,ro,ro,ro,ro,ro,ro");
+		mygrid.setColSorting("na,int,str,str,na,na,na,na,na");
+		mygrid.enableResizing("false,false,false,false,false,false,false,false,false");
 		mygrid.init();
 		mygrid.setSkin("light")
 		mygrid.enableSmartRendering(true,onpage);
@@ -65,13 +113,14 @@
 	  	var rowNum = mygrid.cellById(id,0).getValue();
 	  	return common.selectItemInList(id, rowNum, <?=json_encode($this->basePath('admin/user/edit/'));?>);
 	  });
-		mygrid.attachHeader("#rspan,<div id='pid_flt'><\/div>,<div id='name_flt'><\/div>,<div id='email_flt'><\/div>,<div id='role_flt'><\/div>,<div id='status_flt'><\/div>,<?php echo ($canDelete)? ',' : '#rspan';?>");
+		mygrid.attachHeader("#rspan,<div id='pid_flt'><\/div>,<div id='name_flt'><\/div>,<div id='email_flt'><\/div>,<div id='role_flt'><\/div>,<div id='status_flt'><\/div>,<div id='date_flt_flt'><\/div>,<?php echo ($canDelete)? ',' : '#rspan';?>");
 		//set filters fields
 		$('#pid_flt').append($("#pid_flt_box"));
 		$('#name_flt').append($("#name_flt_box"));
 		$('#role_flt').append($("#role_flt_box"));
 		$('#email_flt').append($("#email_flt_box"));
 		$('#status_flt').append($("#status_flt_box"));
+		$('#date_flt_flt').append($("#date_flt_box"));
 		mygrid.setSizes();
 		filterBy();
 	}
@@ -81,16 +130,22 @@
 		var roleVal=encodeURIComponent($('#role_flt').find('select').val());
 		var emailVal = encodeURIComponent($('#email_flt').find('input').val());
 		var statusVal = encodeURIComponent($('#status_flt').find('select').val());
+		var dateVal = encodeURIComponent($('#created').val());
+		var dateStartVal = encodeURIComponent($('#created_from').val());
+		var dateEndVal = encodeURIComponent($('#created_to').val());
 		mygrid.clearAll();
-		mygrid.load(getListLink+"&order="+gridSortOrder+"&orderby="+gridSortOrderBy+"&flPid="+pidVal+"&flName="+nameVal+'&flRole='+roleVal+'&flEmail='+emailVal+'&flStatus='+statusVal, function() {
+		var getListLinkR = '';
+		getListLinkR = getListLink+"&order="+gridSortOrder+"&orderby="+gridSortOrderBy+"&flPid="+pidVal+"&flName="+nameVal+'&flRole='+roleVal+'&flEmail='+emailVal+'&flStatus='+statusVal+'&created='+dateVal+'&startDate='+dateStartVal+'&endDate='+dateEndVal;
+		mygrid.load(getListLinkR, function() {
 			mygrid.setSortImgState(true,gridSortOrderBy,gridSortOrder);    //set a correct sorting image
-			$('.objbox').each(function () { dhtmlx.CustomScroll._mouse_out_timed.call(this); });
-		});
+			$('.objbox').each(function () { dhtmlx.CustomScroll._mouse_out_timed.call(this); });	
+			common.setGridHeight();
+		}, "json");
+	
 	}
 	$(document).ready(function(){ 
 		common.setGridHeight();
 		doOnLoad();  
-		
 		$(".chosen-select").chosen({disable_search_threshold: 7});
 	});
 </script>

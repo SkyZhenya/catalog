@@ -2,6 +2,14 @@ html, body {
     height: 100%;
 }
 
+.clearfix:before, .clearfix:after {
+	content: "";
+	display: table;
+	line-height: 0;
+}
+.clearfix:after {
+	clear: both;
+}
 div.container a.brand {
     margin-left: 0;
     padding: 8px 20px 12px 40px;

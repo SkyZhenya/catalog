@@ -47,11 +47,13 @@ var common = {
 			var windowHeight = $(window).height();
 			var headerHeight = $('.header').height();
 			var footerHeight = $('.footer').height();
+			var blockBtnsHeight = $('.block-button-no-fix').outerHeight() || 0;
 			var height = $('.xhdr').height();
-			var midleHeight = windowHeight -(headerHeight)-footerHeight-5;
-
+			var midleHeight = windowHeight -(headerHeight)-footerHeight-5 +parseInt($('.middle').css("padding-top")) ;
+			var midleHeight2 = windowHeight -(headerHeight)-footerHeight-5  ;
 			$('.middle').css('height', midleHeight);
-			$('#gridbox').css('height', midleHeight);
+			$('#gridbox').css('height', midleHeight2);
+			$('.objbox').css({'maxHeight': midleHeight2-blockBtnsHeight-height,"height":"auto"});	
 	},
 	
 	backToList: function(id){
@@ -134,18 +136,7 @@ var common = {
 	
 	beforeCloseFancybox: function(){
 		if ((typeof(parent.mygrid) !== 'undefined') && (typeof(parent.common.refreshDataLink)!=='undefined') && (!parent.common.refreshGrid)){
-			parent.mygrid.updateFromXML(parent.common.refreshDataLink, true, false , function(){
-				parent.mygrid.cellById(parent.common.selectedRow.id,0).setValue(parent.common.selectedRow.num);
-				var row = parent.mygrid.getRowById(parent.common.selectedRow.id);
-				var rowClass = ($(row).is(':nth-child(even)'))? 'ev_light' : 'odd_light';
-				if (!$(row).hasClass(rowClass)) {
-					$(row).addClass(rowClass);
-				}
-				if (typeof(parent.common.afterRefreshGrid) !== 'undefined') {
-					parent.common.afterRefreshGrid(parent.common.selectedRow.id);
-				}
-			});
-
+			filterBy();
 		}
 		if ((typeof(parent.mygrid) !== 'undefined') && (parent.common.refreshGrid)){
 			parent.filterBy();
@@ -224,4 +215,17 @@ $(document).ready(function(){
 });
 
 
-
+function toggleCust(item) {
+	$(item).parent().parent().find(".singleDP").toggle();
+	$(item).parent().parent().find(".rangeDP").toggle();
+	$(item).hasClass("showDatepickersLeft") == true ? $(item).removeClass("showDatepickersLeft").addClass("showDatepickersRight") : $(item).removeClass("showDatepickersRight").addClass("showDatepickersLeft");
+}
+function clearDate(item) {
+	$(item).parent().find(".hasDatepicker").val('');
+	if ($(item).parents(".startTest").length) {
+		$("#end").datepicker("option", "minDate", null);
+		$("#end_from").datepicker("option", "minDate", null);
+		$("#end_to").datepicker("option", "minDate", null);
+	}
+	filterBy();
+}
