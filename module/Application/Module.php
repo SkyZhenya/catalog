@@ -54,15 +54,15 @@ class Module implements AutoloaderProviderInterface {
 					$viewHelper = new \Application\View\Helper\Lang;
 					return $viewHelper;
 				},
-        'wrappedElement' => function ($sm) {
-            $viewHelper = new \Application\View\WrappedElement;
-            return $viewHelper;
-        },
-        'wrappedForm' => function ($sm) {
-            $viewHelper = new \Application\View\WrappedForm;
-            return $viewHelper;
-        },
-        'getUser' => function ($sm) {
+				'wrappedElement' => function ($sm) {
+					$viewHelper = new \Application\View\WrappedElement;
+					return $viewHelper;
+				},
+				'wrappedForm' => function ($sm) {
+					$viewHelper = new \Application\View\WrappedForm;
+					return $viewHelper;
+				},
+				'getUser' => function ($sm) {
 					$viewHelper = new \Application\View\Helper\User;
 					return $viewHelper;
 				},

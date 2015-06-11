@@ -62,6 +62,11 @@ abstract class AppTable extends TableGateway {
 	 * @var array()
 	 */
 	protected $localFields = array();
+	
+	/**
+	 * Table "ID" field name
+	 */
+	const ID_COLUMN = 'id';
 
 	/**
 	 * creates table and sets id if neccessary
@@ -284,7 +289,7 @@ abstract class AppTable extends TableGateway {
 	/**
 	 * searches for items, fetching them by ::get()
 	 * 
-	 * @param array $params, e.g. arrat('id', '>=', '135')
+	 * @param array $params, e.g. array('id', '>=', '135')
 	 * @param int $limit, set to 0 or false to no limit
 	 * @param int $offset
 	 * @param string $orderBy
@@ -298,6 +303,29 @@ abstract class AppTable extends TableGateway {
 	}
 
 	/**
+	 * searches for items, returning them as object of current class
+	 * 
+	 * @param array $params, e.g. array('id', '>=', '135')
+	 * @param int $limit, set to 0 or false to no limit
+	 * @param int $offset
+	 * @param string $orderBy
+	 * @param int &$total will be set to total count found
+	 * @return \Zend\Db\ResultSet\ResultSet
+	 */
+	public function findObjects($params, $limit=0, $offset=0, $orderBy=false, &$total=null){
+		$ids = $this->findSimple($params, $limit, $offset, $orderBy, $total, [static::ID_COLUMN])->toArray();
+		$ids = array_column($ids, static::ID_COLUMN);
+		$result = [];
+		$className = get_class($this);
+		foreach($ids as $id){
+			if($id > 0){
+				$result[] = new $className($id);
+			}
+		}
+		return $result;
+	}
+	
+	/**
 	 * searches for items and returns \Zend\Db\ResultSet\ResultSet
 	 * 
 	 * @param array $params, e.g. arrat('id', '>=', '135')
@@ -309,54 +337,203 @@ abstract class AppTable extends TableGateway {
 	 * @return \Zend\Db\ResultSet\ResultSet
 	 */
 	public function findSimple($params, $limit=0, $offset=0, $orderBy=false, &$total=null, $columns=['id']) {
+		$where = $this->buildWhere($params);
+		if(!is_null($total)) {
+			$total = $this->count($where);
+		}
+
+		return $this->query($this->buildSelectQuery($where, $limit, $offset, $orderBy, $columns));
+	}
+
+	/**
+	 * Build where condition string from the $params array
+	 * 
+	 * @param array $params
+	 * @return string
+	 */
+	protected function buildWhere($params) {
+		$whereParams = $this->processWhereParams($params);
+
+		if(!empty($whereParams))
+			return 'where '.implode(' AND ', $whereParams);
+
+		return '';
+	}
+	
+	/**
+	 * Build the select query from arguments
+	 * 
+	 * @param string $where
+	 * @param integer $limit
+	 * @param integer $offset
+	 * @param string $orderBy
+	 * @param array $columns
+	 * @return string
+	 */
+	protected function buildSelectQuery($where, $limit=0, $offset=0, $orderBy=false, $columns=['id'], $join=false) {
+		return 'select '.$this->buildSelect($columns).' from `'.$this->table.'` '.$this->findJoin.' '.
+			$where.
+			($join ? $join : '').
+			($this->getGroupBy() ? $this->getGroupBy() : '').
+			' '.($this->getHaving() ? $this->getHaving() : '').
+			($orderBy ? ' order by '.$orderBy : '').
+			($limit ? ' limit '.((int)$offset) .', '.((int)$limit) : '');
+	}
+	
+	/**
+	 * Build a select condition using the $columns
+	 * 
+	 * @param type $columns
+	 * @return type
+	 */
+	protected function buildSelect($columns) {
+		$tColumns=[];
+		foreach($columns as $alias => $column) {
+			$selectColumn = '';
+			if (is_object($column) && get_class($column) == 'Zend\Db\Sql\Expression') {
+				$expression = $column->getExpression();//
+				$selectColumn = $expression;
+			}
+			elseif (is_array($column)) {
+				$selectColumn = '`'.$column[0].'`.'.$column[1].''; //to get columns from different tables when join
+			} else {
+				if ($column == '*')
+					$selectColumn = '`'.$this->table.'`.*';//to get all table columns
+				else 
+					$selectColumn = '`'.$this->table.'`.`'.$column.'`';
+			}
+			if (is_string($alias) && !empty($alias)) {
+				$selectColumn .= ' AS '.$alias;
+			}
+			$tColumns[] = $selectColumn;
+		}
+		
+		return implode(', ', $tColumns);
+	} 
+	
+	/**
+	 * process array of where paramethers and 
+	 * convert to array of paramethers as strings 
+	 * @param array $params
+	 * @return array
+	 */
+	protected function processWhereParams($params) {
 		$platform = $this->getAdapter()->getPlatform();
 		$whereParams = array();
 		foreach($params as $param) {
-			if($param instanceof \Zend\Db\Sql\Expression) {
-				$set = $param->getExpression();
-			}
-			else {
-				$set = $platform->quoteIdentifierChain($param[0]) . ' ' . $param[1] . ' ';
-				if (isset($param[2])){
-					$set .= $this->quoteValue($param[2]);
-				}
-				else {
-					$set .= 'NULL';
-				}
-			}
-
-			$whereParams []= $set ;
+			$whereParams []= $this->prepareParam($param) ;
 		}
-
+		return $whereParams;
+	}
+	
+	/*
+	 * process condition array into string
+	 * @param array $param
+	 */
+	protected function prepareParam($param) {
+		$platform = $this->getAdapter()->getPlatform();
+		if ($param instanceof \Zend\Db\Sql\Expression) {
+			$set = $param->getExpression();
+		} elseif (is_string($param)) {
+			$set = $param;
+		} else {
+			if (is_object($param[0]) && get_class($param[0]) == 'Zend\Db\Sql\Expression') {
+				$expression = $param[0]->getExpression();
+				$param[0] = $expression;
+			}
+			elseif (strpos($param[0], '.') === false) {
+				$param[0] = $platform->quoteIdentifierChain($param[0]);
+			} else {
+				$param[0] = substr_replace($param[0], "`", strpos($param[0], '.')+1, 0).'`';
+			}
+			$set = $param[0] . ' ' . $param[1] . ' ';
+			if (strtolower($param[1]) == 'in') {
+				if (is_array($param[2])) {
+					$set .= '(';
+					$list = array();
+					foreach ($param[2] as $par) {
+						$list[] = $this->quoteValue($par);
+					}
+					$set .= implode(',', $list) . ')';
+				} else {
+					$set .= '(\'' . $this->quoteValue($param[2]) . '\')';
+				}
+			}
+			elseif (isset($param[2])){
+				$set .= $this->quoteValue($param[2]);
+			} else {
+				$set .= 'NULL';
+			}
+			if(count($param) > 3){
+				$set = '('.$set;
+				for ($index = 3; $index < count($param); $index++) {
+					if(!is_array($param[$index])){
+						throw new \Exception('4th and next params must be array');
+					}
+					$set .= ' '.array_splice($param[$index], 0, 1)[0].' ';
+					$set .= $this->prepareParam($param[$index]);
+				}
+				$set .= ')';
+			}
+		}
+		return $set;
+	}
+	
+	/**
+	 * Returns the row counts by the $params
+	 *
+	 * @param type $params
+	 * @return type
+	 */
+	public function count($params = '') {
 		$where = '';
-		if(!empty($whereParams)) {
-			$where = 'where '.implode(' AND ', $whereParams);
-		}
-
-		if(!is_null($total)) {
-			$total = $this->query('select count(*) cnt from `'.$this->table.'` '.$this->findJoin.' '.$where)->current()->cnt;
-		}
-		$tColumns=[];
-		foreach($columns as $column) {
-			if (is_array($column)) {
-				$tColumns []= '`'.$column[0].'`.`'.$column[1].'`'; //to get columns from different tables when join
-			}
-			else{
-				if ($column == '*')
-					$tColumns []= '`'.$this->table.'`.*';//to get all table columns
-				else 
-					$tColumns []= '`'.$this->table.'`.`'.$column.'`';
-			}
-		}
-		$result = $this->query('select '.implode(', ', $tColumns).' from `'.$this->table.'` '.$this->findJoin.' '.
-			$where.
-			($orderBy ? ' order by '.$orderBy : '').
-			($limit ? ' limit '.((int)$offset) .', '.((int)$limit) : '')
-		);
-
-		return $result;
+		if (is_array($params))
+			$where = $this->buildWhere($params);
+		elseif (is_string($params))
+			$where = $params;
+		
+		return $this->query('select count(*) cnt from `'.$this->table.'` '.$this->findJoin.' '.$where. ($this->getGroupBy() ? $this->getGroupBy() : '').' '.($this->getHaving() ? $this->getHaving() : ''))->current()->cnt;
+	}
+	
+	/*
+	 * set group by closer
+	 * @param string $having
+	 */
+	public function setGroupBy($group)
+	{
+		$this->groupBy = $group;
 	}
 
+	/*
+	 * get group by closer
+	 * 
+	 * @return string
+	 */
+	public function getGroupBy()
+	{
+		return $this->groupBy;
+	}
+	
+	/**
+	 * set having closer
+	 * 
+	 * @param string $having
+	 */
+	public function setHaving($having)
+	{
+		$this->having = $having;
+	}
+
+	/**
+	 * get having closer
+	 * 
+	 * @return string $having
+	 */
+	public function getHaving()
+	{
+		return $this->having;
+	}
+	
 	/**
 	 * creates item, sets id.
 	 *
@@ -390,7 +567,7 @@ abstract class AppTable extends TableGateway {
 	 * @returns item
 	 */
 	public function setId($id) {
-		$this->id = $id;
+		$this->{static::ID_COLUMN } = $id;
 		$item = $this->get($id);
 
 		foreach($item as $field => $value) {
@@ -425,10 +602,10 @@ abstract class AppTable extends TableGateway {
 	 * @return \ArrayObject
 	 */
 	public function getUncached($id) {
-		$row = $this->select(array('id' => $id))
-		->current();
-		//\Zend\Debug\Debug::dump($row);
-		//die;
+		$row = $this->select(array(static::ID_COLUMN => $id))->current();
+		if(isset($row->{static::ID_COLUMN}) && $row->{static::ID_COLUMN} > 0){
+			$row->{static::ID_COLUMN} = (int)$row->{static::ID_COLUMN};
+		}
 		if(!$row) {
 			throw new \Exception(ucfirst($this->table).' '.$id.' not found');
 		}
@@ -442,7 +619,7 @@ abstract class AppTable extends TableGateway {
 	 * @param array $data
 	 */
 	public function set($data) {
-		$this->update($data, array('id' => $this->id));
+		$this->update($data, array(static::ID_COLUMN  => $this->id));
 		$this->cacheDelete($this->id);
 		$this->setId($this->id);
 	}
@@ -457,6 +634,9 @@ abstract class AppTable extends TableGateway {
 	public function update($params, $where = null) {
 		$params = $this->removeUnnecessaryFields($params);
 		parent::update($params, $where);
+		if(is_array($where) && isset($where[static::ID_COLUMN]) && is_numeric($where[static::ID_COLUMN])) {
+			$this->cacheDelete($where[static::ID_COLUMN]);
+		}
 		$this->cacheDelete('list');
 	}
 
@@ -468,7 +648,7 @@ abstract class AppTable extends TableGateway {
 	 * @returns altered rows
 	 */
 	public function deleteById($id) {
-		$rowsAffected = $this->delete(array('id' => $id));
+		$rowsAffected = $this->delete(array(static::ID_COLUMN => $id));
 		$this->cacheDelete($id);
 		$this->cacheDelete('list');
 
@@ -570,9 +750,15 @@ abstract class AppTable extends TableGateway {
 	}
 
 	protected function removeUnnecessaryFields($params){
+		$params = (array)$params;
 		foreach($params as $key => $field) {
 			if(!in_array($key, $this->goodFields)) {
 				unset($params[$key]);
+			}
+			else {
+				if($field===false){
+					$params[$key] = 0;
+				}
 			}
 		}
 		return $params;
@@ -601,6 +787,33 @@ abstract class AppTable extends TableGateway {
 		}
 
 		return $result;
+	}
+
+	public function setFindFields($fields) {
+		$this->findFields = $fields;
+		return $this;
+	}
+
+	public function setFindJoin($join) {
+		$this->findJoin = $join;
+		return $this;
+	}
+
+	public function save() {
+		$data = (array) $this;
+		if ($this->{static::ID_COLUMN} > 0) {
+			$this->set($data);
+		} else {
+			unset($data[static::ID_COLUMN]);
+			$this->create($data);
+		}
+		$this->getUncached($this->{static::ID_COLUMN});
+		return $this->{static::ID_COLUMN};
+	}
+
+	public function refresh() {
+		$row = $this->getUncached($this->id);
+		$this->setId($this->id);
 	}
 
 }

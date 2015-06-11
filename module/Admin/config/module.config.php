@@ -15,7 +15,6 @@ return array(
 						'__NAMESPACE__' => 'Admin\Controller',
 						'controller' => 'User',
 						'action' => 'index',
-						'lang' => 'en',
 						'id' => 0,
 					),
 					'constraints' => array(

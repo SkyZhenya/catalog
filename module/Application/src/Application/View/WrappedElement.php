@@ -1,4 +1,5 @@
-<?
+<?php
+
 namespace Application\View;
 
 use Zend\Form\ElementInterface;
@@ -6,66 +7,76 @@ use Zend\View\Helper\AbstractHelper;
 use Zend\Form\View\Helper\FormElementErrors;
 
 class WrappedElement extends AbstractHelper {
+
 	public function __invoke(ElementInterface $element, $class = 'element') {
-		$view   = $this->getView();
+		$view = $this->getView();
 		$type = $element->getAttribute('type');
-		if(empty($type)) {
+		if (empty($type)) {
 			$type = 'text';
 		}
-
 		$name = $element->getName();
 		$id = $element->getAttribute('id');
+		$ngIf = $element->getAttribute('data-ng-if');
+		
 		$name = (!empty($id)) ? $id : $name;
 
 		$element->setAttribute('id', $name);
 
-		if($element instanceof \Application\Lib\Form\HTML) {
+		if ($element instanceof \Zend\Form\Element\Captcha) {
+			$type = 'captcha';
+		} elseif ($element instanceof \Application\Lib\Form\HTML) {
 			$helper = new \Application\View\Helper\FormHTML();
 			$input = $helper($element);
-		}
-		elseif($element instanceof \Zend\Form\Element\Button && $type == 'submit') {
+		} elseif ($element instanceof \Zend\Form\Element\Button && $type == 'submit') {
 			$input = $view->formButton($element, $element->getAttribute('label'));
-		}
-		else {
-			$input  = 'form'.ucfirst($type);
+		} else {
+			$input = 'form' . ucfirst($type);
 			$input = $view->$input($element);
 		}
 		$visible = !in_array($type, array('hidden'));
 
-    $elementErrorsHelper = $this->getElementErrorsHelper();
-    $errors = $elementErrorsHelper->render($element);
-		if(!empty($errors)) {
+		$elementErrorsHelper = $this->getElementErrorsHelper();
+		$errors = $elementErrorsHelper->render($element);
+		if (!empty($errors)) {
 			//$errors = "<div class='error'>$errors [{$element->getName()}]</div>";
 			$errors = "<div class='error'>$errors</div>";
 		}
 
 		//$element->setAttribute('id', $element->getName());
-
 		//translate labels
 		$currLabel = $element->getLabel();
-		if($currLabel)$element->setLabel($currLabel);
+		if ($currLabel)
+			$element->setLabel($currLabel);
 
 		$label = '';
 		try {
 			$label = $view->formLabel($element);
-		}
-		catch(\Exception $e) {}
+		} catch (\Exception $e) {
 
-		switch($type) {
+		}
+
+		switch ($type) {
+			case 'captcha':
+				$helper = new \Application\View\CaptchaHelper();
+				$image = $helper->getImage($element);
+				$input = $helper->getInput($element);
+				$elementHTML = "<div class='label'>{$image}" . (empty($label) ? '' : $label . ':') . "</div>" . "<div class='el'>$input</div>";
+				break;
 			case 'checkbox':
 			case 'radio':
-				$elementHTML = "<div>$label $input</div>"; break;
+				$elementHTML = "<div>$input $label</div>";
+				break;
 			//case 'html': $elementHTML = "<div>$input $label</div>"; break;
-			default: $elementHTML = (empty($label) ? '' : "<div class='label'>$label:</div>"). "<div class='el'>$input</div>";
+			default: $elementHTML = (empty($label) ? '' : "<div class='label'>$label:</div>") . "<div class='el'>$input</div>";
 		}
 
-		return "<div class='$type $name ".$view->escapeHTML($class)." ".($errors?"highlited":"")."'>
+		return "<div class='$type $name " . $view->escapeHTML($class) . " "  . ($errors ? "highlited" : "") . "'".(!empty($ngIf)?' ng-if="'.$ngIf.'"':'').">
 				$elementHTML".($visible ? '<br>' : '')."
 				$errors
 			</div>";
 	}
 
-	protected function getElementErrorsHelper()	{
+	protected function getElementErrorsHelper() {
 		if (isset($this->elementErrorsHelper) && $this->elementErrorsHelper) {
 			return $this->elementErrorsHelper;
 		}
@@ -80,4 +91,5 @@ class WrappedElement extends AbstractHelper {
 
 		return $this->elementErrorsHelper;
 	}
+
 }

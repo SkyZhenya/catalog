@@ -93,7 +93,6 @@ class IndexController extends AppController
 
 				if($user) {
 					try {
-						$this->user->isActive($user);
 						$profile = $this->user->login($user->id);
 						if ($data['rememberme']) {
 							$this->user->rememberMe($user->id);

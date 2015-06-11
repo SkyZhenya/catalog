@@ -33,9 +33,9 @@ class UserController extends AppController {
 	 * 
 	 * @return \Zend\Form\Form
 	 */
-	public function getForm() {
+	public function getForm($action = 'edit') {
 		if(is_null($this->form)) {
-			$this->form = new \Admin\Form\UserEditForm();
+			$this->form = new \Admin\Form\UserEditForm($action);
 		}
 		return $this->form;
 	}
@@ -54,28 +54,31 @@ class UserController extends AppController {
 	public function editAction() {
 		$this->layout('layout/iframe');
 		$id = $this->params('id',0);
-		
+
 		if(!$id)
-			return $this->redirect()->toRoute('admin', array('controller' => 'user', 'action' => 'add'));
-			
-    $form = $this->getForm();
-    $canEdit = $this->user->isAllowed('Admin\Controller\User', 'save');
-    try {
+		return $this->redirect()->toRoute('admin', array('controller' => 'user', 'action' => 'add'));
+
+		$form = $this->getForm();
+		$form->setUserId($id);
+		$canEdit = $this->user->isAllowed('Admin\Controller\User', 'save');
+		try {
 			$data = $this->userTable->setId($id);
 			$form->setData($data);
 		}
 		catch(\Exception $e) {
 			$this->error = _('User not found');
 		}
-   
-    if ($this->request->isPost()) {
+
+		if ($this->request->isPost()) {
 			if ($canEdit){
 				$data = $this->request->getPost()->toArray();
 				$form->setData($data);
 				if(isset($data['submit'])) {
-					$form->setInputFilter($form->getFormInputFilter('edit'));
 					if ($form->isValid()) {
 						$data = $form->getData();
+						if (!empty($data['pass'])) {
+							$data['password'] = $this->user->passwordHash($data['pass']);
+						}
 						$this->userTable->set($data);
 					}
 				}
@@ -86,7 +89,7 @@ class UserController extends AppController {
 		}
 
 		$canClosePage = !count($form->getMessages());
-		
+
 		$view = new ViewModel(array(
 			'form' => $form,
 			'canClosePage' => $canClosePage,
@@ -99,13 +102,12 @@ class UserController extends AppController {
 	
 	public function addAction(){
 		$this->layout('layout/iframe');
-		$form = $this->getForm();
+		$form = $this->getForm('add');
 		
 		if ($this->request->isPost()) {
 			$data = $this->request->getPost()->toArray();
 			$form->setData($data);
 			if(isset($data['submit'])) {
-				$form->setInputFilter($form->getFormInputFilter('add'));
 				if ($form->isValid()) {
 					$data = $form->getData();
 					$id = $this->userTable->insert($data);
@@ -191,7 +193,7 @@ class UserController extends AppController {
 			$params []= array('level', '=', $flRole);
 		}
 		
-		$flStatus = $this->params()->fromQuery('flStatus');
+		$flStatus = $this->params()->fromQuery('flStatus', -1);
 		if($flStatus >= 0) {
 			$params []= array('active', '=', $flStatus);
 		}
