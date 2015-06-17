@@ -161,8 +161,10 @@ $(document).ready(function(){
 	if (parent.common.needClose>1){
 		common.prepareWindowToClose();
 	}
-	$(".popup_overlay").on("click", function(){
-	})
+	if (!$(".loaderWrapp").length) {
+		var loaderTop = parseInt($(window).height()) / 2 + parseInt($(window).scrollTop());
+		$("body").append("<div class='loaderWrapp'><img style='top:" + loaderTop + "px'  src='" + dir + "/images/loading.gif?" + Math.random() + "' /></div>");
+	}
 
 });
 
