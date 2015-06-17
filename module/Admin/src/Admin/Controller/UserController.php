@@ -135,7 +135,7 @@ class UserController extends AppController {
 		));
 		
 		$result->setTemplate('admin/user/edit');
-					return $result;
+		return $result;
 	/*	$result->setTemplate('admin/user/edit')->setTerminal(true);
 		return $this->sendJSONResponse([], $result);*/
 	}
