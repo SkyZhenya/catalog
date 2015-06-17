@@ -14,7 +14,7 @@ class TemplateForm extends \Application\Form\MultilanguageForm {
 		parent::__construct('template');
 
 		$this->setAttribute('method', 'post');
-		$this->setAttribute('class', 'line-form');
+		$this->setAttribute('class', 'formWrapp');
 
 		$this->add(array(
 			'name' => 'csrf',
@@ -91,7 +91,6 @@ class TemplateForm extends \Application\Form\MultilanguageForm {
 				'label' => _('Cancel'),
 			),
 			'attributes' => array(
-				'value' => _('Cancel'),
 				'onclick' => 'close_fancybox();',
 				'class' => 'clear-btn',
 			))
