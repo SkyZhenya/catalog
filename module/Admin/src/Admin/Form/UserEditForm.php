@@ -32,7 +32,7 @@ class UserEditForm extends \Application\Form\Form {
 		parent::__construct('useredit');
 
 		$this->setAttribute('method', 'post');
-		$this->setAttribute('class', 'line-form');
+		$this->setAttribute('class', 'formWrapp ajaxForm userEditForm');
 		$this->action = $action;
 
 		$this->add(array(
@@ -103,13 +103,6 @@ class UserEditForm extends \Application\Form\Form {
 			)
 		));
 
-		$this->add(array(
-			'name' => 'clear2',
-			'type' => '\Application\Lib\Form\HTML',
-			'attributes' => array(
-				'value' => '<div class="clear"></div>',
-			),
-		));
 		
 		$this->add(array(
 			'name' => 'pass',
@@ -138,13 +131,6 @@ class UserEditForm extends \Application\Form\Form {
 		));
 		
 		
-		$this->add(array(
-			'name' => 'clear',
-			'type' => '\Application\Lib\Form\HTML',
-			'attributes' => array(
-				'value' => '',
-			),
-		));
 		
 		$this->add(array(
 			'name' => 'submit',
@@ -162,8 +148,7 @@ class UserEditForm extends \Application\Form\Form {
 			),
 			'attributes' => array(
 				'value' => _('Cancel'),
-				'onclick' => 'close_fancybox();',
-				'class' => 'clear-btn',
+				'class' => 'clear-btn popup_cancel',
 			))
 		);
 	}
