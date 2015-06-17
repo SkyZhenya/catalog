@@ -52,7 +52,7 @@ class UserController extends AppController {
 	}
 
 	public function editAction() {
-		$this->layout('layout/iframe');
+		$this->layout('layout/iframe'); /* need remove */
 		$id = $this->params('id',0);
 
 		if(!$id)
@@ -64,11 +64,11 @@ class UserController extends AppController {
 		try {
 			$data = $this->userTable->setId($id);
 			$form->setData($data);
+		/*	$form->setAttribute('action', URL.'admin/user/edit/'.$id); */
 		}
 		catch(\Exception $e) {
 			$this->error = _('User not found');
 		}
-
 		if ($this->request->isPost()) {
 			if ($canEdit){
 				$data = $this->request->getPost()->toArray();
@@ -98,6 +98,8 @@ class UserController extends AppController {
 			'title' => _('Edit profile'),
 		));
 		return $view;
+	/*	$view->setTemplate('admin/user/edit')->setTerminal(true);;
+		return $this->sendJSONResponse([], $view); */
 	}
 	
 	public function addAction(){
@@ -120,6 +122,8 @@ class UserController extends AppController {
 					));
 					$result->setTemplate('admin/user/edit');
 					return $result;
+		/*			$result->setTemplate('admin/user/edit')->setTerminal(true);
+					return $this->sendJSONResponse([], $result);*/
 				}
 			}
 		}
@@ -131,7 +135,9 @@ class UserController extends AppController {
 		));
 		
 		$result->setTemplate('admin/user/edit');
-		return $result;
+					return $result;
+	/*	$result->setTemplate('admin/user/edit')->setTerminal(true);
+		return $this->sendJSONResponse([], $result);*/
 	}
 
 	
