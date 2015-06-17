@@ -2,6 +2,7 @@
 	$this->headTitle(_('Manage Users'));
 	$this->headScript()->appendFile($this->basePath() . '/js/admin/chosen.jquery.js', 'text/javascript')
 					->appendFile($this->basePath() . '/js/changeabledata-checkbox.js')
+					->appendFile(URL . 'js/admin/pages/user.js')
 					->appendFile(URL . 'js/tools/jquery-ui-1.10.4.custom.min.js');
 	$this->headLink()->prependStylesheet($this->basePath() . '/css/admin/chosen.css')
 					->prependStylesheet(URL . 'css/tools/ui/jquery-ui-1.10.4.custom.css')
@@ -109,10 +110,7 @@
 	    return false;
 	  });
 	  
-	  mygrid.attachEvent("onBeforeSelect", function(id,ind){
-	  	var rowNum = mygrid.cellById(id,0).getValue();
-	  	return common.selectItemInList(id, rowNum, <?=json_encode($this->basePath('admin/user/edit/'));?>);
-	  });
+	 
 		mygrid.attachHeader("#rspan,<div id='pid_flt'><\/div>,<div id='name_flt'><\/div>,<div id='email_flt'><\/div>,<div id='role_flt'><\/div>,<div id='status_flt'><\/div>,<div id='date_flt_flt'><\/div>,<?php echo ($canDelete)? ',' : '#rspan';?>");
 		//set filters fields
 		$('#pid_flt').append($("#pid_flt_box"));

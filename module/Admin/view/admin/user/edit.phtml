@@ -1,5 +1,4 @@
-<h1><?php echo $title;?></h1>
-<?php
+	<?php
 if (isset($error) && !empty($error)){
 	$this->headTitle(_('Error'));
 	echo $error;
@@ -8,13 +7,11 @@ if (isset($error) && !empty($error)){
 $id = $this->form->get('id')->getValue();
 
 $this->headTitle(htmlspecialchars($this->form->get('name')->getValue()));
-$this->headScript()->appendFile($this->basePath() . '/js/admin/chosen.jquery.js', 'text/javascript');
 ?>
 <div class="user-wrap">
 	<?= $this->form()->openTag($form) ?>
 	<?= $this->wrappedElement($form->get('csrf')) ?> 
 	<?= $this->wrappedElement($form->get('id')) ?> 
-	<div class="clearfix"></div>
 	<div class="clearfix">
 		<div class="halfWidthBlock"><?= $this->wrappedElement($form->get('name')) ?> </div>
 		<div class="halfWidthBlock">	<?= $this->wrappedElement($form->get('email')) ?> </div>
@@ -25,7 +22,7 @@ $this->headScript()->appendFile($this->basePath() . '/js/admin/chosen.jquery.js'
 	</div>
 	<div class="clearfix">
 		<div class="halfWidthBlock"><?= $this->wrappedElement($form->get('pass')) ?></div>
-		<div class="halfWidthBlock"><span class="label">&nbsp;</span><?= $this->wrappedElement($form->get('active'), 'element margTop8') ?></div>
+		<div class="halfWidthBlock"><span class="label">&nbsp;</span><?= $this->wrappedElement($form->get('active'), 'element margTop8 label') ?></div>
 	</div>
 	<div class="clearfix btnsWrapp">
 		<?= $this->wrappedElement($form->get('submit')) ?> 

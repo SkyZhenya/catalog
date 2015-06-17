@@ -64,7 +64,6 @@ var common = {
 		var default_settings = {
 		    mode : "specific_textareas",
 		    editor_selector : "mceEditor",
-
 		    theme : "advanced",
 		    theme_advanced_resizing_min_height : 75,
 		    plugins : "autolink,lists,spellchecker,pagebreak,style,layer,table,save,advhr,advimage,advlink,emotions,iespell,inlinepopups,insertdatetime,preview,media,searchreplace,print,contextmenu,paste,directionality,fullscreen,noneditable,visualchars,nonbreaking,xhtmlxtras,template,openmanager",
@@ -158,59 +157,12 @@ var common = {
 	}
 }
 
-function initFancybox(href){
- $.fancybox({
-    openEffect : 'none',
-    closeEffect : 'none',
-    prevEffect : 'none',
-    nextEffect : 'none',
-    type: 'iframe',
-    href: href,
-    scrolling : 'auto',
-	  width   : 540,
-	  fitToView   : false,
-	  autoSize    : true,
-    arrows : false,
-    helpers : {
-      media : {},
-      buttons : {}
-    },
-    beforeClose: function(){
-    	if (parent.common.changedForm) {
-				jConfirm(closeQuestion, 'Close', 'window', function(data){
-					if (data) {
-						common.prepareWindowToClose();
-						parent.$.fancybox.close();
-					}
-				});
-				return false;
-    	}
-    	else {
-				common.beforeCloseFancybox();
-    	}
-    },
-    beforeShow: function() {
-			common.prepareWindowToClose();
-    }
- });
-}
-
-function close_fancybox(){
-	common.prepareWindowToClose();
-	parent.$.fancybox.close();
-}
-
 $(document).ready(function(){	
-
-	
 	if (parent.common.needClose>1){
 		common.prepareWindowToClose();
-			
-		parent.$.fancybox.close();
 	}
-	$('#iframe').find('form').find('input,select,textarea').change(function(){
-		parent.common.changedForm = true;
-	});
+	$(".popup_overlay").on("click", function(){
+	})
 
 });
 

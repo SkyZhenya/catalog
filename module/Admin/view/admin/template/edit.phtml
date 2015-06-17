@@ -1,5 +1,4 @@
 <div class="temlates">
-	<h1><?php echo $title;?></h1>
 	<?php
 	if (isset($error) && !empty($error)){
 		$this->headTitle('Error');
@@ -8,7 +7,7 @@
 	}
 	if (isset($langs)){
 	?>
-		<ul class='tabs-horiz' id='invTabsUl' style='height: 24px'>
+		<ul class='tabs-horiz clearfix' id='invTabsUl'>
 	    <? foreach ($langs as $i => $lang) { ?>
 	      <li><a class='tab-item-link invTabs<?php echo $lang->id;?> <?= ($lang->id == $activeLang) ? 'active' : '' ?>' onclick='return common.changeLang(<?= $lang->id; ?>, "invTabs");' href='#'><span><?= $lang->name; ?></span></a></li>
 	      <? } ?>
@@ -18,8 +17,27 @@
 	<?php $id = $this->form->get('id')->getValue();
 		$this->headTitle(htmlspecialchars($this->form->get('name')->getValue()));
 		$this->headScript()->appendFile($this->basePath(). '/js/tiny_mce/tiny_mce_src.js');
-		echo $this->wrappedForm($form);
-	?>
+		?>
+		<?= $this->form()->openTag($form) ?>
+		<?= $this->wrappedElement($form->get('csrf')) ?>
+		<?= $this->wrappedElement($form->get('id')) ?>
+		<div class="formRow clearfix">
+				<?= $this->wrappedElement($form->get('name')) ?>
+			</div>
+		<?php foreach ($langs as $lang) { ?>
+			<div class="formRow clearfix">
+				<?= $this->wrappedElement($form->get('subject[' . $lang->id . ']')) ?>
+			</div>
+			<div class="formRow clearfix">
+				<?= $this->wrappedElement($form->get('text[' . $lang->id . ']')) ?>
+			</div>
+		<?php } ?>
+		
+		<div class="clearfix btnsWrapp">
+			<?= $this->wrappedElement($form->get('submit')) ?>
+			<?= $this->wrappedElement($form->get('cancel')) ?>
+		</div>
+		<?= $this->form()->closeTag($form) ?>
 	</div>
 	<script>
 		var activeLang = <?php echo json_encode($activeLang);?>;

@@ -293,9 +293,109 @@
 /* @group Retina compatibility */
 @media only screen and (-webkit-min-device-pixel-ratio: 2), only screen and (min-resolution: 144dpi)  {
   .chzn-rtl .chzn-search input, .chzn-container-single .chzn-single abbr, .chzn-container-single .chzn-single div b, .chzn-container-single .chzn-search input, .chzn-container-multi .chzn-choices .search-choice .search-choice-close, .chzn-container .chzn-results-scroll-down span, .chzn-container .chzn-results-scroll-up span {
-      background-image: url('chosen/chosen-sprite@2x.png') !important;
-      background-repeat: no-repeat !important;
-      background-size: 52px 37px !important;
+		background-image: url('chosen/chosen-sprite@2x.png') !important;
+		background-repeat: no-repeat !important;
+		background-size: 52px 37px !important;
   }
 }
 /* @end */
+.chzn-container-single .chzn-single {
+	border: 1px solid #dcdde1;
+	background: #fff;
+	height: 30px;
+	line-height: 30px;
+	padding: 0 5px;
+	color: #4F5D65;
+	/*font-style: italic;*/
+  display: block;
+  overflow: hidden;
+  white-space: nowrap;
+  position: relative;
+  padding: 0 0 0 5px;
+  text-decoration: none;
+}
+.chzn-container-single .chzn-single:hover {
+	-moz-transition: all 0.9s ease;
+  -moz-transition-delay: 0.1s;
+  -webkit-transition: all 0.9s ease;
+  -webkit-transition-delay: 0.1s;
+  -khtml-transition: all 0.9s ease;
+  -khtml-transition-delay: 0.1s;
+  transition: all 0.9s ease;
+  transition-delay: 0.1s;
+  color:#000;
+	border:1px solid #c3c4c5;
+}
+.chzn-container-active .chzn-single-with-drop {
+	border:1px solid #c3c4c5;
+	font-style: normal;
+	color:#000;
+}
+.chzn-container-active .chzn-single-with-drop:hover {
+	-moz-transition: all 0.9s ease;
+  -moz-transition-delay: 0.1s;
+  -webkit-transition: all 0.9s ease;
+  -webkit-transition-delay: 0.1s;
+  -khtml-transition: all 0.9s ease;
+  -khtml-transition-delay: 0.1s;
+  transition: all 0.9s ease;
+  transition-delay: 0.1s;
+  color:#000;
+	border:1px solid #c3c4c5;
+}
+.chzn-container-active .chzn-single {
+
+}
+.chzn-container .chzn-drop {
+	background: #fff;
+ 	font-style: normal;
+	color:#8c9aa2;
+	border:1px solid #c3c4c5;
+  position: absolute;
+  top: 35px;
+  left: 0;
+  -webkit-box-shadow: 0 4px 5px rgba(0,0,0,.15);
+  -moz-box-shadow   : 0 4px 5px rgba(0,0,0,.15);
+  box-shadow        : 0 4px 5px rgba(0,0,0,.15);
+  z-index: 1010;
+	min-width:99%;
+}
+
+.chzn-container .chzn-results .highlighted {
+	background: #f1f1f3;
+  color: #333333;
+}
+.chzn-container .chzn-results {
+  margin: 0;
+  max-height: 100px;
+  color: #8c9aa2;
+  font-style: italic;
+  padding: 0;
+  position: relative;
+  overflow-x: hidden;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.chzn-container-single .chzn-single div b {
+  background: url('chosen/chosen-sprite.png') no-repeat 6px 6px;
+  display: block;
+  width: 100%;
+  height: 100%;
+  border-left: 1px solid #dcdde1;
+}
+.select.level .chzn-drop{
+	top: 31px;
+}
+.chzn-container-single .chzn-single div {
+	background: #f7f7f7;
+  position: absolute;
+  right: 0;
+  top: 0;
+  display: block;
+  height: 100%;
+  width: 24px;
+}
+.chzn-search input[type="text"] {
+	height: 16px !important;
+}

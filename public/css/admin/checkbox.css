@@ -10,11 +10,8 @@
 .checkbox.checked {
 	background-position: 0 0px;
 }
+
 .checkbox.disabled {
-	/*background-position: 0 -16px;*/
-}
-.checkbox.disabled {
-	/*background-position: -16px -16px;*/
 	opacity: 0.6;
 }
 .checkbox.focused {
@@ -34,6 +31,7 @@
 .checkbox.element label {
 	line-height: 17px;
   position: relative;
+	vertical-align: top;
   padding-left: 7px;
 }
 .checkbox.disabled {

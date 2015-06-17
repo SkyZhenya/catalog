@@ -30,9 +30,9 @@
 		verticalOffset: -50,                // vertical offset of the dialog from center screen, in pixels
 		horizontalOffset: 0,                // horizontal offset of the dialog from center screen, in pixels/
 		repositionOnResize: true,           // re-centers the dialog on window resize
-		draggable: true,                    // make the dialogs draggable (requires UI Draggables plugin)
+		draggable: false,                    // make the dialogs draggable (requires UI Draggables plugin)
 		okButton: 'OK',         // text for the OK button
-		cancelButton: '&nbsp;Cancel&nbsp;', // text for the Cancel button
+		cancelButton: 'Cancel', // text for the Cancel button
 		dialogClass: null,                  // if specified, this class will be applied to all dialogs
 
 		// Public methods
@@ -116,7 +116,11 @@
 					$.alerts._hide(id);
 					if( callback ) callback(false);
 				});
-
+				$(".popup_overlay").click( function() {
+					$.alerts._hide(id);
+					if( callback ) callback(false);
+				});
+				
 				switch( type ) {
 					case 'alert':
 						id.find(".popup_message").after('<div class="popup_panel"><input type="button" class="popup_ok blueButton" value="' + $.alerts.okButton + '" /></div>');
@@ -162,6 +166,15 @@
 						});
 						if( value ) id.find(".popup_prompt").val(value);
 						id.find(".popup_prompt").focus().select();
+					break;
+					case 'popup':
+						id.find(".popup_cancel").click( function() {
+							$.alerts._hide(id);
+							if( callback ) callback( null );
+						});
+						id.find(".popup_cancel").keypress( function(e) {
+							if( e.keyCode == 27 ) id.find(".popup_cancel").trigger('click');
+						});
 					break;
 				}
 
