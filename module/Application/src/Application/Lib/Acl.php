@@ -4,8 +4,8 @@ namespace Application\Lib;
 class Acl extends \Zend\Permissions\Acl\Acl {
 	/**
 	 * Default Role
-   */
-  const DEFAULT_ROLE = 'guest';	
+	 */
+	const DEFAULT_ROLE = 'guest';	
 
 	public function __construct() {
 		//user roles
