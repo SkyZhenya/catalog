@@ -7,7 +7,12 @@ use Zend\Db\ResultSet\ResultSet;
 use Zend\Db\Sql;
 
 abstract class AppTable extends TableGateway {
-	protected $id;
+	/**
+	 * item ID
+	 * 
+	 * @var int
+	 */
+	public $id;
 
 	/**
 	 * Language Id
