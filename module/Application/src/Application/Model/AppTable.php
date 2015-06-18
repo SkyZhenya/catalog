@@ -57,6 +57,20 @@ abstract class AppTable extends TableGateway {
 	protected $localFields = array();
 	
 	/**
+	 * Group by condition for find() method
+	 * 
+	 * @var string
+	 */
+	protected $groupBy;
+	
+	/**
+	 * Having condition for find() method
+	 * 
+	 * @var string
+	 */
+	protected $having;
+	
+	/**
 	 * Table "ID" field name
 	 */
 	const ID_COLUMN = 'id';
