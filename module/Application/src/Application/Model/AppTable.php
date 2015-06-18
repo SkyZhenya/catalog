@@ -545,7 +545,7 @@ abstract class AppTable extends TableGateway {
 	 * @return $id int
 	 */
 	public function getId() {
-		return $this->id;
+		return $this->{static::ID_COLUMN};
 	}
 
 	/**
