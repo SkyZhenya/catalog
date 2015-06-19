@@ -98,7 +98,7 @@ class TemplateForm extends \Application\Form\MultilanguageForm {
 		);
 	}
 	
-	public function getInpFilter() {
+	protected  function getInpFilter() {
 		if (!$this->inputFilter) {
 			$inputFilter = new InputFilter();
 			$factory = new InputFactory();
