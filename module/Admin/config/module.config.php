@@ -20,6 +20,7 @@ return array(
 					'constraints' => array(
 						'controller' => '[a-zA-Z][a-zA-Z0-9_-]*',
 						'action' => '[a-zA-Z][a-zA-Z0-9_-]*',
+						'id' => '[a-zA-Z0-9]*',
 					),
 				),
 				'may_terminate' => true,
