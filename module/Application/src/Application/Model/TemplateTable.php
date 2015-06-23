@@ -6,6 +6,12 @@ use Zend\Db\Adapter\Adapter;
 class TemplateTable extends LocalizableTable {
 	
 	/**
+	 * template name
+	 * 
+	 * @var string
+	 */
+	public $name;
+	/**
 	 * List of fields from DB table
 	 * 
 	 * @var array

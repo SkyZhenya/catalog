@@ -189,7 +189,7 @@ class RegistrationForm extends Form {
 				'validators' => array(
 					$notemptyValidator,
 					new \Application\Lib\Validator\CustomEmailValidator(),
-					new \Application\Lib\Validator\ExistValidator(
+					new \Application\Lib\Validator\NotExistValidator(
 					new \Application\Model\UserTable(), 
 						'email', 
 						false, 

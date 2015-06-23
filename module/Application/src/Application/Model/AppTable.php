@@ -7,7 +7,12 @@ use Zend\Db\ResultSet\ResultSet;
 use Zend\Db\Sql;
 
 abstract class AppTable extends TableGateway {
-	protected $id;
+	/**
+	 * item ID
+	 * 
+	 * @var int
+	 */
+	public $id;
 
 	/**
 	 * Language Id
@@ -36,13 +41,6 @@ abstract class AppTable extends TableGateway {
 	protected $findJoin='';
 
 	/**
-	 * Join clause for findWithoutLangLimitation() method, used for search in local tables without language limitation
-	 * 
-	 * @var string
-	 */
-	protected $baseJoin='';
-
-	/**
 	 * List of fields getting from join, used for avoid dublicated fields
 	 * 
 	 * @var string
@@ -62,6 +60,20 @@ abstract class AppTable extends TableGateway {
 	 * @var array()
 	 */
 	protected $localFields = array();
+	
+	/**
+	 * Group by condition for find() method
+	 * 
+	 * @var string
+	 */
+	protected $groupBy;
+	
+	/**
+	 * Having condition for find() method
+	 * 
+	 * @var string
+	 */
+	protected $having;
 	
 	/**
 	 * Table "ID" field name
@@ -541,11 +553,6 @@ abstract class AppTable extends TableGateway {
 	 * @return id
 	 */
 	public function create($params) {
-		foreach($params as $key => $field) {
-			if(!in_array($key, $this->goodFields)) {
-				unset($params[$key]);
-			}
-		}
 		$id = $this->insert($params);
 		$this->setId($id);
 		return $id;
@@ -557,7 +564,7 @@ abstract class AppTable extends TableGateway {
 	 * @return $id int
 	 */
 	public function getId() {
-		return $this->id;
+		return $this->{static::ID_COLUMN};
 	}
 
 	/**
@@ -653,6 +660,25 @@ abstract class AppTable extends TableGateway {
 		$this->cacheDelete('list');
 
 		return $rowsAffected;
+	}
+	
+	/**
+	 * deletes item
+	 *
+	 * @param Where|\Closure|string|array $where: Item ID or expression
+	 * @return bool: true on OK, false on item not found
+	 */
+	public function delete($where) {
+		if(is_numeric($where)) {
+			$result = parent::delete(array(static::ID_COLUMN => $where));
+			if($result)
+				$this->cacheDelete($where);
+		}
+		else {
+			$result = parent::delete($where);
+		}
+
+		return (bool)$result;
 	}
 
 	/**

@@ -182,6 +182,10 @@ abstract class LocalizableTable extends AppTable {
 		}
 
 		$this->cacheDelete($this->id);
+		
+		if (!empty($this->name)) {
+			$this->cacheDelete(base64_encode($this->name));
+		}
 	}
 
 

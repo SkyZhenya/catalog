@@ -69,8 +69,7 @@ class TemplateController extends AppController {
 				if ($form->isValid()) {
 					$data = $form->getData();
 					if ($id > 0){
-						$oldValue = $this->templateTable->setId($id);
-						$this->templateTable->cacheDelete(base64_encode($oldValue->name));
+						$this->templateTable->setId($id);
 						$this->templateTable->set($data);
 					}
 					else {

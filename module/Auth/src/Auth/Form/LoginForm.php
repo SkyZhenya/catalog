@@ -2,8 +2,6 @@
 namespace Auth\Form;
 
 use Application\Form\Form;
-use Zend\Form\Element;
-use Application\Form\CustomDecorator;
 use Zend\InputFilter\InputFilter;
 use Zend\InputFilter\Factory as InputFactory;
 
@@ -76,7 +74,7 @@ class LoginForm extends Form {
 
 	}
 
-	public function getInpFilter() {
+	protected function getInpFilter() {
 		if (!$this->loginInputFilter) {
 			$inputFilter = new InputFilter();
 			$factory = new InputFactory();

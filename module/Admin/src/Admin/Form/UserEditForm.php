@@ -170,7 +170,7 @@ class UserEditForm extends \Application\Form\Form {
 				),
 				'validators' => array(
 					new \Application\Lib\Validator\CustomEmailValidator(),
-					new \Application\Lib\Validator\ExistValidator(new \Application\Model\UserTable(), 'email', $this->userId, 'id', "E-mail already exists"),
+					new \Application\Lib\Validator\NotExistValidator(new \Application\Model\UserTable(), 'email', $this->userId, 'id', "E-mail already exists"),
 				),
 			)));
 
