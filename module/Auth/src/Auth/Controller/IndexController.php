@@ -2,33 +2,17 @@
 
 namespace Auth\Controller;
 
-use Hybridauth\Hybridauth;
-use Hybridauth\Endpoint;
 use Auth\Service\UserWrapperFactory;
 use Zend\View\Model\ViewModel;
-use Application\Lib\AppController;
+use Auth\Service\AuthServiceController;
 use Application\Model\User\SocialnetworkTable;
 use Application\Lib\User;
 
 /**
  * Login or out using a standart login form or social service
  */
-class IndexController extends AppController
+class IndexController extends AuthServiceController
 {
-	/**
-	 * Stores the HybridAuth-Instance
-	 *
-	 * @var Hybridauth $authenticator
-	 */
-	protected $authenticator = null;
-
-	/**
-	 * Storage of the UserProxyFactory
-	 *
-	 * @var UserWrapperFactory $userProxyFactory
-	 */
-	protected $userWrapperFactory = null;
-
 	/**
 	 *
 	 * @var \Application\Model\User\SocialnetworkTable
@@ -45,32 +29,6 @@ class IndexController extends AppController
 		parent::ready();
 		$this->socialnetworkTable = new SocialnetworkTable();
 		$this->userTable = new User();
-	}
-
-	/**
-	 * Set the authenticator
-	 *
-	 * @param Hybrid_Auth $authenticator The Authenticator-Backend
-	 *
-	 * @return IndexController
-	 */
-	public function setAuthenticator(Hybridauth $authenticator)
-	{
-		$this->authenticator = $authenticator;
-		return $this;
-	}
-
-	/**
-	 * Set the userwrapper
-	 *
-	 * @param UserWrapperFactory $factory The ProxyFactory
-	 *
-	 * @return IndexController
-	 */
-	public function setUserWrapperFactory(UserWrapperFactory $factory)
-	{
-		$this->userWrapperFactory = $factory;
-		return $this;
 	}
 
 	/**
@@ -158,44 +116,42 @@ class IndexController extends AppController
 	 * @param string $provider
 	 */
 	protected function authViaSocialNetwork($provider) {
-		$backend = $this->authenticator->authenticate($provider);
+		try {
+			$backend = $this->getAuthenticator()->authenticate($provider);
 
-		if (! $backend->isAuthorized()) {
+			/** @var \Hybrid_User_Profile $profile */
+			$profile = $backend->getUserProfile();
+
+			$userProfileDb = $this->socialnetworkTable->checkProviderIdentity($profile->identifier, $provider);
+			$userProvider = $this->getUserWrapperFactory()->factory($profile);
+			//if this user-profile not register
+			if($userProfileDb == false) {
+				//if this email-profile used
+				$user = $this->user->getByEmail($profile->email);
+				if($user) {
+					throw new \Exception(sprintf(_("This email is already used, please authorized by %s and merge profiles"), $profile->email));
+				}
+				//create user
+				$userId = $this->userTable->create(array(
+					'email' => $userProvider->getMail(),
+					'name' => $userProvider->getName(),
+					'birthdate' => (!empty($userProvider->getBirthYear())? date('Y-m-d', mktime(0, 0, 0, $userProvider->getBirthMonth(), $userProvider->getBirthDay(), $userProvider->getBirthYear())) : null),
+				));
+				//create profile
+				$this->socialnetworkTable->insert([
+					'userId' => $userId,
+					'provider' => $provider,
+					'identifierId' => $userProvider->getUID(),
+				]);
+
+				$this->user->login($userId);
+			}
+			else {
+				$this->user->login($userProfileDb->userId);
+			}
+		}
+		catch( Exception $e ){
 			throw new \UnexpectedValueException('User is not connected');
-		}
-		/** @var \Hybridauth\Entity\profile $profile */
-		$profile = $backend->getUserProfile();
-
-		$userProfileDb = $this->socialnetworkTable->checkProviderIdentity($profile->getUID(), $provider);
-		$userProvider = $this->userWrapperFactory->factory($profile);
-		//if this user-profile not register
-		if($userProfileDb == false) {
-			//if this email-profile used
-			$user = $this->user->getByEmail($profile->getEmail());
-			if($user) {
-				throw new \Exception(sprintf(_("This email is already used, please authorized by %s and merge profiles"), $profile->getEmail()));
-			}
-			//create user
-			$userId = $this->userTable->create(array(
-				'email' => $userProvider->getMail(),
-				'name' => $userProvider->getName(),
-				'birthdate' => (!empty($userProvider->getBirthYear())? date('Y-m-d', mktime(0, 0, 0, $userProvider->getBirthMonth(), $userProvider->getBirthDay(), $userProvider->getBirthYear())) : null),
-			));
-			//create profile
-			$this->socialnetworkTable->insert([
-				'userId' => $userId,
-				'provider' => $provider,
-				'identifierId' => $userProvider->getUID(),
-			]);
-			if (!empty($userProvider->getPhotoURL())) {
-				$avatarTmp = $this->user->uploadSNAvatar($userProvider->getPhotoURL());
-				if (!empty($avatarTmp))
-					$userData = $this->userTable->setAvatar($avatarTmp, $userId);
-			}
-			$this->user->login($userId);
-		}
-		else {
-			$this->user->login($userProfileDb->userId);
 		}
 	}
 
@@ -232,7 +188,7 @@ class IndexController extends AppController
 	 */
 	public function backendAction()
 	{
-		$endpoint = new Endpoint();
+		$endpoint = new \Hybrid_Endpoint();
 		try {
 			$endpoint->process();
 		}
@@ -328,6 +284,5 @@ class IndexController extends AppController
 			'error' => $this->error,
 		);
 	}
-
 
 }

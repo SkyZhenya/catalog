@@ -11,13 +11,11 @@ return array(
 					"scope"           => "https://www.googleapis.com/auth/userinfo.profile ". // optional
 					"https://www.googleapis.com/auth/userinfo.email"   , // optional
 					"access_type"     => "offline",   // optional
-					"approval_prompt" => "force",     // optional
 				),
 				"Facebook" => array (
 					"enabled" => true,
 					"keys"    => array ( "id" => FACEBOOK_APP_ID, "secret" => FACEBOOK_SECRET ),
 					"scope"   => "email, user_about_me, user_birthday, user_hometown", // optional
-					"display" => "popup" // optional
 				)
 			),
 			'debug_mode' => false,

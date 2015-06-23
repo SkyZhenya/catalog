@@ -21,10 +21,14 @@ include $zf2Path . '/Zend/Loader/AutoloaderFactory.php';
 Zend\Loader\AutoloaderFactory::factory(array(
     'Zend\Loader\StandardAutoloader' => array(
         'autoregister_zf' => true,
-        'namespaces' => [
-	        'Hybridauth' => $zf2Path.'/Hybridauth',
-	    ],
     ),
+    'Zend\Loader\ClassMapAutoloader' => array(
+    	array(
+    		'Hybrid_Auth'                                                              => __DIR__ . '/vendor/Hybridauth/Auth.php',                              // array class map
+	        'Hybrid_User_Profile'                                                      => __DIR__ . '/vendor/Hybridauth/User_Profile.php',
+		    'Hybrid_Endpoint'                                                          => __DIR__ . '/vendor/Hybridauth/Endpoint.php',
+	    ),
+    )
 ));
 
 if (!class_exists('Zend\Loader\AutoloaderFactory')) {

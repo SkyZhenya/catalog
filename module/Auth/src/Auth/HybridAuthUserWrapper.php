@@ -2,7 +2,6 @@
 
 namespace Auth;
 
-use Hybridauth\Entity\Profile;
 use Auth\UserInterface;
 
 /**
@@ -24,7 +23,7 @@ class HybridAuthUserWrapper implements UserInterface
 	 *
 	 * @return HybridAuthUserProxy
 	 */
-	public function setUser(Profile $user)
+	public function setUser(\Hybrid_User_Profile $user)
 	{
 		$this->user = $user;
 		return $this;
@@ -37,7 +36,7 @@ class HybridAuthUserWrapper implements UserInterface
 	 */
 	public function getUID()
 	{
-		return $this->user->getIdentifier();
+		return $this->user->identifier;
 	}
 
 	/**
@@ -57,7 +56,7 @@ class HybridAuthUserWrapper implements UserInterface
 	 */
 	public function getName()
 	{
-		return $this->user->getDisplayName();
+		return $this->user->displayName;
 	}
 
 	/**
@@ -67,7 +66,7 @@ class HybridAuthUserWrapper implements UserInterface
 	 */
 	public function getMail()
 	{
-		return $this->user->getEmail();
+		return $this->user->email;
 	}
 
 	/**
@@ -77,7 +76,7 @@ class HybridAuthUserWrapper implements UserInterface
 	 */
 	public function getLanguage()
 	{
-		return $this->user->getLanguage();
+		return $this->user->language;
 	}
 
 	/**
@@ -85,7 +84,7 @@ class HybridAuthUserWrapper implements UserInterface
 	 */
 	public function getDisplayName()
 	{
-		return $this->user->getDisplayName();
+		return $this->user->displayName;
 	}
 
 	/**
@@ -93,7 +92,7 @@ class HybridAuthUserWrapper implements UserInterface
 	 */
 	public function getFirstName()
 	{
-		return $this->user->getFirstName();
+		return $this->user->firstName;
 	}
 
 	/**
@@ -101,7 +100,7 @@ class HybridAuthUserWrapper implements UserInterface
 	 */
 	public function getLastName()
 	{
-		return $this->user->getLastName();
+		return $this->user->lastName;
 	}
 
 	/**
@@ -111,7 +110,7 @@ class HybridAuthUserWrapper implements UserInterface
 	 */
 	function getBirthDay()
 	{
-		return $this->user->getBirthDay();
+		return $this->user->birthDay;
 	}
 
 	/**
@@ -121,7 +120,7 @@ class HybridAuthUserWrapper implements UserInterface
 	 */
 	function getBirthMonth()
 	{
-		return $this->user->getBirthMonth();
+		return $this->user->birthMonth;
 	}
 
 	
@@ -132,7 +131,7 @@ class HybridAuthUserWrapper implements UserInterface
 	 */
 	function getBirthYear()
 	{
-		return $this->user->getBirthYear();
+		return $this->user->birthYear;
 	}
 
 	/**
@@ -142,6 +141,6 @@ class HybridAuthUserWrapper implements UserInterface
 	 */
 	function getPhotoURL()
 	{
-		return $this->user->getPhotoURL(9999, 9999);
+		return $this->user->photoURL;
 	}
 }
