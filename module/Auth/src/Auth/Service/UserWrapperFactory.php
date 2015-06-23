@@ -16,7 +16,7 @@ class UserWrapperFactory
 	public function factory($userObject)
 	{
 		if ($userObject instanceof \Hybrid_User_Profile) {
-			$userProxy = new \Auth\HybridAuthUserWrapper();
+			$userProxy = new \Auth\Service\HybridAuthUserWrapper();
 			$userProxy->setUser($userObject);
 			return $userProxy;
 		}

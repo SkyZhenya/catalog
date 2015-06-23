@@ -1,8 +1,8 @@
 <?php
 
-namespace Auth;
+namespace Auth\Service;
 
-use Auth\UserInterface;
+use Auth\Service\UserInterface;
 
 /**
  * This class works as proxy to the HybridAuth-User-Object
