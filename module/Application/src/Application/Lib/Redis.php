@@ -1,30 +1,28 @@
 <?php
-
 namespace Application\Lib;
-class Redis {
+use Zend\ServiceManager\ServiceLocatorAwareInterface;
+use Zend\ServiceManager\ServiceLocatorInterface; 
+
+class Redis implements ServiceLocatorAwareInterface {
+	
 	/**
 	 * @var \Redis
 	 */
 	protected $redis;
 	protected $namespace;
 	protected $connected = false;
+	protected $serviceLocator;
+	protected $config = [];
 	const MAX_TRIES = 10;
-
-	public function __construct() {
-		$this->redis = new \Redis();
-		if(REDIS_ENABLED) {
-			$this->connect();
-		}
-	}
 
 	/**
 	 * Connects to redis daemon
 	 *
 	 */
 	protected function connect() {
-		$res = $this->redis->pconnect(REDIS_HOST);
+		$res = $this->redis->pconnect($this->config['host']);
 		$this->redis->setOption(\Redis::OPT_SERIALIZER, \Redis::SERIALIZER_IGBINARY);
-		$this->redis->select(REDIS_NAMESPACE);
+		$this->redis->select($this->config['db']);
 		$this->connected = true;
 	}
 
@@ -38,22 +36,22 @@ class Redis {
 	 * @return bool true on success, false on fail MAX_TRIES times
 	 */
 	public function set($key, $value, $ttl=2678400,  $try=0) {
-		if(!REDIS_ENABLED) return;
+		if(!$this->config['enabled']) return;
 
 		if($try > self::MAX_TRIES) {
 			return false;
 		}
 		
 		if($ttl) {
-			$ret = $this->redis->setex($key, $ttl, $value);
+			$ret = $this->redis->setex($this->config['namespace'].$key, $ttl, $value);
 		}
 		else {
-			$ret = $this->redis->set($key, $value);
+			$ret = $this->redis->set($this->config['namespace'].$key, $value);
 		}
 		
 		if(!$ret) {
 			$this->connect();
-			$this->set($key, ($value), $ttl, $try+1);
+			$this->set($this->config['namespace'].$key, ($value), $ttl, $try+1);
 		}
 
 		return $ret;
@@ -66,9 +64,9 @@ class Redis {
 	 * @return string
 	 */
 	public function get($key) {
-		if(!REDIS_ENABLED) return;
+		if(!$this->config['enabled']) return;
 
-		$ret = $this->redis->get($key);
+		$ret = $this->redis->get($this->config['namespace'].$key);
 		return $ret;
 	}
 
@@ -84,10 +82,12 @@ class Redis {
 	 * @return array of mixed
 	 */
 	public function mget($keys) {
-		
-		if(!REDIS_ENABLED) return;
+		if(!$this->config['enabled']) return;
 
 		$oldHandler = set_error_handler('\Application\Lib\Redis::myHandler');
+		if(is_array($keys)) foreach($keys as $key => $value) {
+			$keys[$key] = $this->config['namespace'].$value;
+		}
 		try {
 			$ret = @$this->redis->mGet($keys);
 		}
@@ -106,6 +106,12 @@ class Redis {
 	 */
 	public function deleteCache($keys) {
 		if($this->connected) {
+			if(is_array($keys)) foreach($keys as $key => $value) {
+				$keys[$key] = $this->config['namespace'].$value;
+			}
+			else {
+				$keys = $this->config['namespace'] . $keys;
+			}
 			return $this->redis->delete($keys);
 		}
 
@@ -119,9 +125,35 @@ class Redis {
 	 */
 	public function deleteByMask($name) {
 		if($this->connected) {
-			$keys = $this->redis->getKeys($name.'*');
+			$keys = $this->redis->getKeys($this->config['namespace'].$name.'*');
 			$this->redis->delete($keys);
 		}
 	}
 
+    /**
+     * Set serviceManager instance
+     *
+     * @param  ServiceLocatorInterface $serviceLocator
+     * @return void
+     */
+    public function setServiceLocator(ServiceLocatorInterface $serviceLocator) {
+        $this->serviceLocator = $serviceLocator;
+
+		$this->config = $serviceLocator->get('Application\Config')['redis'];
+		if($this->config['enabled']) {
+			$this->redis = new \Redis();
+			$this->connect();
+		}
+
+	}
+
+    /**
+     * Retrieve serviceManager instance
+     *
+     * @return ServiceLocatorInterface
+     */
+    public function getServiceLocator() {
+        return $this->serviceLocator;
+    }
+ 
 }

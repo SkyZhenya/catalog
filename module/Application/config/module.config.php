@@ -36,6 +36,13 @@ return array(
 			
 		),
 	),
+	'service_manager' => [
+		'factories' => [
+			'Application\Lib\Redis' => function($sm) {
+				return new Application\Lib\Redis();
+			},
+		],
+	],
 	'controllers' => array(
 		'invokables' => array(
 			'Application\Controller\Index' => 'Application\Controller\IndexController',

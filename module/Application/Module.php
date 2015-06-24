@@ -31,6 +31,9 @@ class Module implements AutoloaderProviderInterface {
 				}
 			}
 		);
+		
+		$redis = $serviceManager->get('Application\Lib\Redis');
+		\Zend\Registry::set('redis', $redis);
 	}
 
 	public function getConfig()	{

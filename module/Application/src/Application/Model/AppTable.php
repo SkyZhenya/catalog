@@ -110,13 +110,7 @@ abstract class AppTable extends TableGateway {
 		$this->lang = \Zend\Registry::get('lang');
 
 		if(!self::$redis) {
-			try {
-				self::$redis = \Zend\Registry::get('redis');
-			}
-			catch(\Exception $e) {
-				self::$redis = new \Application\Lib\Redis();
-				\Zend\Registry::set('redis', self::$redis);
-			}
+			self::$redis = \Zend\Registry::get('redis');
 		}
 
 		if(!$this->locTable) $this->locTable = $this->table.'local';
