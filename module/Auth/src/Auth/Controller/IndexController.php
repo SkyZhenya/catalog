@@ -34,8 +34,7 @@ class IndexController extends AuthServiceController
 	/**
 	 * login using login & password
 	 */
-	public function loginAction()
-	{
+	public function loginAction() {
 		if($this->user->getId()) {
 			return $this->redirect()->toRoute('home');
 		}
@@ -82,8 +81,7 @@ class IndexController extends AuthServiceController
 	 * social login via fb, google
 	 * 
 	 */
-	public function socialNetworkLoginAction()
-	{
+	public function socialNetworkLoginAction() {
 		if($this->user->getId()) {
 			return $this->redirect()->toRoute('home');
 		}
@@ -158,36 +156,15 @@ class IndexController extends AuthServiceController
 	/**
 	 * Logout
 	 */
-	public function logoutAction()
-	{
+	public function logoutAction() {
 		$this->user->logout();
 		$this->redirect()->toRoute('home');
 	}
 
 	/**
-	 * Redirect to the last known URL
-	 *
-	 * @return boolean
-	 */
-	protected function doRedirect()
-	{
-		$redirect = base64_decode($this->getEvent()->getRouteMatch()->getParam('redirect'));
-		// var_dump($redirect);exit;
-
-		if (preg_match('|://|', $redirect)) {
-			$this->redirect()->toUrl($redirect);
-		} else {
-			$this->redirect()->toRoute($redirect);
-		}
-
-		return false;
-	}
-
-	/**
 	 * Call the HybridAuth-Backend
 	 */
-	public function backendAction()
-	{
+	public function backendAction() {
 		$endpoint = new \Hybrid_Endpoint();
 		try {
 			$endpoint->process();
@@ -238,7 +215,7 @@ class IndexController extends AuthServiceController
 	 * save new password as current
 	 * 
 	 */
-	public function activeforgotAction () {
+	public function activeforgotAction() {
 		$id = $this->params()->fromRoute('id');
 		$code =  $this->params()->fromRoute('code');
 		$err = '';

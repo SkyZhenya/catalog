@@ -24,7 +24,7 @@ Zend\Loader\AutoloaderFactory::factory(array(
     ),
     'Zend\Loader\ClassMapAutoloader' => array(
     	array(
-    		'Hybrid_Auth'                                                              => __DIR__ . '/vendor/Hybridauth/Auth.php',                              // array class map
+    		'Hybrid_Auth'                                                              => __DIR__ . '/vendor/Hybridauth/Auth.php',
 	        'Hybrid_User_Profile'                                                      => __DIR__ . '/vendor/Hybridauth/User_Profile.php',
 		    'Hybrid_Endpoint'                                                          => __DIR__ . '/vendor/Hybridauth/Endpoint.php',
 	    ),
