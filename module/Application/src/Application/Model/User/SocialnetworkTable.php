@@ -51,8 +51,8 @@ class SocialnetworkTable extends AppTable {
             array('provider', '=', $provider)
         ), 1 );
 
-        if($row) {
-            $row = array_pop($row);
+        if(count($row)) {
+            $row = $row->current();
             return $row;
         }
 
