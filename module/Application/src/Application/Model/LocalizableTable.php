@@ -1,7 +1,7 @@
 <?php
 namespace Application\Model;
 
-abstract class LocalizableTable extends AppTable {  
+abstract class LocalizableTable extends CachedTable { 
 	/**
 	 * returns row from db with specified slug
 	 *

@@ -22,30 +22,11 @@ abstract class AppTable extends TableGateway {
 	protected $lang=1;
 
 	/**
-	 * @var \Application\Lib\Redis
-	 */
-	protected static $redis = null;
-
-	/**
 	 * Table with local data
 	 *
 	 * @var string
 	 */
 	protected $locTable;
-
-	/**
-	 * Join clause for find() method, used for local tables
-	 * 
-	 * @var string
-	 */
-	protected $findJoin='';
-
-	/**
-	 * List of fields getting from join, used for avoid dublicated fields
-	 * 
-	 * @var string
-	 */
-	protected $findFields='*';
 
 	
 	/**
@@ -53,13 +34,27 @@ abstract class AppTable extends TableGateway {
 	 * 
 	 * @var array
 	 */
-	protected $goodFields = array();
+	protected $goodFields = [];
 	/**
 	 * List of fields for data with localized values
 	 * 
 	 * @var array()
 	 */
-	protected $localFields = array();
+	protected $localFields = [];
+	
+	/**
+	 * private fields list that should be removed from passing to clients
+	 * 
+	 * @var []
+	 */
+	protected $privateFields = [];
+	
+	/**
+	 * Join clause for find() method, used for local tables
+	 * 
+	 * @var string
+	 */
+	protected $findJoin='';
 	
 	/**
 	 * Group by condition for find() method
@@ -79,6 +74,13 @@ abstract class AppTable extends TableGateway {
 	 * Table "ID" field name
 	 */
 	const ID_COLUMN = 'id';
+	
+	/**
+	 * opened transactions counter 
+	 * 
+	 * @var int
+	 */
+	private $transactionsCounter;
 
 	/**
 	 * creates table and sets id if neccessary
@@ -108,10 +110,6 @@ abstract class AppTable extends TableGateway {
 
 		$result = parent::__construct($tableName, $adapter, $databaseSchema, $selectResultPrototype);
 		$this->lang = \Zend\Registry::get('lang');
-
-		if(!self::$redis) {
-			self::$redis = \Zend\Registry::get('redis');
-		}
 
 		if(!$this->locTable) $this->locTable = $this->table.'local';
 		if($id) {
@@ -145,7 +143,7 @@ abstract class AppTable extends TableGateway {
 			return $this->featureSet->callMagicSet($property, $value);
 		}
 
-		$this->member[$property] = $value;
+		@$this->member[$property] = $value;
 	}
 
 	/**
@@ -155,6 +153,10 @@ abstract class AppTable extends TableGateway {
 	 * @return \Zend\Db\Sql\Select
 	 */
 	protected function getSelect($table = null) {
+		if(!$table) {
+			$table = $this->table;
+		}
+
 		return new \Zend\Db\Sql\Select($table);
 	}
 
@@ -232,7 +234,7 @@ abstract class AppTable extends TableGateway {
 	 * @param array $params
 	 * @param int $timeout
 	 */
-	protected function getLock($name, $params=false, $timeout=10) {
+	public function getLock($name, $params=false, $timeout=10) {
 		$resultSet = $this->query("select GET_LOCK('$name', $timeout) as res", $params);
 		$result = $resultSet->current()->res;
 		if(!$result) {
@@ -246,7 +248,7 @@ abstract class AppTable extends TableGateway {
 	 * @param string $name
 	 * @param array $params
 	 */
-	protected function releaseLock($name, $params=false) {
+	public function releaseLock($name, $params=false) {
 		$this->query("select RELEASE_LOCK('$name')", $params);
 	}
 
@@ -254,21 +256,31 @@ abstract class AppTable extends TableGateway {
 	 * starts transaction
 	 */
 	public function startTransaction() {
-		$this->query('start transaction');
+		if(!$this->transactionsCounter) {
+			$this->query('start transaction');
+		}
+		$this->transactionsCounter++;
+
 	}
 
 	/**
 	 * commits transaction
 	 */
 	public function commit() {
-		$this->query('commit');
+		$this->transactionsCounter--;
+		if(!$this->transactionsCounter) {
+			$this->query('commit');
+		}
 	}
 
 	/**
 	 * rollbacks transaction
 	 */
 	public function rollback() {
-		$this->query('rollback');
+		$this->transactionsCounter--;
+		if(!$this->transactionsCounter) {
+			$this->query('rollback');
+		}
 	}
 
 	/**
@@ -280,7 +292,6 @@ abstract class AppTable extends TableGateway {
 	public function insert($set) {
 		$set = $this->removeUnnecessaryFields($set);
 		if(parent::insert($set)) {
-			$this->cacheDelete('list');
 			return $this->lastInsertValue;
 		}
 		throw new \Exception('Insert to "'.$this->table.'" failed. Set was '.print_r($set, true));
@@ -295,41 +306,30 @@ abstract class AppTable extends TableGateway {
 	/**
 	 * searches for items, fetching them by ::get()
 	 * 
-	 * @param array $params, e.g. array('id', '>=', '135')
+	 * @param array $params, e.g. ['id', '>=', '135']
 	 * @param int $limit, set to 0 or false to no limit
 	 * @param int $offset
 	 * @param string $orderBy
 	 * @param int &$total will be set to total count found
-	 * @return \Zend\Db\ResultSet\ResultSet
+	 * @param bool $publicOnly should we return full data or non-private fields only
+	 * @return \Zend\Db\ResultSet\ResultSet|[]
 	 */
-	public function find($params, $limit=0, $offset=0, $orderBy=false, &$total=null) {
-		$ids = $this->findSimple($params, $limit, $offset, $orderBy, $total, ['id'])->toArray();
-		$ids = array_column($ids, 'id');
-		return $this->mget($ids);
-	}
-
-	/**
-	 * searches for items, returning them as object of current class
-	 * 
-	 * @param array $params, e.g. array('id', '>=', '135')
-	 * @param int $limit, set to 0 or false to no limit
-	 * @param int $offset
-	 * @param string $orderBy
-	 * @param int &$total will be set to total count found
-	 * @return \Zend\Db\ResultSet\ResultSet
-	 */
-	public function findObjects($params, $limit=0, $offset=0, $orderBy=false, &$total=null){
-		$ids = $this->findSimple($params, $limit, $offset, $orderBy, $total, [static::ID_COLUMN])->toArray();
-		$ids = array_column($ids, static::ID_COLUMN);
-		$result = [];
-		$className = get_class($this);
-		foreach($ids as $id){
-			if($id > 0){
-				$result[] = new $className($id);
+	public function find($params, $limit=0, $offset=0, $orderBy=false, &$total=null, $publicOnly=false) {
+		$items = $this->findSimple($params, $limit, $offset, $orderBy, $total, ['*']);
+		if($publicOnly) {
+			$result = [];
+			foreach($items as $item) {
+				$result[$item->id] = $this->removePrivateFields($item);
 			}
+			unset($items);
 		}
+		else {
+			$result = $items;
+		}
+
 		return $result;
 	}
+
 	
 	/**
 	 * searches for items and returns \Zend\Db\ResultSet\ResultSet
@@ -377,7 +377,7 @@ abstract class AppTable extends TableGateway {
 	 * @return string
 	 */
 	protected function buildSelectQuery($where, $limit=0, $offset=0, $orderBy=false, $columns=['id'], $join=false) {
-		return 'select '.$this->buildSelect($columns).' from `'.$this->table.'` '.$this->findJoin.' '.
+		return 'select '.$this->buildSelect($columns).' from `'.$this->table.'` '.$this->getFindJoin().' '.
 			$where.
 			($join ? $join : '').
 			($this->getGroupBy() ? $this->getGroupBy() : '').
@@ -505,8 +505,7 @@ abstract class AppTable extends TableGateway {
 	 * set group by closer
 	 * @param string $having
 	 */
-	public function setGroupBy($group)
-	{
+	public function setGroupBy($group) {
 		$this->groupBy = $group;
 	}
 
@@ -515,8 +514,7 @@ abstract class AppTable extends TableGateway {
 	 * 
 	 * @return string
 	 */
-	public function getGroupBy()
-	{
+	public function getGroupBy() {
 		return $this->groupBy;
 	}
 	
@@ -525,8 +523,7 @@ abstract class AppTable extends TableGateway {
 	 * 
 	 * @param string $having
 	 */
-	public function setHaving($having)
-	{
+	public function setHaving($having) {
 		$this->having = $having;
 	}
 
@@ -535,8 +532,7 @@ abstract class AppTable extends TableGateway {
 	 * 
 	 * @return string $having
 	 */
-	public function getHaving()
-	{
+	public function getHaving() {
 		return $this->having;
 	}
 	
@@ -584,74 +580,79 @@ abstract class AppTable extends TableGateway {
 	 * returns row from db with specified id
 	 *
 	 * @param int $id
+	 * @param bool $publicOnly remove private fields
 	 * @return \ArrayObject
 	 */
-	public function get($id) {
-		$row = $this->cacheGet($id);
+	public function get($id, $publicOnly=false) {
+		$row = $this->select(array(static::ID_COLUMN => $id))
+					->current();
 		if(!$row) {
-			$row = $this->getUncached($id);
-			$this->cacheSet($id, $row);
+			throw new \Exception(ucfirst($this->table).' '.$id.' not found');
+
 		}
 
 		return $row;
 	}
-
-	/**
-	 * returns row from db with specified id
-	 *
-	 * @param int $id
-	 * @return \ArrayObject
+	
+	/**	
+	 * removes fields marked as private from public content (used in ::get())
+	 * 
+	 * @param \ArrayObject $item
+	 * @returns \ArrayObject $item
 	 */
-	public function getUncached($id) {
-		$row = $this->select(array(static::ID_COLUMN => $id))->current();
-		if(isset($row->{static::ID_COLUMN}) && $row->{static::ID_COLUMN} > 0){
-			$row->{static::ID_COLUMN} = (int)$row->{static::ID_COLUMN};
+	public function removePrivateFields($item) {
+		if(is_object($item)) {
+			$item = clone $item;
 		}
-		if(!$row) {
-			throw new \Exception(ucfirst($this->table).' '.$id.' not found');
+		foreach($this->privateFields as $field) {
+			unset($item[$field]);
 		}
+		
+		return $item;
 
-		return $row;
+
 	}
 
 	/**
 	 * sets data for current id
 	 *
 	 * @param array $data
+	 * @param int $id
+	 * @param bool $setDataToObject perform setId() call after update
 	 */
-	public function set($data) {
-		$this->update($data, array(static::ID_COLUMN  => $this->id));
-		$this->cacheDelete($this->id);
-		$this->setId($this->id);
+	public function set($data, $id=false, $setDataToObject=true) {
+		$myId = $this->id;
+		if($id) {
+			$myId = $id;
+		}
+		$this->update($data, [static::ID_COLUMN => $myId]);
+		if(($myId == $this->id) && $setDataToObject)
+			$this->setId($this->id);
 	}
+
 
 	/**
 	 * Update
 	 *
 	 * @param  array $params
 	 * @param  string|array|closure $where
-	 * @return int
+	 * @return int affected rows
 	 */
 	public function update($params, $where = null) {
 		$params = $this->removeUnnecessaryFields($params);
-		parent::update($params, $where);
-		if(is_array($where) && isset($where[static::ID_COLUMN]) && is_numeric($where[static::ID_COLUMN])) {
-			$this->cacheDelete($where[static::ID_COLUMN]);
-		}
-		$this->cacheDelete('list');
+		$result = parent::update($params, $where);
+		return $result;
 	}
 
 
 	/**
-	 * deletes record by id, removes cached data
+	 * deletes record by id
 	 * 
 	 * @param mixed $id
 	 * @returns altered rows
 	 */
 	public function deleteById($id) {
 		$rowsAffected = $this->delete(array(static::ID_COLUMN => $id));
-		$this->cacheDelete($id);
-		$this->cacheDelete('list');
 
 		return $rowsAffected;
 	}
@@ -665,64 +666,12 @@ abstract class AppTable extends TableGateway {
 	public function delete($where) {
 		if(is_numeric($where)) {
 			$result = parent::delete(array(static::ID_COLUMN => $where));
-			if($result)
-				$this->cacheDelete($where);
 		}
 		else {
 			$result = parent::delete($where);
 		}
 
 		return (bool)$result;
-	}
-
-	/**
-	 * get cached value
-	 *
-	 * @param string $name
-	 * @return string
-	 */
-	/**
-	 * get cached value
-	 *
-	 * @param string $name
-	 * @return string
-	 */
-	public function cacheGet($key) {
-		//\Application\Lib\Logger::write("AppTable::cacheGet($key [{$this->table}])");
-		return self::$redis->get('table.'.$this->table.'.'.$key);
-	}
-
-	/**
-	 * assigns a value to a specified cached param
-	 *
-	 * @param string $name param name
-	 * @param string $value param value
-	 * @param int $timeout TTL in seconds
-	 * @param int $try
-	 * @return bool true on success, false on fail MAX_TRIES times
-	 */
-	public function cacheSet($key, $value, $timeout = 0, $try=0) {
-		//\Application\Lib\Logger::write("AppTable::cacheSet($key [{$this->table}])");
-		return self::$redis->set('table.'.$this->table.'.'.$key, $value, $timeout, $try);
-	}
-
-	/**
-	 * deletes cached value
-	 *
-	 * @param string $key
-	 */
-	public function cacheDelete($key) {
-		//\Application\Lib\Logger::write("AppTable::cacheDelete($key [{$this->table}])");
-		return self::$redis->deleteCache('table.'.$this->table.'.'.$key);
-	}
-
-	/**
-	 * deletes cached values with keys that start with name
-	 *
-	 * @param string $keyMask
-	 */
-	public function cacheDeleteByMask($keyMask) {
-		return self::$redis->deleteByMask('table.'.$this->table.'.'.$keyMask);
 	}
 
 	/**
@@ -733,27 +682,28 @@ abstract class AppTable extends TableGateway {
 	 * @return ResultSet
 	 */
 	public function getList($limit=false, $offset=0) {
-		$res = $this->cacheGet('list');
-		if(!$res) {
-			$select = $this->getSelect($this->table);
-			if($limit !== false) {
-				$select->limit($limit);
-			}
-			if($offset) {
-				$select->offset($offset);
-			}
-
-			$list = $this->execute($select);
-			$res = array();
-			foreach($list as $item) {
-				$res[$item->id] = $this->get($item->id);
-			}
-			$this->cacheSet('list', $res);
+		$select = $this->getSelect($this->table);
+		if($limit !== false) {
+			$select->limit($limit);
 		}
-		return $res;
+		if($offset) {
+			$select->offset($offset);
+		}
+
+		$list = $this->execute($select);
+		return $list;
+
 	}
 
-	public function getColumn($query, $params=array()){
+	/**
+	 * return column value from 1st line of query
+	 * 
+	 * @param string $query
+	 * @param array $params
+	 * @returns string value
+	 */
+	public function getCell($query, $params=array()) {
+
 		$q = (array)$this->query($query, $params)->current();
 		return current($q);
 	}
@@ -783,57 +733,23 @@ abstract class AppTable extends TableGateway {
 		}
 		return $params;
 	}
+	
 
 	/**
-	 * returns rows from db with specified id
-	 *
-	 * @param array $ids
-	 * @return \ArrayObject
+	 * set join expression for find() method
+	 * 
+	 * @param string $join
 	 */
-	public function mget($ids) {
-		$keys = [];
-		foreach($ids as $id) {
-			$keys[]='table.'.$this->table.'.'.$id;
-		}
-		$values = self::$redis->mget($keys);
-		$result = [];
-		foreach($ids as $num => $id) {
-			if(isset($values[$num]) && !empty($values[$num])) {
-				$result[$id] = $values[$num];
-			}
-			else {
-				$result[$id] = $this->get($id);
-			}
-		}
-
-		return $result;
-	}
-
-	public function setFindFields($fields) {
-		$this->findFields = $fields;
-		return $this;
-	}
-
 	public function setFindJoin($join) {
 		$this->findJoin = $join;
-		return $this;
 	}
 
-	public function save() {
-		$data = (array) $this;
-		if ($this->{static::ID_COLUMN} > 0) {
-			$this->set($data);
-		} else {
-			unset($data[static::ID_COLUMN]);
-			$this->create($data);
-		}
-		$this->getUncached($this->{static::ID_COLUMN});
-		return $this->{static::ID_COLUMN};
+	/**
+	 * return join expression for find() method
+	 * 
+	 * @return string
+	 */
+	public function getFindJoin() {
+		return $this->findJoin;
 	}
-
-	public function refresh() {
-		$row = $this->getUncached($this->id);
-		$this->setId($this->id);
-	}
-
 }
