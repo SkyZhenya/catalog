@@ -591,6 +591,10 @@ abstract class AppTable extends TableGateway {
 
 		}
 
+		if ($publicOnly) {
+			$row = $this->removePrivateFields($row);
+		}
+		
 		return $row;
 	}
 	
