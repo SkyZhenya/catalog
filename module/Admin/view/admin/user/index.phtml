@@ -45,11 +45,11 @@
 		<div class="rangeDP">
 			<input id="created_from" readonly="readonly"  style="border:1px solid gray; width:48%" onclick="(arguments[0]||window.event).cancelBubble=true;" onchange="filterBy()">-<input id="created_to" readonly="readonly"  style="border:1px solid gray; width:48%" onclick="(arguments[0]||window.event).cancelBubble=true;" onchange="filterBy()">
 		</div>
-		<a  href="javascript:void(0);" class="clearDate"  onclick="clearDate(this); return false;">&nbsp;</a>
+		<a  href="javascript:void(0);" class="clearDate"  onclick="common.clearDate(this); return false;">&nbsp;</a>
 	</div>
 	<p class="showDatepickersWrapp">
 		<?php echo _('Date') ?>
-		<span class="datepickersToggle showDatepickersLeft" onclick="toggleCust(this);"> </span>
+		<span class="datepickersToggle showDatepickersLeft" onclick="common.toggleCustomDatepicker(this);"> </span>
 		<?php echo _('Date Range') ?>
 	</p>
 </div>
