@@ -174,7 +174,7 @@ class CachedTable extends AppTable {
 	 * @param string $orderBy
 	 * @param int &$total will be set to total count found
 	 * @param bool $publicOnly should we return full data or non-private fields only
-	 * @return \Zend\Db\ResultSet\ResultSet
+	 * @return \ArrayObject
 	 */
 	public function find($params, $limit=0, $offset=0, $orderBy=false, &$total=null, $publicOnly=false) {
 		$ids = $this->findSimple($params, $limit, $offset, $orderBy, $total, [static::ID_COLUMN])->toArray();
