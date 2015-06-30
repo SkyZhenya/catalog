@@ -20,6 +20,10 @@ class User extends UserTable {
 			session_start();
 		}
 
+		if(!isset($_SESSION['id'])) {
+			$this->loginByAutologin();
+		}
+		
 		if(isset($_SESSION['id'])) {
 			try {
 				$this->setId($_SESSION['id']);
@@ -171,4 +175,24 @@ class User extends UserTable {
 		setcookie('autologin', $tokenData['token'], $tokenData['expire'], '/');
 	}
 
+	/**
+	 * logs user in by their autologin id
+	 * 
+	 */
+	public function loginByAutologin() {
+		if(isset($_COOKIE['autologin'])) {
+			try {
+				$userAutologinTable = new \Application\Model\User\AutologinTable();
+				$userId = $userAutologinTable->checkToken($_COOKIE['autologin']);
+				$this->login($userId);
+				return true;
+			}
+			catch(\Exception $e) {
+				unset($_COOKIE['autologin']);
+				setcookie('autologin', NULL, -1, '/');
+			}
+		}
+
+		return false;
+	}
 }

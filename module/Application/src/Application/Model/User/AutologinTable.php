@@ -28,12 +28,12 @@ class AutologinTable extends AppTable {
 	*/
 	public function checkToken($token) {
 		if(!$token) return false;
-		$userId = $this->getCell('select user from '.$this->table.' WHERE expire>? and token=?', [TIME, $token]);
+		$userId = $this->query('select user from '.$this->table.' WHERE expire>? and token=?', [TIME, $token])->current();
 		
 		if (empty($userId)) 
 			throw new \Exception('Wrong autologin token');
 		
-		return $userId;
+		return $userId->user;
 	}
 	
 	/**

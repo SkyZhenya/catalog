@@ -83,22 +83,13 @@ return array(
 		),
 	),
 	'controllers' => array(
-		'factories' => array(
-			'Auth\Controller\Index' => 'Auth\Service\IndexControllerFactory',
+		'invokables' => array(
+			'Auth\Controller\Index' => 'Auth\Controller\IndexController',
 		),
 	),
 	'service_manager' => array(
-		'factories' => array(
-			'AuthBackend' => 'Auth\Service\HybridAuthFactory',
-			'AuthCurrentUser' => 'Auth\Service\UserFactory',
-		),
 		'invokables' => array(
 			'Auth\Service\UserWrapperFactory' => 'Auth\Service\UserWrapperFactory',
-		),
-	),
-	'view_helpers' => array(
-		'invokables' => array(
-			'authinfo' => 'Auth\View\Helper\Auth',
 		),
 	),
 	'view_manager' => array(

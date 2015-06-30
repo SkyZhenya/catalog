@@ -125,7 +125,7 @@ class Authentication {
 		if ($this->cachedAcl === null) {
 			$cachedAcl = \Zend\Cache\PatternFactory::factory('object', array(
 			  'object'   => new \Application\Lib\Acl(),
-			  'storage' => 'memcached',
+			  'storage' => 'session',
 			  'object_key' => '.objectCache.\Application\Lib\Acl',
 			  'cache_by_default' => false,
 

@@ -34,7 +34,7 @@ class NotExistValidator extends AbstractValidator{
 			$where[] = array($this->idFiledName, '!=', $this->id);
 		}
 
-		if($this->model->find($where)){
+		if(count($this->model->find($where))){
 			$this->error(self::EXIST);
 			return false;
 		}

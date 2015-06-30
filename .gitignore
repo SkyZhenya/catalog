@@ -4,8 +4,9 @@
 .idea
 .doc
 .project
-config/application.config.php
+config/local.php
 composer.*
 vendor/Zend
 nbproject
 .htaccess
+.log

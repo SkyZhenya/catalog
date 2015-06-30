@@ -11,7 +11,7 @@ use Zend\Db\Sql\Delete;
 use Zend\InputFilter\InputFilter;
 use Zend\InputFilter\Factory as InputFactory;
 
-class UserTable extends AppTable {
+class UserTable extends CachedTable {
 	/**
 	 * user Id
 	 * 
