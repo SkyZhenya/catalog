@@ -100,6 +100,7 @@ class UserTable extends CachedTable {
 		'email',
 		'level',
 		'active',
+		'created',
 		'password',
 		'newpass',
 		'code',

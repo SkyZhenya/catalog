@@ -113,7 +113,7 @@ class UserController extends AppController {
 			$form->setData($data);
 			if ($form->isValid()) {
 				$data = $form->getData();
-				$id = $this->userTable->insert($data);
+				$id = $this->userTable->create($data);
 				$form->setUserId($id);
 				$result =  new ViewModel(array(
 					'form' => $form,
@@ -161,6 +161,7 @@ class UserController extends AppController {
 
 		$total = 0;
 		$list = $this->userTable->find($params, $count, $pos, $orderby, $total);
+		
 		$xmlResult = new ViewModel(array(
 			'pos' => $pos,
 			'total' => $total,
@@ -207,7 +208,23 @@ class UserController extends AppController {
 		if($flStatus >= 0) {
 			$params []= array('active', '=', $flStatus);
 		}
-			
+		
+		$flCreated = $this->params()->fromQuery('flCreated');
+		if(!empty($flCreated)) {
+			$params []= array('created', '>=', strtotime($flCreated.' 00:00:00'));
+			$params []= array('created', '<=', strtotime($flCreated.' 23:59:59'));
+		}
+		
+		$flCreatedFrom = $this->params()->fromQuery('flCreatedFrom');
+		if(!empty($flCreatedFrom)) {
+			$params []= array('created', '>=', strtotime($flCreatedFrom.' 00:00:00'));
+		}
+		
+		$flCreatedTo = $this->params()->fromQuery('flCreatedTo');
+		if(!empty($flCreatedTo)) {
+			$params []= array('created', '<=', strtotime($flCreatedTo.' 23:59:59'));
+		}
+
 		return $params;
 	}
 	

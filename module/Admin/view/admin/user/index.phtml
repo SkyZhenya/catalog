@@ -133,7 +133,7 @@
 		var dateEndVal = encodeURIComponent($('#created_to').val());
 		mygrid.clearAll();
 		var getListLinkR = '';
-		getListLinkR = getListLink+"&order="+gridSortOrder+"&orderby="+gridSortOrderBy+"&flPid="+pidVal+"&flName="+nameVal+'&flRole='+roleVal+'&flEmail='+emailVal+'&flStatus='+statusVal+'&created='+dateVal+'&startDate='+dateStartVal+'&endDate='+dateEndVal;
+		getListLinkR = getListLink+"&order="+gridSortOrder+"&orderby="+gridSortOrderBy+"&flPid="+pidVal+"&flName="+nameVal+'&flRole='+roleVal+'&flEmail='+emailVal+'&flStatus='+statusVal+'&flCreated='+dateVal+'&flCreatedFrom='+dateStartVal+'&flCreatedTo='+dateEndVal;
 		mygrid.load(getListLinkR, function() {
 			mygrid.setSortImgState(true,gridSortOrderBy,gridSortOrder);    //set a correct sorting image
 			$('.objbox').each(function () { dhtmlx.CustomScroll._mouse_out_timed.call(this); });	
