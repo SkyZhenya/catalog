@@ -282,12 +282,16 @@ abstract class AppController extends AbstractActionController {
 		 * @param int $code
 		 * @return \Zend\View\Model\ViewModel
 		 */
-		public function sendJSONError($text = '', $code = false) {
-			return $this->sendJSONResponse(['code' => $code, 'message' => $text], false, 'none', 'error', true);
+		public function sendJSONError($text = '', $code = false, $title = '') {
+			if (empty($title)) 
+				$title = _('Error');
+			return $this->sendJSONResponse(['code' => $code, 'message' => $text, 'title' => $title], false, 'none', 'error', true);
 		}
 
-		public function sendJSONAlert($text) {
-			return $this->sendJSONResponse(['content' => $text], false, 'alert', 'success');
+		public function sendJSONAlert($text, $title = '') {
+			if (empty($title)) 
+				$title = _('Warning');
+			return $this->sendJSONResponse(['content' => $text, 'title' => $title], false, 'alert', 'success');
 		}
 
 		/**

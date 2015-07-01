@@ -33,6 +33,7 @@ class UserEditForm extends \Application\Form\Form {
 
 		$this->setAttribute('method', 'post');
 		$this->setAttribute('class', 'formWrapp ajaxForm userEditForm');
+		$this->setAttribute('action', URL.'admin/user/add');
 		$this->action = $action;
 
 		$this->add(array(
@@ -204,5 +205,6 @@ class UserEditForm extends \Application\Form\Form {
 	
 	public function setUserId($userId) {
 		$this->userId = $userId;
+		$this->setAttribute('action', URL.'admin/user/edit/'.$userId); 
 	}
 }

@@ -16,7 +16,7 @@ function getUserEditForm(userid) {
 			if (typeof data.content != "undefined") {
 				var nowDate = new Date();
 				nowDate = nowDate.getUTCMinutes() + '' + nowDate.getUTCMilliseconds();
-				jPopup(data.content, 'Send notification for all', 'sendNotice' + nowDate, '');
+				jPopup(data.content, data.data.title, 'userEditForm' + nowDate, false);
 				$(".userEditForm").on("submit", function() {
 					if ($(this).hasClass("sent")) {
 						return false;

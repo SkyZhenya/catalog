@@ -52,11 +52,10 @@ class UserController extends AppController {
 	}
 
 	public function editAction() {
-		$this->layout('layout/iframe'); /* need remove */
 		$id = $this->params('id',0);
 
 		if(!$id)
-		return $this->redirect()->toRoute('admin', array('controller' => 'user', 'action' => 'add'));
+			return $this->addAction();
 
 		$form = $this->getForm();
 		$form->setUserId($id);
@@ -64,7 +63,6 @@ class UserController extends AppController {
 		try {
 			$data = $this->userTable->setId($id);
 			$form->setData($data);
-		/*	$form->setAttribute('action', URL.'admin/user/edit/'.$id); */
 		}
 		catch(\Exception $e) {
 			$this->error = _('User not found');
@@ -73,33 +71,37 @@ class UserController extends AppController {
 			if ($canEdit){
 				$data = $this->request->getPost()->toArray();
 				$form->setData($data);
-				if(isset($data['submit'])) {
-					if ($form->isValid()) {
-						$data = $form->getData();
-						if (!empty($data['pass'])) {
-							$data['password'] = $this->user->passwordHash($data['pass']);
-						}
-						$this->userTable->set($data);
+				if ($form->isValid()) {
+					$data = $form->getData();
+					if (!empty($data['pass'])) {
+						$data['password'] = $this->user->passwordHash($data['pass']);
 					}
+					$this->userTable->set($data);
+					return $this->sendJSONResponse([
+						'canClose' => true,
+					]);
+				}
+				else {
+					// form errors
+					$messages = $form->getMessages();
+					return $this->sendJSONError($messages, 1100);
 				}
 			}
 			else {
-				$this->error = _('You do not have enough permissions to make changes');
+				return $this->sendJSONError(_('You do not have enough permissions to make changes'), 403, _('Permissions denied'));
 			}
 		}
 
-		$canClosePage = !count($form->getMessages());
-
 		$view = new ViewModel(array(
 			'form' => $form,
-			'canClosePage' => $canClosePage,
 			'error' => $this->error,
 			'canEdit' => $canEdit,
-			'title' => _('Edit profile'),
 		));
-		return $view;
-	/*	$view->setTemplate('admin/user/edit')->setTerminal(true);;
-		return $this->sendJSONResponse([], $view); */
+		$view->setTemplate('admin/user/edit')->setTerminal(true);
+		
+		return $this->sendJSONResponse([
+			'title' => _('Edit profile'),
+		], $view);
 	}
 	
 	public function addAction(){
@@ -109,35 +111,37 @@ class UserController extends AppController {
 		if ($this->request->isPost()) {
 			$data = $this->request->getPost()->toArray();
 			$form->setData($data);
-			if(isset($data['submit'])) {
-				if ($form->isValid()) {
-					$data = $form->getData();
-					$id = $this->userTable->insert($data);
-					$form->setAttribute('action', URL.'admin/user/edit/'.$id);
-					$result =  new ViewModel(array(
-						'form' => $form,
-						'canClosePage' => true,
-						'title' => _('Edit profile'),
-						'wasAdded' => true,
-					));
-					$result->setTemplate('admin/user/edit');
-					return $result;
-		/*			$result->setTemplate('admin/user/edit')->setTerminal(true);
-					return $this->sendJSONResponse([], $result);*/
-				}
+			if ($form->isValid()) {
+				$data = $form->getData();
+				$id = $this->userTable->insert($data);
+				$form->setUserId($id);
+				$result =  new ViewModel(array(
+					'form' => $form,
+					'canClosePage' => true,
+					'title' => _('Edit profile'),
+					'wasAdded' => true,
+				));
+				$result->setTemplate('admin/user/edit')->setTerminal(true);
+				return $this->sendJSONResponse([
+					'title' => _('Edit profile')
+				], $result);
+			}
+			else {
+				// form errors
+				$messages = $form->getMessages();
+				return $this->sendJSONError($messages, 1100);
 			}
 		}
 		
 		$result = new ViewModel(array(
 			'form' => $form,
-			'title' => _('Create new account'),
 			'canClosePage' => false,
 		));
-		
-		$result->setTemplate('admin/user/edit');
-		return $result;
-	/*	$result->setTemplate('admin/user/edit')->setTerminal(true);
-		return $this->sendJSONResponse([], $result);*/
+
+		$result->setTemplate('admin/user/edit')->setTerminal(true);
+		return $this->sendJSONResponse([
+			'title' => _('Create new account'),
+		], $result);
 	}
 
 	
@@ -149,7 +153,7 @@ class UserController extends AppController {
 
 
 	public function listAction() {
-		header("Content-Type: text/xml");
+		header("Content-Type: application/json");
 		$count = (int)$this->params()->fromQuery('count', 50);
 		$pos = (int)$this->params()->fromQuery('posStart', 0);
 		$params = $this->resolveParams();
