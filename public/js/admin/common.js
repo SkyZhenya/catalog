@@ -16,7 +16,7 @@ var common = {
 	},
 
 	removeItem: function(id){
-		mygrid.deleteRow(id);
+		adminGrid.grid.deleteRow(id);
 	},
 
 
@@ -134,10 +134,10 @@ var common = {
 	},
 
 	beforeCloseFancybox: function(){
-		if ((typeof(parent.mygrid) !== 'undefined') && (typeof(parent.common.refreshDataLink)!=='undefined') && (!parent.common.refreshGrid)){
+		if ((typeof(parent.adminGrid.grid) !== 'undefined') && (typeof(parent.common.refreshDataLink)!=='undefined') && (!parent.common.refreshGrid)){
 			filterBy();
 		}
-		if ((typeof(parent.mygrid) !== 'undefined') && (parent.common.refreshGrid)){
+		if ((typeof(parent.adminGrid.grid) !== 'undefined') && (parent.common.refreshGrid)){
 			parent.filterBy();
 			parent.common.refreshGrid = 0;
 		}
@@ -152,7 +152,7 @@ var common = {
 		common.selectedRow.id = contentId;
 		common.selectedRow.num = rowNum;
 		var link = urlToContentEdit + contentId;
-		initFancybox(link);
+		getUserEditForm(contentId);
 		return false;
 	},
 	

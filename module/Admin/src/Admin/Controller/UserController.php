@@ -153,7 +153,6 @@ class UserController extends AppController {
 
 
 	public function listAction() {
-		header("Content-Type: application/json");
 		$count = (int)$this->params()->fromQuery('count', 50);
 		$pos = (int)$this->params()->fromQuery('posStart', 0);
 		$params = $this->resolveParams();

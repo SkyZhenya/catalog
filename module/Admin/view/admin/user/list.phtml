@@ -2,7 +2,7 @@
 use Application\Lib\Time;
 header("Content-Type: text/json");
 $i = $pos;
-$data = ['rows' => []];
+$data = ['rows' => [], 'total_count' => $total];
 foreach ($list as $item) {
 	$i++;
 	$editActions = "<a class='edit' onclick='getUserEditForm(".$item->id.")' >" . _("Edit") . "</a> ";

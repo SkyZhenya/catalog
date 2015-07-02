@@ -1,6 +1,7 @@
 <?php
 	$this->headTitle(_('Manage Users'));
-	$this->headScript()->appendFile($this->basePath() . '/js/admin/chosen.jquery.js', 'text/javascript')
+	$this->headScript()->appendFile(URL . 'js/admin/adminGrid.js')
+					->appendFile($this->basePath() . '/js/admin/chosen.jquery.js', 'text/javascript')
 					->appendFile($this->basePath() . '/js/changeabledata-checkbox.js')
 					->appendFile(URL . 'js/admin/pages/user.js')
 					->appendFile(URL . 'js/tools/jquery-ui-1.10.4.custom.min.js');
@@ -12,9 +13,9 @@
 <div class="clear"></div>
 <div id="gridbox" style="height:500px;background-color:white;"></div>
 <div style="display:none">
-	<div id="pid_flt_box"><input style="border:1px solid gray; width:100%" onclick="(arguments[0]||window.event).cancelBubble=true;" onkeyup="filterBy()"></div>
-	<div id="name_flt_box"><input style="border:1px solid gray; width:100%" onclick="(arguments[0]||window.event).cancelBubble=true;" onkeyup="filterBy()"></div>
-	<div id="email_flt_box"><input style="border:1px solid gray; width:100%" onclick="(arguments[0]||window.event).cancelBubble=true;" onkeyup="filterBy()"></div>
+	<div id="pid_flt_box"><input class="js-filter-value" style="border:1px solid gray; width:100%" onclick="(arguments[0]||window.event).cancelBubble=true;" onkeyup="adminGrid.filterBy()"></div>
+	<div id="name_flt_box"><input class="js-filter-value" style="border:1px solid gray; width:100%" onclick="(arguments[0]||window.event).cancelBubble=true;" onkeyup="adminGrid.filterBy()"></div>
+	<div id="email_flt_box"><input class="js-filter-value" style="border:1px solid gray; width:100%" onclick="(arguments[0]||window.event).cancelBubble=true;" onkeyup="adminGrid.filterBy()"></div>
 	<div id="role_flt_box">
 	<?php $disabled = '';
 		$roles = array(
@@ -23,14 +24,14 @@
 				'admin' => _('Admin'),
 			);
 		?>
-		<select class="chosen-select" style="border:1px solid gray; width:100%" onclick="(arguments[0]||window.event).cancelBubble=true;" onchange="filterBy()" <?php echo $disabled;?>>
+		<select class="chosen-select js-filter-value" style="border:1px solid gray; width:100%" onclick="(arguments[0]||window.event).cancelBubble=true;" onchange="adminGrid.filterBy()" <?php echo $disabled;?>>
 			<?php foreach ($roles as $value=>$role){?>
 				<option value="<?php echo $value;?>"><?php echo $role;?></option>
 			<?php }?>
 		</select>
 	</div>
 	<div id="status_flt_box">
-		<select class="chosen-select" style="border:1px solid gray; width:100%" onclick="(arguments[0]||window.event).cancelBubble=true;" onchange="filterBy()">
+		<select class="chosen-select js-filter-value" style="border:1px solid gray; width:100%" onclick="(arguments[0]||window.event).cancelBubble=true;" onchange="adminGrid.filterBy()">
 			<option value="-1"><?php echo _('All');?></option>
 			<option value="1"><?php echo _('Active');?></option>
 			<option value="0"><?php echo _('Inactive');?></option>
@@ -40,10 +41,10 @@
 <div id="date_flt_box">
 	<div  class="clearfix">
 		<div class="singleDP">
-			<input id="created" readonly="readonly" style="border:1px solid gray; width:100%" onclick="(arguments[0]||window.event).cancelBubble=true;" onchange="filterBy()">
+			<input id="created" readonly="readonly" style="border:1px solid gray; width:100%" onclick="(arguments[0]||window.event).cancelBubble=true;" onchange="adminGrid.filterBy()">
 		</div>
 		<div class="rangeDP">
-			<input id="created_from" readonly="readonly"  style="border:1px solid gray; width:48%" onclick="(arguments[0]||window.event).cancelBubble=true;" onchange="filterBy()">-<input id="created_to" readonly="readonly"  style="border:1px solid gray; width:48%" onclick="(arguments[0]||window.event).cancelBubble=true;" onchange="filterBy()">
+			<input id="created_from" readonly="readonly"  style="border:1px solid gray; width:48%" onclick="(arguments[0]||window.event).cancelBubble=true;" onchange="adminGrid.filterBy()">-<input id="created_to" readonly="readonly"  style="border:1px solid gray; width:48%" onclick="(arguments[0]||window.event).cancelBubble=true;" onchange="adminGrid.filterBy()">
 		</div>
 		<a  href="javascript:void(0);" class="clearDate"  onclick="common.clearDate(this); return false;">&nbsp;</a>
 	</div>
@@ -54,7 +55,7 @@
 	</p>
 </div>
 <script>
-			$(function() {
+	$(function() {
 		$("#created").datepicker({
 			"dateFormat": 'dd.mm.yy',
 			changeMonth: true,
@@ -81,69 +82,74 @@
 			maxDate: 0,
 			onClose: function( selectedDate ) {
 				$("#created").val("");
-        $("#created_to").datepicker( "option", "minDate", selectedDate);}
+				$("#created_to").datepicker( "option", "minDate", selectedDate);}
 		});
 	});
-	dhtmlx.CustomScroll.init();
-	gridSortOrder='desc';
-	gridSortOrderBy=1;
-	onpage = 30;
-	var getListLink = <?php echo json_encode($this->basePath('admin/user/list'));?>+"?action=list";
-	function doOnLoad(){
-		mygrid = new dhtmlXGridObject('gridbox');
-		mygrid.setImagePath("<?php echo $this->basePath('js/dhtmlxGrid/imgs/')?>");
-	  mygrid.setHeader("#,<?php echo _('User ID');?>,<?php echo _('Name');?>,<?php echo _('Email');?>,<?php echo _('User Type');?>,<?php echo _('Status');?>, <?php echo _('Registration date') ?>,<?php echo _('Actions');?><?php echo ($canDelete)? ',#cspan' : '';?>");
-		mygrid.setInitWidths("30,85,120,120,100,70,80,<?php echo ($canDelete)? '30,30' : '60';?>")
-		mygrid.setColAlign("center,center,center,center,center,center,center,center,center")
-		mygrid.setColTypes("ro,ro,ro,ro,ro,ro,ro,ro,ro");
-		mygrid.setColSorting("na,int,str,str,na,na,na,na,na");
-		mygrid.enableResizing("false,false,false,false,false,false,false,false,false");
-		mygrid.init();
-		mygrid.setSkin("light")
-		mygrid.enableSmartRendering(true,onpage);
-		mygrid.enablePreRendering(onpage);
-		mygrid.setAwaitedRowHeight(35);
-	  mygrid.attachEvent("onBeforeSorting",function(ind,type,dir){
-	    gridSortOrderBy=ind;
-	    gridSortOrder=dir;
-	    filterBy();
-	    return false;
-	  });
-	  
-	 
-		mygrid.attachHeader("#rspan,<div id='pid_flt'><\/div>,<div id='name_flt'><\/div>,<div id='email_flt'><\/div>,<div id='role_flt'><\/div>,<div id='status_flt'><\/div>,<div id='date_flt_flt'><\/div>,<?php echo ($canDelete)? ',' : '#rspan';?>");
-		//set filters fields
-		$('#pid_flt').append($("#pid_flt_box"));
-		$('#name_flt').append($("#name_flt_box"));
-		$('#role_flt').append($("#role_flt_box"));
-		$('#email_flt').append($("#email_flt_box"));
-		$('#status_flt').append($("#status_flt_box"));
-		$('#date_flt_flt').append($("#date_flt_box"));
-		mygrid.setSizes();
-		filterBy();
-	}
-	function filterBy(){
-		var pidVal=encodeURIComponent($('#pid_flt').find('input').val());
-		var nameVal=encodeURIComponent($('#name_flt').find('input').val());
-		var roleVal=encodeURIComponent($('#role_flt').find('select').val());
-		var emailVal = encodeURIComponent($('#email_flt').find('input').val());
-		var statusVal = encodeURIComponent($('#status_flt').find('select').val());
-		var dateVal = encodeURIComponent($('#created').val());
-		var dateStartVal = encodeURIComponent($('#created_from').val());
-		var dateEndVal = encodeURIComponent($('#created_to').val());
-		mygrid.clearAll();
-		var getListLinkR = '';
-		getListLinkR = getListLink+"&order="+gridSortOrder+"&orderby="+gridSortOrderBy+"&flPid="+pidVal+"&flName="+nameVal+'&flRole='+roleVal+'&flEmail='+emailVal+'&flStatus='+statusVal+'&flCreated='+dateVal+'&flCreatedFrom='+dateStartVal+'&flCreatedTo='+dateEndVal;
-		mygrid.load(getListLinkR, function() {
-			mygrid.setSortImgState(true,gridSortOrderBy,gridSortOrder);    //set a correct sorting image
-			$('.objbox').each(function () { dhtmlx.CustomScroll._mouse_out_timed.call(this); });	
-			common.setGridHeight();
-		}, "json");
-	
-	}
+
+	var gridColumns = [
+		{'title' : "#", 'width': 30},
+		{'title' : <?php echo json_encode(_('User ID'));?>, 'width': 85, 'colSorting': 'int', 
+			'filter': {
+				'sourceContainerSelector': "#pid_flt_box",
+				'values': [{'name':'flPid'}]
+			}
+		},
+		{'title' : <?php echo json_encode(_('Name'));?>, 'width': 120, 'colSorting': 'str', 
+			'filter': {
+				'sourceContainerSelector': "#name_flt_box",
+				'values': [{'name':'flName'}]
+			}
+		},
+		{'title' : <?php echo json_encode(_('Email'));?>, 'width': 120, 'colSorting': 'str', 
+			'filter': {
+				'sourceContainerSelector': "#email_flt_box",
+				'values': [{'name':'flEmail'}]
+			}
+		},
+		{'title' : <?php echo json_encode(_('User Type'));?>, 'width': 100, 
+			'filter': {
+				'sourceContainerSelector': "#role_flt_box",
+				'values': [{'name':'flRole'}]
+			}
+		},
+		{'title' : <?php echo json_encode(_('Status'));?>, 'width': 70, 
+			'filter': {
+				'sourceContainerSelector': "#status_flt_box",
+				'values': [{'name':'flStatus'}]
+			}
+		},
+		{'title' : <?php echo json_encode(_('Registration date'));?>, 'width': 80, 
+			'filter': {
+				'sourceContainerSelector': "#date_flt_box",
+				'values': [
+					{'name':'flCreated', 'fieldSelector': '#created'}, 
+					{'name':'flCreatedFrom', 'fieldSelector': '#created_from'}, 
+					{'name': 'flCreatedTo', 'fieldSelector': '#created_to'}
+				]
+			}
+		},
+		{'title' : <?php echo json_encode(_('Actions'));?>, 'width': <?php echo ($canDelete)? '30' : '60';?>}
+	];
+	<?php if ($canDelete) {?>
+		gridColumns.push({
+			'title' : "#cspan", 'width': 30
+		});
+	<?php } ?>
+
 	$(document).ready(function(){ 
-		common.setGridHeight();
-		doOnLoad();  
+		adminGrid.init({
+			listUrl: <?php echo json_encode($this->basePath('admin/user/list'));?>+"?action=list",
+			columns: gridColumns,
+			events: [
+				{
+					'name': "onBeforeSelect", 'callback': function(id,ind){
+						var rowNum = adminGrid.grid.cellById(id,0).getValue();
+						return common.selectItemInList(id, rowNum, <?=json_encode($this->basePath('admin/user/edit/'));?>, true);
+					}
+				}
+			]
+		});
+
 		$(".chosen-select").chosen({disable_search_threshold: 7});
 	});
 </script>
