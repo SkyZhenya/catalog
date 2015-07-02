@@ -48,7 +48,7 @@ $role = $this->getUser()->getRole();
                         		<a href="<?php echo URL.'auth/login'; ?>"><span><?echo _('Log In');?></span></a>
                         	</li>
                         	<li class="<?php echo($action=='registration')? "active ":''?>">
-                        		<a href="<?php echo URL.'auth/registration'; ?>"><span><?echo _('Sing Up');?></span></a>
+                        		<a href="<?php echo URL.'auth/registration'; ?>"><span><?echo _('Sign Up');?></span></a>
                         	</li>
                         <?php } ?>
                         <? if ($this->getUser()->isAllowed('Admin\Controller\User', 'index')) {?>
