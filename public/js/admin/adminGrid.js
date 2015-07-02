@@ -161,6 +161,7 @@ var adminGrid = {
 				 name: filter.values[i].name,
 				 field: filter.values[i].field
 			 });
+			 filter.values[i].field.attr('onclick', '(arguments[0]||window.event).cancelBubble=true;');
 		 }
 	},
 	

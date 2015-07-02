@@ -11,27 +11,24 @@
 ?>
 
 <div class="clear"></div>
-<div id="gridbox" style="height:500px;background-color:white;"></div>
+<div id="gridbox"></div>
 <div style="display:none">
-	<div id="pid_flt_box"><input class="js-filter-value" style="border:1px solid gray; width:100%" onclick="(arguments[0]||window.event).cancelBubble=true;" onkeyup="adminGrid.filterBy()"></div>
-	<div id="name_flt_box"><input class="js-filter-value" style="border:1px solid gray; width:100%" onclick="(arguments[0]||window.event).cancelBubble=true;" onkeyup="adminGrid.filterBy()"></div>
-	<div id="email_flt_box"><input class="js-filter-value" style="border:1px solid gray; width:100%" onclick="(arguments[0]||window.event).cancelBubble=true;" onkeyup="adminGrid.filterBy()"></div>
+	<div id="pid_flt_box"><input class="js-filter-value" onkeyup="adminGrid.filterBy()"></div>
+	<div id="name_flt_box"><input class="js-filter-value" onkeyup="adminGrid.filterBy()"></div>
+	<div id="email_flt_box"><input class="js-filter-value" onkeyup="adminGrid.filterBy()"></div>
 	<div id="role_flt_box">
-	<?php $disabled = '';
-		$roles = array(
-				'0' =>  _('All'),
-				'user' => _('User'),
-				'admin' => _('Admin'),
-			);
+	<?php
+		$roles = \Application\Model\UserTable::$roleDescriptions;
+		array_unshift($roles, 'All');
 		?>
-		<select class="chosen-select js-filter-value" style="border:1px solid gray; width:100%" onclick="(arguments[0]||window.event).cancelBubble=true;" onchange="adminGrid.filterBy()" <?php echo $disabled;?>>
+		<select class="chosen-select js-filter-value" onchange="adminGrid.filterBy()">
 			<?php foreach ($roles as $value=>$role){?>
 				<option value="<?php echo $value;?>"><?php echo $role;?></option>
 			<?php }?>
 		</select>
 	</div>
 	<div id="status_flt_box">
-		<select class="chosen-select js-filter-value" style="border:1px solid gray; width:100%" onclick="(arguments[0]||window.event).cancelBubble=true;" onchange="adminGrid.filterBy()">
+		<select class="chosen-select js-filter-value" onchange="adminGrid.filterBy()">
 			<option value="-1"><?php echo _('All');?></option>
 			<option value="1"><?php echo _('Active');?></option>
 			<option value="0"><?php echo _('Inactive');?></option>
@@ -41,12 +38,13 @@
 <div id="date_flt_box">
 	<div  class="clearfix">
 		<div class="singleDP">
-			<input id="created" readonly="readonly" style="border:1px solid gray; width:100%" onclick="(arguments[0]||window.event).cancelBubble=true;" onchange="adminGrid.filterBy()">
+			<input id="created" readonly="readonly" onchange="adminGrid.filterBy()">
 		</div>
 		<div class="rangeDP">
-			<input id="created_from" readonly="readonly"  style="border:1px solid gray; width:48%" onclick="(arguments[0]||window.event).cancelBubble=true;" onchange="adminGrid.filterBy()">-<input id="created_to" readonly="readonly"  style="border:1px solid gray; width:48%" onclick="(arguments[0]||window.event).cancelBubble=true;" onchange="adminGrid.filterBy()">
+			<input id="created_from" readonly="readonly"  style="width:48%" onchange="adminGrid.filterBy()">-
+			<input id="created_to" readonly="readonly"  style="width:48%" onchange="adminGrid.filterBy()">
 		</div>
-		<a  href="javascript:void(0);" class="clearDate"  onclick="common.clearDate(this); return false;">&nbsp;</a>
+		<a href="javascript:void(0);" class="clearDate" onclick="common.clearDate(this); return false;">&nbsp;</a>
 	</div>
 	<p class="showDatepickersWrapp">
 		<?php echo _('Date') ?>
