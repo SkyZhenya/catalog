@@ -30,6 +30,7 @@ $config = array_merge_recursive($config, [
 		'Application',		
 		'Admin',
 		'Auth',	
+		'Tools',
 	),
 	'module_listener_options' => array(
 		'config_glob_paths'    => array(
