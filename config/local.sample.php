@@ -13,6 +13,7 @@ define('FACEBOOK_SECRET', '1c04d56fb1175ef42ca12730fce45255');
 define('GA_APP_ID', '928400678967-5phs21q39knkqavk6qi2234unm04gav4.apps.googleusercontent.com');
 define('GA_SECRET', 'jmJuDR4spQmHNJ70fldJB-Jj');
 
+//define('SESSION_NAME', '');//do not need this constant on production
 
 return [
 	'database' => [

@@ -16,6 +16,10 @@ class User extends UserTable {
 	 */
 	public function auth($forceAuth = true) {
 
+		if (defined('SESSION_NAME')) {
+			session_name(SESSION_NAME);
+		}
+		
 		if(session_id() == '') {
 			session_start();
 		}
