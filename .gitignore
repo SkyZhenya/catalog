@@ -8,5 +8,4 @@ config/local.php
 composer.*
 vendor/Zend
 nbproject
-.htaccess
 .log
