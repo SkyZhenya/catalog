@@ -74,7 +74,7 @@ class WrappedElement extends AbstractHelper {
 		}
 
 		return "<div class='$type $name " . $view->escapeHTML($class) . " "  . ($errors ? "highlited" : "") . "'".(!empty($ngIf)?' ng-if="'.$ngIf.'"':'').">
-				$elementHTML".($visible ? '<br>' : '')."
+				$elementHTML
 				$errors
 			</div>";
 	}
