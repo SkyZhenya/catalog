@@ -16,7 +16,7 @@ class ForgotpasswordForm extends Form {
 
 		$this->setName('forgotpassword')
 		->setAttribute('method', 'post')
-		->setAttribute('class', 'form-horizontal auth-form')
+		->setAttribute('class', 'auth-form')
 
 		->add(array(
 			'name' => 'csrf',

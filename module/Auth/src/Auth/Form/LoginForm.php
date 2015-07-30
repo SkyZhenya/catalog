@@ -14,7 +14,7 @@ class LoginForm extends Form {
 
 		$this->setName('login')
 		->setAttribute('method', 'post')
-		->setAttribute('class', 'form-horizontal auth-form')
+		->setAttribute('class', 'auth-form')
 		->setAttribute('action', URL.'auth/login')
 
 		->add(array(

@@ -19,7 +19,7 @@ class RegistrationForm extends Form {
 		
 		$this
 			->setAttribute('method', 'post')
-			->setAttribute('class', 'form-horizontal auth-form')
+			->setAttribute('class', 'auth-form')
 			->setAttribute('action', URL.'auth/registration')
 			
 			->add(array(
