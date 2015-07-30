@@ -43,4 +43,6 @@ div.container a.brand {
 #wrap > .container {
     padding-top: 60px;
 }
-
+.element {
+	margin-bottom: 10px;
+}
