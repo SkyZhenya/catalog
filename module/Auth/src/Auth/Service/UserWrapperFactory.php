@@ -5,8 +5,7 @@ namespace Auth\Service;
 /**
  * This class works as factory to get an Object implementing the UserInterface
  */
-class UserWrapperFactory
-{
+class UserWrapperFactory {
 	/**
 	 * Create the user-Proxy according to the given User-Object
 	 *

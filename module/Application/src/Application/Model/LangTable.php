@@ -65,10 +65,10 @@ class LangTable extends AppTable {
 		$key = base64_encode($code);
 		$item = $this->cacheGet($key);
 		if(!$item) {
-	    $item = $this->find(array(
-	    	array('code', '=', $code),
-	    ), 1, 0)->current();
-	    if(!$item) {
+			$item = $this->find(array(
+				array('code', '=', $code),
+				), 1, 0)->current();
+			if(!$item) {
 				throw new \Exception(ucfirst($this->table).' '.$code.' not found');
 			}
 			$this->cacheSet($key, $item);
@@ -76,5 +76,5 @@ class LangTable extends AppTable {
 
 		return $item;
 	}
-	
+
 }

@@ -246,21 +246,21 @@ class RegistrationForm extends Form {
 		}
 		return true;
 	}
-	
+
 	/**
-     * Validate the form
-     *
-     * @return bool
-     * @throws Exception\DomainException
-     */
-    public function isValid()
-    {
-    	$result = parent::isValid();
-    	
-    	if (!$this->validateBirthdate()) {
+	 * Validate the form
+	 *
+	 * @return bool
+	 * @throws Exception\DomainException
+	 */
+	public function isValid()
+	{
+		$result = parent::isValid();
+
+		if (!$this->validateBirthdate()) {
 			$result = false;
-    	}
-    	
-    	return $result;
+		}
+
+		return $result;
 	}
 }

@@ -144,7 +144,7 @@ class Email {
 		$transport = $this->getTransport();
 		$transport->send($m);
 	}
-  
+
 	/**
 	 * Returns SMTP transport depending on email confirmation status
 	 * 	

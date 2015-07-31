@@ -1,17 +1,4 @@
 <?php
-/**
-* File for Event Class
-*
-* @category  User
-* @package   User_Event
-* @author    Marco Neumann <webcoder_at_binware_dot_org>
-* @copyright Copyright (c) 2011, Marco Neumann
-* @license   http://binware.org/license/index/type:new-bsd New BSD License
-*/
-
-/**
-* @namespace
-*/
 namespace Application\Lib;
 
 /**

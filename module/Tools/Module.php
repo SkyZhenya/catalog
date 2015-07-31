@@ -21,7 +21,7 @@ class Module implements AutoloaderProviderInterface {
 		$serviceManager->get('viewhelpermanager')->setFactory('appviewalias', function($sm) use ($e) {
 			return new \Application\View\AppViewHelper();
 		});
-  }
+	}
 
 	public function getConfig()	{
 		return include __DIR__ . '/config/module.config.php';

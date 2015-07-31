@@ -13,61 +13,64 @@ $role = $this->getUser()->getRole();
 		<?php echo $this->headTitle(SITE_NAME)->setSeparator(' - ') ?>
 		<?php echo $this->headMeta()->appendName('viewport', 'width=device-width, initial-scale=1.0') ?>
 
-    <!-- Le styles -->
-    <?php echo $this->headLink(array('rel' => 'shortcut icon', 'type' => 'image/vnd.microsoft.icon', 'href' => $this->basePath() . '/img/favicon.ico'))
-                    ->prependStylesheet($this->basePath() . '/css/style.css')
-                    ->prependStylesheet($this->basePath() . '/css/bootstrap.min.css') ?>
+		<!-- Le styles -->
+		<?php echo $this->headLink(array('rel' => 'shortcut icon', 'type' => 'image/vnd.microsoft.icon', 'href' => URL . 'img/favicon.ico'))
+			->prependStylesheet($this->basePath() . '/css/style.css')
+			->prependStylesheet($this->basePath() . '/css/bootstrap.min.css')
+		; ?>
 
-    <!-- Scripts -->
-    <?php echo $this->headScript()
-        ->prependFile(URL. 'js/html5.js', 'text/javascript', array('conditional' => 'lt IE 9',))
-        ->prependFile($this->basePath() . '/js/bootstrap.min.js')
-        ->prependFile($this->basePath() . '/js/jquery-2.1.1.min.js')
-    ; ?>
+		<!-- Scripts -->
+		<?php echo $this->headScript()
+			->prependFile(URL. 'js/html5.js', 'text/javascript', array('conditional' => 'lt IE 9',))
+			->prependFile(URL . 'js/bootstrap.min.js')
+			->prependFile(URL . 'js/jquery-2.1.1.min.js')
+		; ?>
 
-    </head>
-    <body>
-    	<div id="wrap">
-        <nav class="navbar navbar-fixed-top" role="navigation">
-            <div class="container">
-                <div class="navbar-header">
-                    <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
-                        <span class="icon-bar"></span>
-                        <span class="icon-bar"></span>
-                        <span class="icon-bar"></span>
-                    </button>
-                    <a class="navbar-brand" href="<?php echo URL; ?>"><img src="<?php echo $this->basePath('images/logo.png') ?>"/></a>
-                </div>
-                <div class="bs-component">
-										<ul class="nav nav-pills">
-                        <li class="<?php echo (in_array($controller, array('Index')) && $this->namespace=='Application\Index')?"active ":''?>"><a href="<?php echo URL; ?>"><?php echo _('Home') ?></a></li>
-                        <?php if ($this->getUser()->getId()) { ?>
-                        	<li><a href="<?php echo URL.'auth/logout'; ?>" class=""><span><?echo _('Log Out');?></span></a></li>
-                        <? } else { ?>
-                        	<li class="<?php echo($action=='login')? "active ":''?>">
-                        		<a href="<?php echo URL.'auth/login'; ?>"><span><?echo _('Log In');?></span></a>
-                        	</li>
-                        	<li class="<?php echo($action=='registration')? "active ":''?>">
-                        		<a href="<?php echo URL.'auth/registration'; ?>"><span><?echo _('Sign Up');?></span></a>
-                        	</li>
-                        <?php } ?>
-                        <? if ($this->getUser()->isAllowed('Admin\Controller\User', 'index')) {?>
-													<li><a href="<?php echo $this->basepath('admin/')?>" class=""><span><?echo _('Admin panel');?></span></a></li>
-												<?}?>
-                    </ul>
-                </div><!--/.nav-collapse -->
-            </div>
-        </nav>
-        <div class="container">
-            <?php echo $this->content; ?>
-        </div>
-      </div>
-      <div id="footer">
+	</head>
+	<body>
+		<div id="wrap">
+			<nav class="navbar navbar-fixed-top" role="navigation">
 				<div class="container">
-					<hr>
-				  <p><?php printf(_('&copy; %d by CodeIT. All rights reserved.'), date('Y')) ?></p>
+					<div class="navbar-header">
+						<button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+							<span class="icon-bar"></span>
+							<span class="icon-bar"></span>
+							<span class="icon-bar"></span>
+						</button>
+						<a class="navbar-brand" href="<?php echo URL; ?>"><img src="<?php echo $this->basePath('images/logo.png') ?>"/></a>
+					</div>
+					<div class="bs-component">
+						<ul class="nav nav-pills">
+							<li class="<?php echo (in_array($controller, array('Index')) && $this->namespace=='Application\Index')?"active ":''?>">
+								<a href="<?php echo URL; ?>"><?php echo _('Home') ?></a>
+							</li>
+							<?php if ($this->getUser()->getId()) { ?>
+								<li><a href="<?php echo URL.'auth/logout'; ?>" class=""><span><?echo _('Log Out');?></span></a></li>
+								<? } else { ?>
+								<li class="<?php echo($action=='login')? "active ":''?>">
+									<a href="<?php echo URL.'auth/login'; ?>"><span><?echo _('Log In');?></span></a>
+								</li>
+								<li class="<?php echo($action=='registration')? "active ":''?>">
+									<a href="<?php echo URL.'auth/registration'; ?>"><span><?echo _('Sign Up');?></span></a>
+								</li>
+								<?php } ?>
+							<? if ($this->getUser()->isAllowed('Admin\Controller\User', 'index')) {?>
+								<li><a href="<?php echo $this->basepath('admin/')?>" class=""><span><?echo _('Admin panel');?></span></a></li>
+								<?}?>
+						</ul>
+					</div><!--/.nav-collapse -->
 				</div>
-      </div> <!-- /container -->
-        <?php echo $this->inlineScript() ?>
-    </body>
+			</nav>
+			<div class="container">
+				<?php echo $this->content; ?>
+			</div>
+		</div>
+		<div id="footer">
+			<div class="container">
+				<hr>
+				<p><?php printf(_('&copy; %d by CodeIT. All rights reserved.'), date('Y')) ?></p>
+			</div>
+		</div> <!-- /container -->
+		<?php echo $this->inlineScript() ?>
+	</body>
 </html>
