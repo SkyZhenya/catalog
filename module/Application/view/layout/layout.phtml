@@ -41,7 +41,7 @@ $role = $this->getUser()->getRole();
 					</div>
 					<div class="bs-component">
 						<ul class="nav nav-pills">
-							<li class="<?php echo (in_array($controller, array('Index')) && $this->namespace=='Application\Index')?"active ":''?>">
+							<li class="<?php echo (in_array($controller, array('Index')) && $this->namespace=='Application\Controller')?"active ":''?>">
 								<a href="<?php echo URL; ?>"><?php echo _('Home') ?></a>
 							</li>
 							<?php if ($this->getUser()->getId()) { ?>
