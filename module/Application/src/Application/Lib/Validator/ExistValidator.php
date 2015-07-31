@@ -4,7 +4,7 @@ namespace Application\Lib\Validator;
 use Zend\Validator\AbstractValidator;
 use Zend\Db\Sql\Expression;
 
-class ExistValidator extends AbstractValidator{
+class ExistValidator extends AbstractValidator {
 
 	/**
 	 * @var \Application\Model\AppTable

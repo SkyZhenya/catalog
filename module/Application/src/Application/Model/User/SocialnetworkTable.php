@@ -33,7 +33,7 @@ class SocialnetworkTable extends AppTable {
 	public $provider;   
 
 	protected $goodFields = array(
-        'id',
+		'id',
 		'userId',
 		'identifierId',
 		'provider',
@@ -44,21 +44,19 @@ class SocialnetworkTable extends AppTable {
 	}
 
 
-    public function checkProviderIdentity($identifierId, $provider){
+	public function checkProviderIdentity($identifierId, $provider){
+		$row = $this->find(array(
+			array('identifierId', '=', $identifierId),
+			array('provider', '=', $provider)
+			), 1 );
 
-        $row = $this->find(array(
-            array('identifierId', '=', $identifierId),
-            array('provider', '=', $provider)
-        ), 1 );
+		if(count($row)) {
+			$row = $row->current();
+			return $row;
+		}
 
-        if(count($row)) {
-            $row = $row->current();
-            return $row;
-        }
-
-
-        return false;
-    }
+		return false;
+	}
 
 
 }

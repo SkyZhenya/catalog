@@ -130,14 +130,14 @@ class Redis implements ServiceLocatorAwareInterface {
 		}
 	}
 
-    /**
-     * Set serviceManager instance
-     *
-     * @param  ServiceLocatorInterface $serviceLocator
-     * @return void
-     */
-    public function setServiceLocator(ServiceLocatorInterface $serviceLocator) {
-        $this->serviceLocator = $serviceLocator;
+	/**
+	 * Set serviceManager instance
+	 *
+	 * @param  ServiceLocatorInterface $serviceLocator
+	 * @return void
+	 */
+	public function setServiceLocator(ServiceLocatorInterface $serviceLocator) {
+		$this->serviceLocator = $serviceLocator;
 
 		$this->config = $serviceLocator->get('Application\Config')['redis'];
 		if($this->config['enabled']) {
@@ -147,13 +147,13 @@ class Redis implements ServiceLocatorAwareInterface {
 
 	}
 
-    /**
-     * Retrieve serviceManager instance
-     *
-     * @return ServiceLocatorInterface
-     */
-    public function getServiceLocator() {
-        return $this->serviceLocator;
-    }
- 
+	/**
+	 * Retrieve serviceManager instance
+	 *
+	 * @return ServiceLocatorInterface
+	 */
+	public function getServiceLocator() {
+		return $this->serviceLocator;
+	}
+
 }

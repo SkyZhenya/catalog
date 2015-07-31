@@ -14,23 +14,23 @@ class Utils {
 	}
 
 	function stripText($pagetext, $nchars=200, $link=false, $addAnchor=true)	{
-	  if(isset($nchars)&&(strlen($pagetext)>$nchars)) {
-	    $border="--xlengine-border--";
-	    $pagetext=wordwrap($pagetext,$nchars,$border);
-	    $pt=explode($border,$pagetext);
-	    if(strlen($pt[0])<=$nchars) {
-	      $pagetext=$pt[0]."...";
-	    }
-	    else {
-	      $pagetext=substr($pt[0],0,$nchars)."...";
-	    }
-	    if($link) {
-	      if($addAnchor) {
-	        $link="<A HREF='$link'>read more</A>";
-	      }
-	      $pagetext.="&nbsp;$link";    }
-	  }
-	  return $pagetext;
+		if(isset($nchars)&&(strlen($pagetext)>$nchars)) {
+			$border="--xlengine-border--";
+			$pagetext=wordwrap($pagetext,$nchars,$border);
+			$pt=explode($border,$pagetext);
+			if(strlen($pt[0])<=$nchars) {
+				$pagetext=$pt[0]."...";
+			}
+			else {
+				$pagetext=substr($pt[0],0,$nchars)."...";
+			}
+			if($link) {
+				if($addAnchor) {
+					$link="<A HREF='$link'>read more</A>";
+				}
+				$pagetext.="&nbsp;$link";    }
+		}
+		return $pagetext;
 	}
 
 	function mod10($txt, $odd=true) {

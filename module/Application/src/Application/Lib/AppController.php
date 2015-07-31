@@ -1,5 +1,6 @@
 <?php
 namespace Application\Lib;
+
 use Zend\Mvc\Controller\AbstractActionController;
 use Zend\EventManager\EventManagerInterface;
 use Zend\View\Model\ViewModel;
@@ -14,29 +15,29 @@ abstract class AppController extends AbstractActionController {
 	 */
 	public $breadcrumbs;
 	public $error = '';
-	
+
 	protected $forceAuth;
-	
+
 	/**
-	* User class
-	*
-	* @var User
-	*/
+	 * User class
+	 *
+	 * @var User
+	 */
 	protected $user;
-	
+
 	/**
 	 * Json Format
 	 * 
 	 * @var string
 	 */
 	public $jsonFormat = null;
-	
+
 	/**
-	* Construct default controller, create lang table
-	* 
-	* @param mixed $forceAuth
-	* @return AppController
-	*/
+	 * Construct default controller, create lang table
+	 * 
+	 * @param mixed $forceAuth
+	 * @return AppController
+	 */
 	public function __construct($forceAuth = false) {
 		$this->forceAuth = $forceAuth;
 		$this->jsonFormat = \JSON_UNESCAPED_UNICODE;
@@ -52,17 +53,17 @@ abstract class AppController extends AbstractActionController {
 			$user->auth($this->forceAuth);
 			\Zend\Registry::set('User', $user);
 		}
-		
+
 		$this->user = $user;
 		$this->userId = $user->getId();
 	}
-	
-  /**
-  * Inject an EventManager instance
-  *
-  * @param  EventManagerInterface $eventManager
-  * @return void
-  */
+
+	/**
+	 * Inject an EventManager instance
+	 *
+	 * @param  EventManagerInterface $eventManager
+	 * @return void
+	 */
 	public function setEventManager(EventManagerInterface $eventManager) {
 		$controller = $this;
 		$eventManager->attach('dispatch', function ($e) use ($controller) {
@@ -81,7 +82,7 @@ abstract class AppController extends AbstractActionController {
 					$controller->lang = $langTable->getByCode($lang);
 					\Zend\Registry::set('lang', $controller->lang->id);
 					*/
-					
+
 					setlocale(LC_ALL, $lang.'.UTF-8');
 					bind_textdomain_codeset('messages', 'UTF8');
 					bindtextdomain('messages', BASEDIR.'/module/Application/language');
@@ -100,22 +101,22 @@ abstract class AppController extends AbstractActionController {
 		parent::setEventManager($eventManager);
 	}
 
-	 public function basePath($path='') {
-		 return URL.$path;
-	 }
+	public function basePath($path='') {
+		return URL.$path;
+	}
 
-  /**
-  * returnes error view template with current message
-  *
-  * @param str $mess
-  * @return \Zend\View\Model\ViewModel
-  */
-  public function returnError($mess){
+	/**
+	 * returnes error view template with current message
+	 *
+	 * @param str $mess
+	 * @return \Zend\View\Model\ViewModel
+	 */
+	public function returnError($mess){
 		$view = new \Zend\View\Model\ViewModel(array('err' => $mess));
 		$view->setTemplate('service/error');
 		return $view;
-  }
-  
+	}
+
 	/**
 	 * method sets breadcrumbs;
 	 * add link to site home page by default
@@ -123,184 +124,184 @@ abstract class AppController extends AbstractActionController {
 	 * @param array $data
 	 * @param bool $isAdmin;
 	 */
-	 protected function setBreadcrumbs($data = array(), $isAdmin = false){	 
-		 $this->breadcrumbs = array(URL => SITE_NAME);
-		 $baseUrl = URL.($isAdmin ? 'admin/' : '');
-		 
-		 if($isAdmin)
-	 		 $this->breadcrumbs[$baseUrl] = _('Administration Panel');
-		 
-		 foreach($data as $url => $name)
-	 		 $this->breadcrumbs[$baseUrl.$url] = $name;
-		 
-		 $this->layout()->breadcrumbs = $this->breadcrumbs; 
-	 }
-	 
-	  /**
-	   * Action called if matched action is forbidden
-	   *
-	   * @return array
-	   */
-	  public function forbiddenAction() {
-	    $response   = $this->getResponse();
-	    
-	    $event      = $this->getEvent();
-	    $routeMatch = $event->getRouteMatch();
-	    $routeMatch->setParam('action', 'forbidden');
+	protected function setBreadcrumbs($data = array(), $isAdmin = false){	 
+		$this->breadcrumbs = array(URL => SITE_NAME);
+		$baseUrl = URL.($isAdmin ? 'admin/' : '');
 
-		  $response->setStatusCode(403);
-		  $view = new ViewModel(array(
-		    'error' => _('This action is forbidden for your role'),
-		  ));
-		  $view->setTemplate('service/forbidden.phtml');
-		  return $view;
-	  }
+		if($isAdmin)
+			$this->breadcrumbs[$baseUrl] = _('Administration Panel');
 
-		/**
-	   * Action called if matched action is 
-	   *
-	   * @return array
-	   */
-	  public function siteClosedAction() {
-	    $response   = $this->getResponse();
-	    
-	    $event      = $this->getEvent();
-	    $routeMatch = $event->getRouteMatch();
-	    $routeMatch->setParam('action', 'siteClosed');
+		foreach($data as $url => $name)
+			$this->breadcrumbs[$baseUrl.$url] = $name;
 
-		  $response->setStatusCode(403);
-		  $view = new ViewModel();
-		  $view->setTemplate('service/siteClosed.phtml');
-		  return $view;
-	  } 
-	  
-		/**
-		 * function return text from view template $template, replacing php-variables with data in $variables
-		 * 
-		 * @param string $template
-		 * @param array $variables
-		 * @return string
-		 */
-		protected function renderViewByTemplate($template, $variables = array()) {
-			$htmlViewPart = new ViewModel();
-			$htmlViewPart->setTerminal(true)
-			->setTemplate($template)
-			->setVariables($variables);
-
-			$viewRender = $this->getServiceLocator()->get('ViewRenderer');
-			return $viewRender->render($htmlViewPart);
-		}
-
-		/**
-		 * function return text from view
-		 * 
-		 * @param \Zend\View\Model\ViewModel $view
-		 * @return string
-		 */
-		protected function renderView($view) {
-			$viewRender = $this->getServiceLocator()->get('ViewRenderer');
-			return $viewRender->render($view);
-		}
+		$this->layout()->breadcrumbs = $this->breadcrumbs; 
+	}
 
 	/**
-		 * render html template into layout with $layoutVariable name
-		 * 
-		 * @param string $layoutVariable
-		 * @param string $viewTemplate
-		 * @param array $viewData
-		 */
-		public function renderHtmlIntoLayout($layoutVariable, $viewTemplate, $viewData = array()) {
-			$controls = new ViewModel($viewData);
-			$controls->setTemplate($viewTemplate);
-			$this->layout()->addChild($controls, $layoutVariable);
-		}
+	 * Action called if matched action is forbidden
+	 *
+	 * @return array
+	 */
+	public function forbiddenAction() {
+		$response   = $this->getResponse();
 
-		/**
-		 * return unified json responce (use it for all ajax actions)
-		 * 
-		 * @param mixed $data - any data for js processor
-		 * @param string $view - ViewModel object or string to be placed on frontend
-		 * @param string $action - (values: none, redirect, alert, content, error)
-		 * @param string $status - (values: succes, error)
-		 * @param boolean $exit - echo data and die
-		 * @return ViewModel 
-		 * 
-		 */
-		public function sendJSONResponse($data = [], $view = false, $action = 'content', $status = 'success', $exit = false) {
+		$event      = $this->getEvent();
+		$routeMatch = $event->getRouteMatch();
+		$routeMatch->setParam('action', 'forbidden');
 
-			$statusList = [
-				'success',
-				'error'
-			];
-
-			$actionList = [
-				'none',
-				'redirect',
-				'login', // display sign in/sign up form
-				'alert',
-				'content',
-				'replaceContent',
-			];
-
-			if (!in_array($status, $statusList))
-				throw new \Exception('prepareJSONResponse: Wrong response status');
-			if (!in_array($action, $actionList))
-				throw new \Exception('prepareJSONResponse: Wrong action');
-
-			if ($view instanceof ViewModel) {
-				$view->setTerminal(true);
-				$content = $this->renderView($view);
-			} else {
-				$content = $view;
-			}
-
-			$result = [
-				'status' => $status,
-				'action' => $action,
-				'content' => $content,
-				'data' => $data
-			];
-
-			$jsonView = new ViewModel([
-				'json' => $result,
-				'jsonFormat' => $this->jsonFormat,
-			]);
-			$jsonView->setTerminal(true);
-			$jsonView->setTemplate('service/json');
-
-			if ($exit) {
-				echo $this->renderView($jsonView);
-				exit;
-			} else
-				return $jsonView;
-		}
-
-		/**
-		 * send json error to client
-		 * 
-		 * @param string $text
-		 * @param int $code
-		 * @return \Zend\View\Model\ViewModel
-		 */
-		public function sendJSONError($text = '', $code = false, $title = '') {
-			if (empty($title)) 
-				$title = _('Error');
-			return $this->sendJSONResponse(['code' => $code, 'message' => $text, 'title' => $title], false, 'none', 'error', true);
-		}
-
-		public function sendJSONAlert($text, $title = '') {
-			if (empty($title)) 
-				$title = _('Warning');
-			return $this->sendJSONResponse(['content' => $text, 'title' => $title], false, 'alert', 'success');
-		}
-
-		/**
-		 * retunrns json responce with error status
-		 * 
-		 * @param string $url
-		 */
-		public function sendJSONRedirect($url) {
-			return $this->sendJSONResponse([$url], false, 'redirect', 'success');
-		}
-
+		$response->setStatusCode(403);
+		$view = new ViewModel(array(
+			'error' => _('This action is forbidden for your role'),
+		));
+		$view->setTemplate('service/forbidden.phtml');
+		return $view;
 	}
+
+	/**
+	 * Action called if matched action is 
+	 *
+	 * @return array
+	 */
+	public function siteClosedAction() {
+		$response   = $this->getResponse();
+
+		$event      = $this->getEvent();
+		$routeMatch = $event->getRouteMatch();
+		$routeMatch->setParam('action', 'siteClosed');
+
+		$response->setStatusCode(403);
+		$view = new ViewModel();
+		$view->setTemplate('service/siteClosed.phtml');
+		return $view;
+	} 
+
+	/**
+	 * function return text from view template $template, replacing php-variables with data in $variables
+	 * 
+	 * @param string $template
+	 * @param array $variables
+	 * @return string
+	 */
+	protected function renderViewByTemplate($template, $variables = array()) {
+		$htmlViewPart = new ViewModel();
+		$htmlViewPart->setTerminal(true)
+		->setTemplate($template)
+		->setVariables($variables);
+
+		$viewRender = $this->getServiceLocator()->get('ViewRenderer');
+		return $viewRender->render($htmlViewPart);
+	}
+
+	/**
+	 * function return text from view
+	 * 
+	 * @param \Zend\View\Model\ViewModel $view
+	 * @return string
+	 */
+	protected function renderView($view) {
+		$viewRender = $this->getServiceLocator()->get('ViewRenderer');
+		return $viewRender->render($view);
+	}
+
+	/**
+	 * render html template into layout with $layoutVariable name
+	 * 
+	 * @param string $layoutVariable
+	 * @param string $viewTemplate
+	 * @param array $viewData
+	 */
+	public function renderHtmlIntoLayout($layoutVariable, $viewTemplate, $viewData = array()) {
+		$controls = new ViewModel($viewData);
+		$controls->setTemplate($viewTemplate);
+		$this->layout()->addChild($controls, $layoutVariable);
+	}
+
+	/**
+	 * return unified json responce (use it for all ajax actions)
+	 * 
+	 * @param mixed $data - any data for js processor
+	 * @param string $view - ViewModel object or string to be placed on frontend
+	 * @param string $action - (values: none, redirect, alert, content, error)
+	 * @param string $status - (values: succes, error)
+	 * @param boolean $exit - echo data and die
+	 * @return ViewModel 
+	 * 
+	 */
+	public function sendJSONResponse($data = [], $view = false, $action = 'content', $status = 'success', $exit = false) {
+
+		$statusList = [
+			'success',
+			'error'
+		];
+
+		$actionList = [
+			'none',
+			'redirect',
+			'login', // display sign in/sign up form
+			'alert',
+			'content',
+			'replaceContent',
+		];
+
+		if (!in_array($status, $statusList))
+			throw new \Exception('prepareJSONResponse: Wrong response status');
+		if (!in_array($action, $actionList))
+			throw new \Exception('prepareJSONResponse: Wrong action');
+
+		if ($view instanceof ViewModel) {
+			$view->setTerminal(true);
+			$content = $this->renderView($view);
+		} else {
+			$content = $view;
+		}
+
+		$result = [
+			'status' => $status,
+			'action' => $action,
+			'content' => $content,
+			'data' => $data
+		];
+
+		$jsonView = new ViewModel([
+			'json' => $result,
+			'jsonFormat' => $this->jsonFormat,
+		]);
+		$jsonView->setTerminal(true);
+		$jsonView->setTemplate('service/json');
+
+		if ($exit) {
+			echo $this->renderView($jsonView);
+			exit;
+		} else
+			return $jsonView;
+	}
+
+	/**
+	 * send json error to client
+	 * 
+	 * @param string $text
+	 * @param int $code
+	 * @return \Zend\View\Model\ViewModel
+	 */
+	public function sendJSONError($text = '', $code = false, $title = '') {
+		if (empty($title)) 
+			$title = _('Error');
+		return $this->sendJSONResponse(['code' => $code, 'message' => $text, 'title' => $title], false, 'none', 'error', true);
+	}
+
+	public function sendJSONAlert($text, $title = '') {
+		if (empty($title)) 
+			$title = _('Warning');
+		return $this->sendJSONResponse(['content' => $text, 'title' => $title], false, 'alert', 'success');
+	}
+
+	/**
+	 * retunrns json responce with error status
+	 * 
+	 * @param string $url
+	 */
+	public function sendJSONRedirect($url) {
+		return $this->sendJSONResponse([$url], false, 'redirect', 'success');
+	}
+
+}

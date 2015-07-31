@@ -1,6 +1,6 @@
 <?php
-
 namespace Application\Lib;
+
 class Memcache {
 	/**
 	* @var \Memcache
@@ -20,13 +20,13 @@ class Memcache {
 	}
 
 	function __destruct() {
-  	$this->disconnect();
-  }
-   
-  /**
-	* Connects to memcache daemon
-	*
-	*/
+		$this->disconnect();
+	}
+
+	/**
+	 * Connects to memcache daemon
+	 *
+	 */
 	protected function connect() {
 		$res = $this->memc->connect(MEMCACHE_HOST, 11211);
 		$this->namespace = MEMCACHE_NAMESPACE;

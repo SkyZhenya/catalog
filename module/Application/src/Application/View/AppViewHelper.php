@@ -1,5 +1,6 @@
 <?php
 namespace Application\View;
+
 use Zend\View\Helper\AbstractHelper;
 
 class AppViewHelper extends AbstractHelper {
