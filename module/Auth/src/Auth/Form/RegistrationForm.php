@@ -212,6 +212,19 @@ class RegistrationForm extends Form {
 			)))
 			
 			->add($factory->createInput(array(
+				'name' => 'birthmonth',
+				'required' => true,
+				'validators' => array(
+					new \Application\Lib\Validator\MultiFieldDate([
+						'message' => array('Birthdate is invalid'),
+						'yearFieldName' => 'birthyear',
+						'monthFieldName' => 'birthmonth',
+						'dayFieldName' => 'birthday'
+					]),
+				),
+			)))
+			
+			->add($factory->createInput(array(
 					'name' => 'confirmpassword',
 					'required' => true,
 					'filters' => array(
@@ -235,32 +248,5 @@ class RegistrationForm extends Form {
 				)));
 
 		return $inputFilter;
-	}
-	
-	protected function validateBirthdate() {
-		//validate date
-		$dateValidator = new \Zend\Validator\Date(array('format' => 'Y-m-d'));
-		if (!$dateValidator->isValid($this->get('birthyear')->getValue().'-'.$this->get('birthmonth')->getValue().'-'.$this->get('birthday')->getValue())) {
-			$this->get('birthmonth')->setMessages(array('Birthdate is invalid'));
-			return false;
-		}
-		return true;
-	}
-
-	/**
-	 * Validate the form
-	 *
-	 * @return bool
-	 * @throws Exception\DomainException
-	 */
-	public function isValid()
-	{
-		$result = parent::isValid();
-
-		if (!$this->validateBirthdate()) {
-			$result = false;
-		}
-
-		return $result;
 	}
 }
