@@ -2,10 +2,10 @@
 	<p><?php echo htmlspecialchars($error);?></p>
 <?php } ?>
 <fieldset>
-	<a class="hybridauth" href="<?php echo $this->url('auth/google');?>">Login with Google+</a><br/>
-	<a class="hybridauth" href="<?php echo $this->url('auth/facebook');?>">Login with Facebook</a>
+	<a class="hybridauth" href="<?php echo $this->url('auth/google');?>"><?php echo _('Login with Google+');?></a><br/>
+	<a class="hybridauth" href="<?php echo $this->url('auth/facebook');?>"><?php echo _('Login with Facebook');?></a>
 </fieldset>
-OR
+<?php echo _('OR');?>
 <?php
 	echo $this->wrappedForm($form);
 ?>

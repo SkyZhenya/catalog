@@ -21,7 +21,7 @@ class UserWrapperFactory {
 		}
 
 		throw new \UnexpectedValueException(sprintf(
-			'The given Object could not be found. Found "%s" instead',
+			_('The given Object could not be found. Found "%s" instead'),
 			get_Class($userObject)
 		));
 	}

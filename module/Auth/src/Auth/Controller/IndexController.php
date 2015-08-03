@@ -149,7 +149,7 @@ class IndexController extends AuthServiceController
 			}
 		}
 		catch( Exception $e ){
-			throw new \UnexpectedValueException('User is not connected');
+			throw new \UnexpectedValueException(_('User is not connected'));
 		}
 	}
 

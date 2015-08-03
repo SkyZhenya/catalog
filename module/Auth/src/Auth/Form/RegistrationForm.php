@@ -152,10 +152,8 @@ class RegistrationForm extends Form {
 			'name' => '\Zend\Validator\StringLength',
 			'options' => array (
 				'min' => 8,
-				'max' => 20,
 				'messages' => array(
 					\Zend\Validator\StringLength::TOO_SHORT => _("The input is less than 8 characters long"),
-					\Zend\Validator\StringLength::TOO_LONG => _("The input is longer than 20 characters"),
 				),
 			),
 		);
@@ -212,6 +210,19 @@ class RegistrationForm extends Form {
 			)))
 			
 			->add($factory->createInput(array(
+				'name' => 'birthmonth',
+				'required' => true,
+				'validators' => array(
+					new \Application\Lib\Validator\MultiFieldDate([
+						'message' => array(_('Birthdate is invalid')),
+						'yearFieldName' => 'birthyear',
+						'monthFieldName' => 'birthmonth',
+						'dayFieldName' => 'birthday'
+					]),
+				),
+			)))
+			
+			->add($factory->createInput(array(
 					'name' => 'confirmpassword',
 					'required' => true,
 					'filters' => array(
@@ -235,32 +246,5 @@ class RegistrationForm extends Form {
 				)));
 
 		return $inputFilter;
-	}
-	
-	protected function validateBirthdate() {
-		//validate date
-		$dateValidator = new \Zend\Validator\Date(array('format' => 'Y-m-d'));
-		if (!$dateValidator->isValid($this->get('birthyear')->getValue().'-'.$this->get('birthmonth')->getValue().'-'.$this->get('birthday')->getValue())) {
-			$this->get('birthmonth')->setMessages(array('Birthdate is invalid'));
-			return false;
-		}
-		return true;
-	}
-
-	/**
-	 * Validate the form
-	 *
-	 * @return bool
-	 * @throws Exception\DomainException
-	 */
-	public function isValid()
-	{
-		$result = parent::isValid();
-
-		if (!$this->validateBirthdate()) {
-			$result = false;
-		}
-
-		return $result;
 	}
 }

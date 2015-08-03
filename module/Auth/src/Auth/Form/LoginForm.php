@@ -56,10 +56,10 @@ class LoginForm extends Form {
 			'name' => 'rememberme',
 			'type' => 'checkbox',
 			'options' => array(
-				'label' => 'Remember me',
+				'label' => _('Remember me'),
 				'use_hidden_element' => true,
 				'checked_value' => 1,
-                'unchecked_value' => 0,
+				'unchecked_value' => 0,
 			),
 		))
 		
@@ -83,7 +83,7 @@ class LoginForm extends Form {
 				'name' => 'not_empty',
 				'options' => array (
 					'messages' => array(
-						\Zend\Validator\NotEmpty::IS_EMPTY => "This field is required",
+						\Zend\Validator\NotEmpty::IS_EMPTY => _("This field is required"),
 					),
 				),
 				'break_chain_on_failure' => true,

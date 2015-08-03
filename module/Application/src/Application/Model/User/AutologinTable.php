@@ -31,7 +31,7 @@ class AutologinTable extends AppTable {
 		$userId = $this->query('select user from '.$this->table.' WHERE expire>? and token=?', [TIME, $token])->current();
 		
 		if (empty($userId)) 
-			throw new \Exception('Wrong autologin token');
+			throw new \Exception(_('Wrong autologin token'));
 		
 		return $userId->user;
 	}
