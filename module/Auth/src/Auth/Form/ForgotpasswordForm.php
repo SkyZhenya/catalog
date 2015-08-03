@@ -74,7 +74,7 @@ class ForgotpasswordForm extends Form {
 				'name' => 'not_empty',
 				'options' => array (
 					'messages' => array(
-						\Zend\Validator\NotEmpty::IS_EMPTY => "This field is required",
+						\Zend\Validator\NotEmpty::IS_EMPTY => _("This field is required"),
 					),
 				),
 				'break_chain_on_failure' => true,
@@ -107,10 +107,8 @@ class ForgotpasswordForm extends Form {
 						'name' => '\Zend\Validator\StringLength',
 						'options' => array (
 							'min' => 8,
-							'max' => 20,
 							'messages' => array(
-								\Zend\Validator\StringLength::TOO_SHORT => "The input is less than 8 characters long",
-								\Zend\Validator\StringLength::TOO_LONG => "The input is longer than 20 characters",
+								\Zend\Validator\StringLength::TOO_SHORT => _("The input is less than 8 characters long"),
 							),
 						),
 					),

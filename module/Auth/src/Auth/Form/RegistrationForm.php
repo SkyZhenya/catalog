@@ -152,10 +152,8 @@ class RegistrationForm extends Form {
 			'name' => '\Zend\Validator\StringLength',
 			'options' => array (
 				'min' => 8,
-				'max' => 20,
 				'messages' => array(
 					\Zend\Validator\StringLength::TOO_SHORT => _("The input is less than 8 characters long"),
-					\Zend\Validator\StringLength::TOO_LONG => _("The input is longer than 20 characters"),
 				),
 			),
 		);
@@ -216,7 +214,7 @@ class RegistrationForm extends Form {
 				'required' => true,
 				'validators' => array(
 					new \Application\Lib\Validator\MultiFieldDate([
-						'message' => array('Birthdate is invalid'),
+						'message' => array(_('Birthdate is invalid')),
 						'yearFieldName' => 'birthyear',
 						'monthFieldName' => 'birthmonth',
 						'dayFieldName' => 'birthday'
