@@ -19,18 +19,15 @@
 $zf2Path = 'vendor';
 include $zf2Path . '/Zend/Loader/AutoloaderFactory.php';
 Zend\Loader\AutoloaderFactory::factory(array(
-    'Zend\Loader\StandardAutoloader' => array(
-        'autoregister_zf' => true,
-    ),
-    'Zend\Loader\ClassMapAutoloader' => array(
-    	array(
-    		'Hybrid_Auth'                                                              => __DIR__ . '/vendor/Hybridauth/Auth.php',
-	        'Hybrid_User_Profile'                                                      => __DIR__ . '/vendor/Hybridauth/User_Profile.php',
-		    'Hybrid_Endpoint'                                                          => __DIR__ . '/vendor/Hybridauth/Endpoint.php',
-	    ),
-    )
+	'Zend\Loader\StandardAutoloader' => array(
+		'autoregister_zf' => true,
+		'prefixes' => array(
+			'Hybrid' => __DIR__ . '/vendor/Hybridauth',
+		),
+		'fallback_autoloader' => true,
+	),
 ));
 
 if (!class_exists('Zend\Loader\AutoloaderFactory')) {
-    throw new RuntimeException('Unable to load ZF2. Run `php composer.phar install` or define a ZF2_PATH environment variable.');
+	throw new RuntimeException('Unable to load ZF2. Run `php composer.phar install` or define a ZF2_PATH environment variable.');
 }
