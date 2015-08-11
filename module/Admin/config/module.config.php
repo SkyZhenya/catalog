@@ -27,25 +27,7 @@ return array(
 			),
 		),
 	),
-	//Router for controllers which will be executed only via command line
-	// or like cron tasks
-	/*
-	'console' => array(
-    'router' => array(
-      'routes' => array(
-      	// Console routes go here
-      	'cron' => array(
-      		'options' => array(
-      			'route' => 'cron daily',
-      			'defaults' => array(
-      				'controller' => 'Admin\Controller\CronController',
-      				'action' => 'daily',
-      			),
-      		),
-      	),
-      ),
-    ),
-	),*/
+
 	'controllers' => array(
 		'invokables' => array(
 			'Admin\Controller\User' => 'Admin\Controller\UserController',
