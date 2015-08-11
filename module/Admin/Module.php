@@ -11,6 +11,14 @@ class Module
         $eventManager        = $e->getApplication()->getEventManager();
         $moduleRouteListener = new ModuleRouteListener();
         $moduleRouteListener->attach($eventManager);
+        $eventManager->attach(\Zend\Mvc\MvcEvent::EVENT_DISPATCH_ERROR, function($e) {
+			$serviceManager = $e->getApplication()->getServiceManager();
+			$controller = $e->getApplication()->getMvcEvent()->getController();
+			if (strpos($controller, 'Admin') === 0) {
+				$layout = $serviceManager->get('viewManager')->getViewModel();
+				$layout->setTemplate('admin/layout');
+			}
+		});
     }
 
     public function init(\Zend\ModuleManager\ModuleManager $moduleManager)
