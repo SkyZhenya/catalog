@@ -3,7 +3,7 @@
 define('LOCALE', 'en_US'); // ru_RU for russian
 Zend\Registry::set('lang', 1); // 1 is English, 2 is Rissian
 
-define('BASEDIR', dirname(__FILE__).'/../');
+define('BASEDIR', dirname(__DIR__).'/');
 
 $config = require_once BASEDIR . 'config/local.php';
 
