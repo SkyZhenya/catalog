@@ -8,10 +8,11 @@ use Zend\Db\Sql\Expression;
 use Zend\Db\Sql\Update;
 use Zend\Db\Sql\Insert;
 use Zend\Db\Sql\Delete;
-use Zend\InputFilter\InputFilter;
-use Zend\InputFilter\Factory as InputFactory;
 
 class UserTable extends CachedTable {
+	use UserConf;
+	use \Application\Traits\Avatar;
+	
 	/**
 	 * user Id
 	 * 
@@ -88,6 +89,20 @@ class UserTable extends CachedTable {
 	 * @var string
 	 */
 	public $phone;
+	
+	/**
+	 * avatar type, can be default or normal
+	 * 
+	 * @var string
+	 */
+	public $avatarType;
+	
+	/**
+	 * array of links to avatars
+	 * 
+	 * @var array
+	 */
+	public $avatars;
 
 	/**
 	 * List of fields from DB table
@@ -107,18 +122,35 @@ class UserTable extends CachedTable {
 		'birthdate'
 	);
 
-	/**
-	 * list of user roles
-	 * 
-	 * @var array
-	 */
-	public static $roleDescriptions = array(
-		'user' => 'User',
-		'admin' => 'Admin',
-	);
-
 	public function __construct($userId = null) {
 		parent::__construct('user', $userId);
+	}
+
+	/**
+	 * returns row from db with specified id
+	 *
+	 * @param int $id
+	 * @return \ArrayObject
+	 */
+	public function getUncached($id) {
+		$row = parent::getUncached($id);
+
+		$row->avatarType = 'normal';
+		try {
+			$imagesInfo = $this->getAvatar($id);
+			$row->avatars = $imagesInfo['avatars'];
+			$row->avatarsPaths = $imagesInfo['avatarsPaths'];
+		}
+		catch(\Exception $e) {
+			// set default avatar
+			$row->avatarType = 'default';
+
+			foreach($this->avatarSizes as $sizes) {
+				$row->avatars[$sizes[0]] = URL . 'img/user/default'.$sizes[0].'.png';
+			}
+		}
+
+		return $row;
 	}
 
 	/**
@@ -148,6 +180,10 @@ class UserTable extends CachedTable {
 	 * @return bool: true on OK, false on user not found
 	 */
 	public function delete($id){
+		//remove all images
+		$udir = $this->getImageDir($id);
+		@unlink($udir['dir']);
+		
 		return (bool)parent::delete(array('id' => $id));
 	}
 
@@ -314,5 +350,6 @@ class UserTable extends CachedTable {
 		}
 		return false;
 	}
+
 
 }

@@ -7,6 +7,7 @@ use Zend\View\Model\ViewModel;
 use Auth\Service\AuthServiceController;
 use Application\Model\User\SocialnetworkTable;
 use Application\Lib\User;
+use \Application\Lib\Image;
 
 /**
  * Login or out using a standart login form or social service
@@ -135,6 +136,11 @@ class IndexController extends AuthServiceController
 					'name' => $userProvider->getName(),
 					'birthdate' => (!empty($userProvider->getBirthYear())? date('Y-m-d', mktime(0, 0, 0, $userProvider->getBirthMonth(), $userProvider->getBirthDay(), $userProvider->getBirthYear())) : null),
 				));
+				if (!empty($userProvider->getPhotoURL())) {
+					$avatarTmp = tempnam(sys_get_temp_dir(), 'user_');
+					Image::simpleImageUpload($userProvider->getPhotoURL(), $avatarTmp);
+					$this->user->setAvatar($avatarTmp, $userId);
+				}
 				//create profile
 				$this->socialnetworkTable->insert([
 					'userId' => $userId,
