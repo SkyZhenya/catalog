@@ -115,9 +115,10 @@ class UserController extends AppController {
 	public function addAction(){
 		$this->layout('layout/iframe');
 		$form = $this->getForm('add');
+		$user = null;
 		
 		if ($this->request->isPost()) {
-			$data = $this->request->getPost()->toArray();
+			$data = array_merge_recursive($this->request->getPost()->toArray(), $this->request->getFiles()->toArray());
 			$form->setData($data);
 			if(isset($data['submit'])) {
 				if ($form->isValid()) {
@@ -126,12 +127,15 @@ class UserController extends AppController {
 					if (!empty($data['avatar']['tmp_name'])) {
 						$userData = $this->userTable->setAvatar($data['avatar']['tmp_name'], $id);
 					}
+					$user = $this->userTable->get($id);
+					$form->get('avatar')->setValue(null);
 					$form->setAttribute('action', URL.'admin/user/edit/'.$id);
 					$result =  new ViewModel(array(
 						'form' => $form,
 						'canClosePage' => true,
 						'title' => _('Edit profile'),
 						'wasAdded' => true,
+						'item' => $user,
 					));
 					$result->setTemplate('admin/user/edit');
 					return $result;

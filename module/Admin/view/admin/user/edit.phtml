@@ -22,7 +22,7 @@ $this->headLink()->prependStylesheet(URL . 'css/admin/chosen.css')
 		echo $this->wrappedElement($form->get('id'));
 	?>
 	<div class="avatar_container">
-		<div class="avatar_image" style="background-image: url('<?php echo $item->avatars[140];?>')" id="avatarImage"></div>
+		<div class="avatar_image" style="background-image: url('<?php echo isset($item)? $item->avatars[140] : URL.'images/user/default140.png';?>')" id="avatarImage"></div>
 		<label><?php echo $this->formInput($form->get('avatar')); ?></label>
 		<div class="remove-button" onclick="return avatarEditor.removeFile('<?php echo URL.'images/user/default140.png';?>');">&nbsp;</div>
 		<?php if (!empty($this->formElementErrors($form->get('avatar')))) {?>
