@@ -3,7 +3,8 @@ $this->myviewalias()->prepareControllerAction();
 $controller = $this->controller;
 $action = $this->action;
 
-$role = $this->getUser()->getRole();
+$currentUser = $this->getUser();
+$role = $currentUser->getRole();
 ?>
 <!DOCTYPE HTML>
 <html>
@@ -15,7 +16,7 @@ $role = $this->getUser()->getRole();
 
 		<!-- Le styles -->
 		<?php echo $this->headLink(array('rel' => 'shortcut icon', 'type' => 'image/vnd.microsoft.icon', 'href' => URL . 'img/favicon.ico'))
-			->prependStylesheet($this->basePath() . '/css/style.css')
+			->prependStylesheet($this->basePath() . '/css/style.css?t=2015081801')
 			->prependStylesheet($this->basePath() . '/css/bootstrap.min.css')
 		; ?>
 
@@ -40,11 +41,23 @@ $role = $this->getUser()->getRole();
 						<a class="navbar-brand" href="<?php echo URL; ?>"><img src="<?php echo $this->basePath('images/logo.png') ?>"/></a>
 					</div>
 					<div class="bs-component">
+						<?php if ($currentUser->getId()) { ?>
+							<ul class="nav navbar-nav navbar-right">
+								<li>
+									<div class="user_avatar">
+										<div class="avatar_image">
+											<img src="<?php echo $currentUser->avatars[60];?>" alt="">
+										</div>
+										<div class="user_name"><?php echo htmlspecialchars($currentUser->name);?></div>
+									</div>
+								</li>
+							</ul>
+						<?php } ?>
 						<ul class="nav nav-pills">
 							<li class="<?php echo (in_array($controller, array('Index')) && $this->namespace=='Application\Controller')?"active ":''?>">
 								<a href="<?php echo URL; ?>"><?php echo _('Home') ?></a>
 							</li>
-							<?php if ($this->getUser()->getId()) { ?>
+							<?php if ($currentUser->getId()) { ?>
 								<li><a href="<?php echo URL.'auth/logout'; ?>" class=""><span><?echo _('Log Out');?></span></a></li>
 								<? } else { ?>
 								<li class="<?php echo($action=='login')? "active ":''?>">
@@ -54,7 +67,7 @@ $role = $this->getUser()->getRole();
 									<a href="<?php echo URL.'auth/registration'; ?>"><span><?echo _('Sign Up');?></span></a>
 								</li>
 								<?php } ?>
-							<? if ($this->getUser()->isAllowed('Admin\Controller\User', 'index')) {?>
+							<? if ($currentUser->isAllowed('Admin\Controller\User', 'index')) {?>
 								<li><a href="<?php echo $this->basepath('admin/')?>" class=""><span><?echo _('Admin panel');?></span></a></li>
 								<?}?>
 						</ul>

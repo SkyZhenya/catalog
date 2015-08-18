@@ -1,6 +1,14 @@
 <?php
 
-define('URL', 'http://dcodeit.net/codeit-carcass-natali/public/');
+define('DOMAIN', 'dcodeit.net');
+define('BASE_URL', '/codeit-carcass-natali/public'); //set to '/' on live
+//define('HTTP_SCHEMA', 'http'); // uncomment if you need concrete scheme
+
+if (!defined('HTTP_SCHEMA')) {
+	define('HTTP_SCHEMA', $_SERVER['REQUEST_SCHEME']);
+}
+
+define('URL', HTTP_SCHEMA . '://' . DOMAIN . BASE_URL . '/');
 
 define('DEBUG', true);
 

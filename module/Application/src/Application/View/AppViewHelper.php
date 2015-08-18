@@ -7,11 +7,11 @@ class AppViewHelper extends AbstractHelper {
 	protected $route;
 
 	public function __construct($route) {
-		if(!$route) exit();
 		$this->route = $route;
 	}
 
 	public function prepareControllerAction() {
+		if (!$this->route) return;
 		$controller = $this->route->getParam('controller', 'index');
 		$action = $this->route->getParam('action', 'index');
 		$lang = $this->route->getParam('lang', 'en');
@@ -22,8 +22,6 @@ class AppViewHelper extends AbstractHelper {
 		$this->view->action = $mA[1];
 		$this->view->namespace = $namespace;
 		$this->view->current_lang = $lang;
-		
-		
 	}
 
 }

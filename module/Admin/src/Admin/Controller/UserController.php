@@ -61,15 +61,15 @@ class UserController extends AppController {
 		$form->setUserId($id);
 		$canEdit = $this->user->isAllowed('Admin\Controller\User', 'save');
 		try {
-			$data = $this->userTable->setId($id);
-			$form->setData($data);
+			$user = $this->userTable->setId($id);
+			$form->setData($user);
 		}
 		catch(\Exception $e) {
 			$this->error = _('User not found');
 		}
 		if ($this->request->isPost()) {
 			if ($canEdit){
-				$data = $this->request->getPost()->toArray();
+				$data = array_merge_recursive($this->request->getPost()->toArray(), $this->request->getFiles()->toArray());
 				$form->setData($data);
 				if ($form->isValid()) {
 					$data = $form->getData();
@@ -77,6 +77,18 @@ class UserController extends AppController {
 						$data['password'] = $this->user->passwordHash($data['pass']);
 					}
 					$this->userTable->set($data);
+					//manage avatar
+					$data['removeAvatar'] = (int)$data['removeAvatar'];
+					if (!empty($data['removeAvatar'])) {
+						$this->userTable->removeImages($id);
+					}
+					$this->userTable->set($data);
+					if (!empty($data['avatar']['tmp_name'])) {
+						$this->userTable->setAvatar($data['avatar']['tmp_name'], $id);
+					}
+					$user = $this->userTable->get($id);
+					$form->get('avatar')->setValue(null);
+
 					return $this->sendJSONResponse([
 						'canClose' => true,
 					]);
@@ -96,6 +108,8 @@ class UserController extends AppController {
 			'form' => $form,
 			'error' => $this->error,
 			'canEdit' => $canEdit,
+			'title' => _('Edit profile'),
+			'item' => $user,
 		));
 		$view->setTemplate('admin/user/edit')->setTerminal(true);
 		
@@ -121,6 +135,9 @@ class UserController extends AppController {
 					'title' => _('Edit profile'),
 					'wasAdded' => true,
 				));
+				if (!empty($data['avatar']['tmp_name'])) {
+					$userData = $this->userTable->setAvatar($data['avatar']['tmp_name'], $id);
+				}
 				$result->setTemplate('admin/user/edit')->setTerminal(true);
 				return $this->sendJSONResponse([
 					'title' => _('Edit profile')

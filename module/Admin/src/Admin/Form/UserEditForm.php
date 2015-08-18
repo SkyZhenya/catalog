@@ -22,6 +22,8 @@ class UserEditForm extends \Application\Form\Form {
 	 */
 	private $userId;
 	
+	const MAX_FILE_SIZE = 10485760; // 10 Mb
+	
 	/**
 	* constructor
 	* 
@@ -34,6 +36,8 @@ class UserEditForm extends \Application\Form\Form {
 		$this->setAttribute('method', 'post');
 		$this->setAttribute('class', 'formWrapp ajaxForm userEditForm');
 		$this->setAttribute('action', URL.'admin/user/add');
+		$this->setAttribute('enctype', 'multipart/form-data');
+		$this->setAttribute('onsubmit', 'return avatarEditor.beforeSubmitAvatar();');
 		$this->action = $action;
 
 		$this->add(array(
@@ -103,7 +107,6 @@ class UserEditForm extends \Application\Form\Form {
 				),
 			)
 		));
-
 		
 		$this->add(array(
 			'name' => 'pass',
@@ -113,7 +116,7 @@ class UserEditForm extends \Application\Form\Form {
 			),
 			'attributes' => array(
 				'class' => 'input-big',
-			)
+			),
 		));
 			
 		
@@ -126,12 +129,28 @@ class UserEditForm extends \Application\Form\Form {
 			'attributes' => array(
 				'value' => 1,
 				'class' => 'styled changeabledata_check',
-    		'data-active' => _('Account is Active'),
-   			'data-inactive' => _('Account is Inactive'),
+				'data-active' => _('Account is Active'),
+				'data-inactive' => _('Account is Inactive'),
 			)
 		));
 		
 		
+		$this->add(array(
+			'name' => 'avatar',
+			'type' => 'file',
+			'attributes' => array(
+				'onchange' => 'avatarEditor.showFile(this);',
+				'accept' => "image/*",
+			),
+		))
+		
+		->add(array(
+			'name' => 'removeAvatar',
+			'type' => 'hidden',
+			'attributes' => array(
+				'value' => '0',
+			),
+		));
 		
 		$this->add(array(
 			'name' => 'submit',
@@ -195,6 +214,29 @@ class UserEditForm extends \Application\Form\Form {
 			$inputFilter->add($factory->createInput(array(
 				'name' => 'level',
 				'required' => true,
+			)));
+			
+			$inputFilter->add($factory->createInput(array(
+				'name' => 'avatar',
+				'required' => false,
+				'validators' => array(
+					array(
+						'name' => '\Zend\Validator\File\Extension',
+						'options' => array (
+							'extension' => array('png', 'jpg', 'jpeg'),
+							'messages' => array(
+								\Zend\Validator\File\Extension::FALSE_EXTENSION => "You can upload jpg, jpeg, png files only",
+							),
+						),
+						'break_chain_on_failure' => true,
+					),
+					new \Zend\Validator\File\Size(array(
+						'max' => self::MAX_FILE_SIZE,
+						'messages' => array(
+							\Zend\Validator\File\Size::TOO_BIG => _('Your image should be less than 10 Mb'),
+						)
+					)),
+				),
 			)));
 					
 			$this->inputFilter = $inputFilter;

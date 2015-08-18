@@ -12,6 +12,16 @@ $this->headTitle(htmlspecialchars($this->form->get('name')->getValue()));
 	<?= $this->form()->openTag($form) ?>
 	<?= $this->wrappedElement($form->get('csrf')) ?> 
 	<?= $this->wrappedElement($form->get('id')) ?> 
+	<div class="avatar_container">
+		<div class="avatar_image" style="background-image: url('<?php echo $item->avatars[140];?>')" id="avatarImage"></div>
+		<label><?php echo $this->formInput($form->get('avatar')); ?></label>
+		<div class="remove-button" onclick="return avatarEditor.removeFile('<?php echo URL.'images/user/default140.png';?>');">&nbsp;</div>
+		<?php if (!empty($this->formElementErrors($form->get('avatar')))) {?>
+			<div class="error"><?php echo $this->formElementErrors($form->get('avatar'));?></div>
+			<?php } ?>
+		<?php echo $this->wrappedElement($form->get('removeAvatar')); ?>
+	</div>
+	<div class="clear"></div>
 	<div class="clearfix">
 		<div class="halfWidthBlock"><?= $this->wrappedElement($form->get('name')) ?> </div>
 		<div class="halfWidthBlock">	<?= $this->wrappedElement($form->get('email')) ?> </div>
