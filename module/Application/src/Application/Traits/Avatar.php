@@ -52,7 +52,6 @@ trait Avatar {
 			$id = $this->id;
 		}
 
-		$source = Image::openImage($srcPath);
 		$path = $this->getImageDir($id);
 		$dstPath = $path['dir'].'/avatar.jpg';
 		if(!copy($srcPath, $dstPath)) {
@@ -60,7 +59,7 @@ trait Avatar {
 		}
 
 		foreach($this->avatarSizes as $sizes) {
-			Image::resizeResource($source, $path['dir'].'/avatar'.$sizes[0].'.jpg', $sizes[0], $sizes[1]);
+			Image::resize($srcPath, $path['dir'].'/avatar'.$sizes[0].'.jpg', $sizes[0], $sizes[1]);
 		}
 
 		$userObject = $this->get($id);
@@ -77,8 +76,6 @@ trait Avatar {
 		}
 
 		$this->cacheSet($id, $userObject, 0);
-
-		imagedestroy($source);
 	}
 	
 	/**
