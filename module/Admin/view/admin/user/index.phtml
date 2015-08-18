@@ -4,9 +4,11 @@
 					->appendFile($this->basePath() . '/js/admin/chosen.jquery.js', 'text/javascript')
 					->appendFile($this->basePath() . '/js/changeabledata-checkbox.js')
 					->appendFile(URL . 'js/admin/pages/user.js')
-					->appendFile(URL . 'js/tools/jquery-ui-1.10.4.custom.min.js');
+					->appendFile(URL . 'js/tools/jquery-ui-1.10.4.custom.min.js')
+					->appendFile(URL . 'js/pages/avatarEditor.js', 'text/javascript');
 	$this->headLink()->prependStylesheet($this->basePath() . '/css/admin/chosen.css')
 					->prependStylesheet(URL . 'css/tools/ui/jquery-ui-1.10.4.custom.css')
+					->appendStylesheet(URL . 'css/admin/avatarEditor.css')
 ;
 ?>
 
