@@ -146,7 +146,7 @@ class UserTable extends CachedTable {
 			$row->avatarType = 'default';
 
 			foreach($this->avatarSizes as $sizes) {
-				$row->avatars[$sizes[0]] = URL . 'img/user/default'.$sizes[0].'.png';
+				$row->avatars[$sizes[0]] = URL . 'images/user/default'.$sizes[0].'.png';
 			}
 		}
 
@@ -180,9 +180,7 @@ class UserTable extends CachedTable {
 	 * @return bool: true on OK, false on user not found
 	 */
 	public function delete($id){
-		//remove all images
-		$udir = $this->getImageDir($id);
-		@unlink($udir['dir']);
+		$this->removeImages($id);
 		
 		return (bool)parent::delete(array('id' => $id));
 	}

@@ -8,13 +8,44 @@ if (isset($error) && !empty($error)){
 $id = $this->form->get('id')->getValue();
 
 $this->headTitle(htmlspecialchars($this->form->get('name')->getValue()));
-$this->headScript()->appendFile($this->basePath() . '/js/admin/chosen.jquery.js', 'text/javascript');
-$this->headLink()->prependStylesheet($this->basePath() . '/css/admin/chosen.css');
+$this->headScript()->appendFile(URL . 'js/admin/chosen.jquery.js', 'text/javascript')
+					->appendFile(URL . 'js/pages/avatarEditor.js', 'text/javascript')
+;
+$this->headLink()->prependStylesheet(URL . 'css/admin/chosen.css')
+				->appendStylesheet(URL . 'css/admin/avatarEditor.css')
+;
 ?>
 <div class="user-wrap">
-	<?php
-			echo $this->wrappedForm($form);
+	<?php 
+		echo $this->form()->openTag($form); 
+		echo $this->wrappedElement($form->get('csrf'));
+		echo $this->wrappedElement($form->get('id'));
 	?>
+	<div class="avatar_container">
+		<div class="avatar_image" style="background-image: url('<?php echo $item->avatars[140];?>')" id="avatarImage"></div>
+		<label><?php echo $this->formInput($form->get('avatar')); ?></label>
+		<div class="remove-button" onclick="return avatarEditor.removeFile('<?php echo URL.'images/user/default140.png';?>');">&nbsp;</div>
+		<?php if (!empty($this->formElementErrors($form->get('avatar')))) {?>
+			<div class="error"><?php echo $this->formElementErrors($form->get('avatar'));?></div>
+			<?php } ?>
+		<?php echo $this->wrappedElement($form->get('removeAvatar')); ?>
+	</div>
+	<div class="clear"></div>
+	<?php 
+		echo $this->wrappedElement($form->get('name'));
+		echo $this->wrappedElement($form->get('email'));
+		echo $this->wrappedElement($form->get('phone'));
+		echo $this->wrappedElement($form->get('pass'));
+		echo $this->wrappedElement($form->get('level'));
+		echo $this->wrappedElement($form->get('active'));
+	?>
+	<div class="clear"></div>
+	<?php 
+		echo $this->wrappedElement($form->get('submit'));
+		echo $this->wrappedElement($form->get('cancel'));
+	?>
+	
+	<?php echo $this->form()->closeTag($form); ?>
 
 <script>
 	<?php if (isset($canClosePage) && $canClosePage){?>

@@ -62,8 +62,8 @@ class UserController extends AppController {
 		$form->setUserId($id);
 		$canEdit = $this->user->isAllowed('Admin\Controller\User', 'save');
 		try {
-			$data = $this->userTable->setId($id);
-			$form->setData($data);
+			$user = $this->userTable->setId($id);
+			$form->setData($user);
 		}
 		catch(\Exception $e) {
 			$this->error = _('User not found');
@@ -71,7 +71,7 @@ class UserController extends AppController {
 
 		if ($this->request->isPost()) {
 			if ($canEdit){
-				$data = $this->request->getPost()->toArray();
+				$data = array_merge_recursive($this->request->getPost()->toArray(), $this->request->getFiles()->toArray());
 				$form->setData($data);
 				if(isset($data['submit'])) {
 					if ($form->isValid()) {
@@ -80,6 +80,17 @@ class UserController extends AppController {
 							$data['password'] = $this->user->passwordHash($data['pass']);
 						}
 						$this->userTable->set($data);
+						//manage avatar
+						$data['removeAvatar'] = (int)$data['removeAvatar'];
+						if (!empty($data['removeAvatar'])) {
+							$this->userTable->removeImages($id);
+						}
+						$this->userTable->set($data);
+						if (!empty($data['avatar']['tmp_name'])) {
+							$this->userTable->setAvatar($data['avatar']['tmp_name'], $id);
+						}
+						$user = $this->userTable->get($id);
+						$form->get('avatar')->setValue(null);
 					}
 				}
 			}
@@ -96,6 +107,7 @@ class UserController extends AppController {
 			'error' => $this->error,
 			'canEdit' => $canEdit,
 			'title' => _('Edit profile'),
+			'item' => $user,
 		));
 		return $view;
 	}
@@ -111,6 +123,9 @@ class UserController extends AppController {
 				if ($form->isValid()) {
 					$data = $form->getData();
 					$id = $this->userTable->insert($data);
+					if (!empty($data['avatar']['tmp_name'])) {
+						$userData = $this->userTable->setAvatar($data['avatar']['tmp_name'], $id);
+					}
 					$form->setAttribute('action', URL.'admin/user/edit/'.$id);
 					$result =  new ViewModel(array(
 						'form' => $form,

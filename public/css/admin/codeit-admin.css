@@ -600,7 +600,7 @@ form#useredit .password.element {
   float: none;
   overflow: hidden;
   position: relative;
-	margin: 25px 0 10px 25px;
+	margin: 25px auto;
 }
 #useredit .submit.element {
     margin-left: 155px;
@@ -997,7 +997,7 @@ input [type=text]::-ms-clear { display: none; }
 	/*min-width: 530px;*/
 }
 .user-wrap {
-	margin-top: 10px;
+	margin-top: 20px;
   position: relative;
 }
 .user-wrap ul.tabs-horiz,

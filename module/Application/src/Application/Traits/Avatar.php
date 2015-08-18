@@ -105,4 +105,18 @@ trait Avatar {
 			'dir' =>  realpath(BASEDIR . "public/".$objectName."/$hash/$id"),
 		];
 	}
+	
+	/**
+	 * removes avatar images
+	 * 
+	 * @param int $id
+	 */
+	public function removeImages($id) {
+		$udir = $this->getImageDir($id);
+		$files = array_diff(scandir($udir['dir']), array('.','..'));
+		foreach ($files as $file) {
+			@unlink($udir['dir']."/$file");
+		}
+		@rmdir($udir['dir']);
+	}
 }

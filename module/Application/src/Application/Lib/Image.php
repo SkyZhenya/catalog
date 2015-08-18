@@ -82,7 +82,7 @@ class Image {
 	 * @throws 10003 on Source image seems to be too small
 	 * @throws 10004 on Destination image cannot be saved
 	 */
-	static function resizeResource($source, $dstPath, $width, $height, $method='fill') {
+	static function resizeResource($source, $dstPath, $width, $height, $method='resize') {
 		$picX = imagesx($source); $picY = imagesy($source);
 		
 		if(!$picX || !$picY) {
