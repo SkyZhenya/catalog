@@ -46,3 +46,21 @@ div.container a.brand {
 .element {
 	margin-bottom: 10px;
 }
+.user_avatar .avatar_image{
+	float: left;
+}
+.user_avatar {
+	height: 50px;
+	vertical-align: middle;
+}
+.user_avatar .avatar_image img {
+	border-radius: 4px;
+	max-height: 50px;
+	max-width: 50px;
+	
+}
+.user_avatar .user_name {
+	display: inline-block;
+	margin: 15px 0px 0px 5px;
+	font-weight: bold;
+}

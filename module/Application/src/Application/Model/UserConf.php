@@ -5,7 +5,7 @@ namespace Application\Model;
 trait UserConf {
 	
 	public $avatarSizes = [
-		[100, 100], // small square thumb 
+		[60, 60], // small square thumb 
 		[140, 140], // square medium thumb
 		[250, 250], // standart big square avatar
 	];
