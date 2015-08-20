@@ -85,7 +85,7 @@ trait Avatar {
 	* @throws 10000 on user id = 0
 	* @returns array of 'href' and 'dir': http and fs paths correspondingly 
 	*/
-	function getImageDir($id) {
+	public function getImageDir($id) {
 		$objectName = $this->table;
 		
 		if(!$id) {
