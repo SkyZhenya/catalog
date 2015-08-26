@@ -33,7 +33,6 @@ return array(
 				),
 				'may_terminate' => true,
 			),
-			
 		),
 	),
 	'service_manager' => [
@@ -46,7 +45,6 @@ return array(
 	'controllers' => array(
 		'invokables' => array(
 			'Application\Controller\Index' => 'Application\Controller\IndexController',
-			'Application\Controller\User' => 'Application\Controller\UserController',
 		),
 	),
 	'view_manager' => array(
@@ -60,6 +58,7 @@ return array(
 			'application/index/index' => __DIR__ . '/../view/application/index/index.phtml',
 			'error/404'               => __DIR__ . '/../view/error/404.phtml',
 			'error/index'             => __DIR__ . '/../view/error/index.phtml',
+			'application/paginator' => __DIR__ . '/../view/service/pagination.phtml',
 		),
 		'template_path_stack' => array(
 			__DIR__ . '/../view',
