@@ -1,11 +1,15 @@
 <?php
+define('IS_CLI', php_sapi_name() == 'cli');
 
 define('DOMAIN', 'dcodeit.net');
 define('BASE_URL', '/codeit-carcass-natali/public'); //set to '/' on live
 //define('HTTP_SCHEMA', 'http'); // uncomment if you need concrete scheme
+define('DEFAULT_HTTP_SCHEMA', 'http');
 
-if (!defined('HTTP_SCHEMA')) {
-	define('HTTP_SCHEMA', $_SERVER['REQUEST_SCHEME']);
+if (!defined('HTTP_SCHEMA') && !IS_CLI) {
+ 	define('HTTP_SCHEMA', $_SERVER['REQUEST_SCHEME']);
+} else {
+	define('HTTP_SCHEMA', DEFAULT_HTTP_SCHEMA);
 }
 
 define('URL', HTTP_SCHEMA . '://' . DOMAIN . BASE_URL . '/');
