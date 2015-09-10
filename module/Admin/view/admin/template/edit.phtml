@@ -9,10 +9,10 @@
 	if (isset($langs)){
 	?>
 		<ul class='tabs-horiz' id='invTabsUl' style='height: 24px'>
-	    <? foreach ($langs as $i => $lang) { ?>
-	      <li><a class='tab-item-link invTabs<?php echo $lang->id;?> <?= ($lang->id == $activeLang) ? 'active' : '' ?>' onclick='return common.changeLang(<?= $lang->id; ?>, "invTabs");' href='#'><span><?= $lang->name; ?></span></a></li>
-	      <? } ?>
-	  </ul>
+		<?php foreach ($langs as $i => $lang) { ?>
+			<li><a class='tab-item-link invTabs<?php echo $lang->id;?> <?= ($lang->id == $activeLang) ? 'active' : '' ?>' onclick='return common.changeLang(<?= $lang->id; ?>, "invTabs");' href='#'><span><?= $lang->name; ?></span></a></li>
+		<? } ?>
+		</ul>
 	<?php }?>
 	<div class="invTabs">
 	<?php $id = $this->form->get('id')->getValue();

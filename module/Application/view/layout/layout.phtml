@@ -59,17 +59,17 @@ $role = $currentUser->getRole();
 							</li>
 							<?php if ($currentUser->getId()) { ?>
 								<li><a href="<?php echo URL.'auth/logout'; ?>" class=""><span><?echo _('Log Out');?></span></a></li>
-								<? } else { ?>
+							<?php } else { ?>
 								<li class="<?php echo($action=='login')? "active ":''?>">
 									<a href="<?php echo URL.'auth/login'; ?>"><span><?echo _('Log In');?></span></a>
 								</li>
 								<li class="<?php echo($action=='registration')? "active ":''?>">
 									<a href="<?php echo URL.'auth/registration'; ?>"><span><?echo _('Sign Up');?></span></a>
 								</li>
-								<?php } ?>
+							<?php } ?>
 							<? if ($currentUser->isAllowed('Admin\Controller\User', 'index')) {?>
 								<li><a href="<?php echo $this->basepath('admin/')?>" class=""><span><?echo _('Admin panel');?></span></a></li>
-								<?}?>
+							<?php }?>
 						</ul>
 					</div><!--/.nav-collapse -->
 				</div>
