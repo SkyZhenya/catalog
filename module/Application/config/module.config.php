@@ -64,4 +64,9 @@ return array(
 			__DIR__ . '/../view',
 		),
 	),
+	'view_helpers' => [
+		'invokables' => [
+			'captchainoutputimage' => 'Application\Lib\Form\View\Helper\Captcha\InOutputImage',
+		],
+	],
 );
