@@ -1,67 +1,63 @@
-	<?php
-if (isset($error) && !empty($error)){
-	$this->headTitle(_('Error'));
-	echo $error;
-	return;
-}
-$id = $this->form->get('id')->getValue();
-
-$this->headTitle(htmlspecialchars($this->form->get('name')->getValue()));
+<?php 
+	$this->headTitle($title);
+	
+	$this->headScript()->appendFile($this->basePath(). '/js/admin/pages/content-version.js')
+					->appendFile(URL . 'js/pages/avatarEditor.js', 'text/javascript')
+	;
+	$this->headLink()->prependStylesheet($this->basePath() . '/css/admin/chosen.css')
+					->appendStylesheet(URL . 'css/admin/avatarEditor.css')
+					->appendStylesheet(URL . 'css/admin/pages/user.css')
+	;
 ?>
-<div class="user-wrap">
-	<?= $this->form()->openTag($form) ?>
-	<?= $this->wrappedElement($form->get('csrf')) ?> 
-	<?= $this->wrappedElement($form->get('id')) ?> 
-	<div class="avatar_container">
-		<div class="avatar_image" style="background-image: url('<?php echo isset($item)? $item->avatars[140] : URL.'images/user/default140.png';?>')" id="avatarImage"></div>
-		<label><?php echo $this->formInput($form->get('avatar')); ?></label>
-		<div class="remove-button" onclick="return avatarEditor.removeFile('<?php echo URL.'images/user/default140.png';?>');">&nbsp;</div>
-		<?php if (!empty($this->formElementErrors($form->get('avatar')))) {?>
-			<div class="error"><?php echo $this->formElementErrors($form->get('avatar'));?></div>
-			<?php } ?>
-		<?php echo $this->wrappedElement($form->get('removeAvatar')); ?>
-	</div>
-	<div class="clear"></div>
-	<div class="clearfix">
-		<div class="halfWidthBlock"><?= $this->wrappedElement($form->get('name')) ?> </div>
-		<div class="halfWidthBlock">	<?= $this->wrappedElement($form->get('email')) ?> </div>
-	</div>
-	<div class="clearfix">
-		<div class="halfWidthBlock"><?= $this->wrappedElement($form->get('phone')) ?> </div>
-		<div class="halfWidthBlock"><?= $this->wrappedElement($form->get('level')) ?> 	</div>
-	</div>
-	<div class="clearfix">
-		<div class="halfWidthBlock"><?= $this->wrappedElement($form->get('pass')) ?></div>
-		<div class="halfWidthBlock"><span class="label">&nbsp;</span><?= $this->wrappedElement($form->get('active'), 'element margTop8 label') ?></div>
-	</div>
-	<div class="clearfix btnsWrapp">
-		<?= $this->wrappedElement($form->get('submit')) ?> 
-		<?= $this->wrappedElement($form->get('cancel')) ?> 
-	</div>
-	<?= $this->form()->closeTag($form) ?>
+<?php
+	if (isset($error) && !empty($error)){
+		echo $error;
+		return;
+	}
+?>
+<div class="edit-content-wrap">
+	<h1><?php echo htmlspecialchars($title);?></h1>
+	<div class="user-wrap">
+		<?= $this->form()->openTag($form) ?>
+		<?= $this->wrappedElement($form->get('csrf')) ?> 
+		<?= $this->wrappedElement($form->get('id')) ?> 
+		<?= $this->wrappedElement($form->get('updated')) ?> 
+		<div class="avatar_container">
+			<div class="avatar_image" style="background-image: url('<?php echo isset($item)? $item->avatars[140] : URL.'images/user/default140.png';?>')" id="avatarImage"></div>
+			<label><?php echo $this->formInput($form->get('avatar')); ?></label>
+			<div class="remove-button" onclick="return avatarEditor.removeFile('<?php echo URL.'images/user/default140.png';?>');">&nbsp;</div>
+			<?php if (!empty($this->formElementErrors($form->get('avatar')))) {?>
+				<div class="error"><?php echo $this->formElementErrors($form->get('avatar'));?></div>
+				<?php } ?>
+			<?php echo $this->wrappedElement($form->get('removeAvatar')); ?>
+		</div>
+		<div class="clear"></div>
+		<div class="clearfix">
+			<div class="halfWidthBlock"><?= $this->wrappedElement($form->get('name')) ?> </div>
+			<div class="halfWidthBlock">	<?= $this->wrappedElement($form->get('email')) ?> </div>
+		</div>
+		<div class="clearfix">
+			<div class="halfWidthBlock"><?= $this->wrappedElement($form->get('phone')) ?> </div>
+			<div class="halfWidthBlock"><?= $this->wrappedElement($form->get('level')) ?> 	</div>
+		</div>
+		<div class="clearfix">
+			<div class="halfWidthBlock"><?= $this->wrappedElement($form->get('pass')) ?></div>
+			<div class="halfWidthBlock"><span class="label">&nbsp;</span><?= $this->wrappedElement($form->get('active'), 'element margTop8 label') ?></div>
+		</div>
+		<div class="clearfix btnsWrapp">
+			<?= $this->wrappedElement($form->get('submit')) ?> 
+			<?= $this->wrappedElement($form->get('cancel')) ?> 
+		</div>
+		<?= $this->form()->closeTag($form) ?>
 
-<script>
-	<?php if (isset($canClosePage) && $canClosePage){?>
-		parent.common.needClose++;
-	<?} ?>
-	parent.common.refreshGrid = 0;
-	delete parent.common.refreshDataLink;
-	<?php if (isset($wasAdded) && $wasAdded) { ?>
-		parent.common.changedForm = false;
-		parent.common.refreshGrid = 1;
-	<?php }?>
-	$(document).ready(function(){
-		<?php if (isset($canEdit) && !$canEdit){?>
-			common.readonlyForm();
-		<?php } ?>
-		$(".chosen-select").chosen({disable_search_threshold: 7});
-		$('input.styled').checkbox();
-	});
-</script>
+	<script>
+		$(document).ready(function(){
+			contentVersion.init();
+			
+			$(".chosen-select").chosen({disable_search_threshold: 7});
+			$('input.styled').checkbox();
+		});
+	</script>
 
-<?php if ($id>0){?>
-<script>
-	parent.common.refreshDataLink = parent.getListLink+"&flId="+<?php echo json_encode($id);?>;
-</script>
-<?php } ?>
+	</div>
 </div>

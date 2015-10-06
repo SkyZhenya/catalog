@@ -1,9 +1,10 @@
 <div class="menu-btns">
 	<?php	if ($canAdd) { ?>
 		<p class="content-buttons form-buttons add_item_btn">
-		  <a class="add form-button" onclick='getUserEditForm()'>
-		    <span><?php echo _('Create new account');?></span>
-		  </a>
+			<a class="add form-button" href="<?php echo URL;?>admin/user/add">
+				<span><?php echo _('Add New User');?></span>
+			</a>
 		</p>
-	<?php }?>
+		<?php }?>
 </div>
+<div class="total-grid-count"><?php echo sprintf(_('Total: %d users'), $total);?></div>

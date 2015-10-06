@@ -1,18 +1,14 @@
 <?php
 namespace Admin\Controller;
+
 use Application\Lib\AppController;
-use Application\Model\DepartmentTable;
-use Application\Model\UserTable;
 use Application\Lib\User;
 use Zend\View\Model\ViewModel;
-use Application\Model\CommissionTable;
-use \Application\Lib\Utils;
-use \Zend\View\Model\JsonModel;
 
 class UserController extends AppController {
 	/**
-	* @var \Zend\Form\Form
-	*/
+	 * @var \Zend\Form\Form
+	 */
 	var $form;
 
 	/**
@@ -33,19 +29,24 @@ class UserController extends AppController {
 	 * 
 	 * @return \Zend\Form\Form
 	 */
-	public function getForm($action = 'edit') {
+	public function getForm($action = 'edit', $id = null) {
 		if(is_null($this->form)) {
-			$this->form = new \Admin\Form\UserEditForm($action);
+			$this->form = new \Admin\Form\UserEditForm($action, $id);
 		}
 		return $this->form;
 	}
+
 	
 	public function indexAction() {
 		$this->layout()->bodyClass = 'user';
 
+		$total = 0;
+		$list = $this->userTable->find([], 1, 0, null, $total);
+
 		$result = array(
 			'canAdd' => $this->user->isAllowed('Admin\Controller\User', 'add'),
 			'canDelete' => $this->user->isAllowed('Admin\Controller\User', 'save'),
+			'total' => $total,
 		);
 		$this->renderHtmlIntoLayout('submenu', 'admin/user/submenu.phtml', $result);
 		return $result;
@@ -55,28 +56,30 @@ class UserController extends AppController {
 		$id = $this->params('id',0);
 
 		if(!$id)
-			return $this->addAction();
+		return $this->redirect()->toRoute('admin', array('controller' => 'user', 'action' => 'add'));
 
-		$form = $this->getForm();
-		$form->setUserId($id);
+		$this->setBreadcrumbs(['user' => 'Users',], true);
+		$form = $this->getForm('edit', $id);
 		$canEdit = $this->user->isAllowed('Admin\Controller\User', 'save');
 		try {
 			$user = $this->userTable->setId($id);
+			$form->setUpdated($user->updated);
 			$form->setData($user);
 		}
 		catch(\Exception $e) {
-			$this->error = _('User not found');
+			return $this->notFoundAction();
 		}
+
 		if ($this->request->isPost()) {
 			if ($canEdit){
 				$data = array_merge_recursive($this->request->getPost()->toArray(), $this->request->getFiles()->toArray());
 				$form->setData($data);
 				if ($form->isValid()) {
 					$data = $form->getData();
+					$data['updated'] = TIME;
 					if (!empty($data['pass'])) {
 						$data['password'] = $this->user->passwordHash($data['pass']);
 					}
-					$this->userTable->set($data);
 					//manage avatar
 					$data['removeAvatar'] = (int)$data['removeAvatar'];
 					if (!empty($data['removeAvatar'])) {
@@ -86,92 +89,61 @@ class UserController extends AppController {
 					if (!empty($data['avatar']['tmp_name'])) {
 						$this->userTable->setAvatar($data['avatar']['tmp_name'], $id);
 					}
-					$user = $this->userTable->get($id);
-					$form->get('avatar')->setValue(null);
 
-					return $this->sendJSONResponse([
-						'canClose' => true,
-					]);
-				}
-				else {
-					// form errors
-					$messages = $form->getMessages();
-					return $this->sendJSONError($messages, 1100);
+					$this->redirect()->toUrl(URL.'admin/user/');
 				}
 			}
 			else {
-				return $this->sendJSONError(_('You do not have enough permissions to make changes'), 403, _('Permissions denied'));
+				$this->error = _('You do not have enough permissions to make changes');
 			}
 		}
+		$form->get('avatar')->setValue(null);
 
-		$view = new ViewModel(array(
+		return  new ViewModel(array(
 			'form' => $form,
 			'error' => $this->error,
-			'canEdit' => $canEdit,
-			'title' => _('Edit profile'),
+			'title' => _('Edit User'),
 			'item' => $user,
 		));
-		$view->setTemplate('admin/user/edit')->setTerminal(true);
-		
-		return $this->sendJSONResponse([
-			'title' => _('Edit profile'),
-		], $view);
 	}
-	
+
 	public function addAction(){
-		$this->layout('layout/iframe');
+		$this->setBreadcrumbs(['user' => 'Users',], true);
 		$form = $this->getForm('add');
-		$user = null;
-		
+
 		if ($this->request->isPost()) {
 			$data = array_merge_recursive($this->request->getPost()->toArray(), $this->request->getFiles()->toArray());
 			$form->setData($data);
 			if ($form->isValid()) {
 				$data = $form->getData();
+				$data['updated'] = TIME;
 				if (!empty($data['pass'])) {
 					$data['password'] = $this->user->passwordHash($data['pass']);
 				}
+				//manage avatar
 				$id = $this->userTable->insert($data);
-				$form->setUserId($id);
 				if (!empty($data['avatar']['tmp_name'])) {
-					$userData = $this->userTable->setAvatar($data['avatar']['tmp_name'], $id);
+					$this->userTable->setAvatar($data['avatar']['tmp_name'], $id);
 				}
-				$user = $this->userTable->get($id);
-				$form->get('avatar')->setValue(null);
-				$result =  new ViewModel(array(
-					'form' => $form,
-					'canClosePage' => true,
-					'title' => _('Edit profile'),
-					'wasAdded' => true,
-					'item' => $user,
-				));
-				$result->setTemplate('admin/user/edit')->setTerminal(true);
-				return $this->sendJSONResponse([
-					'title' => _('Edit profile')
-				], $result);
-			}
-			else {
-				// form errors
-				$messages = $form->getMessages();
-				return $this->sendJSONError($messages, 1100);
+
+				$this->redirect()->toUrl(URL.'admin/user/');
 			}
 		}
-		
-		$result = new ViewModel(array(
-			'form' => $form,
-			'canClosePage' => false,
-		));
+		$form->get('avatar')->setValue(null);
 
-		$result->setTemplate('admin/user/edit')->setTerminal(true);
-		return $this->sendJSONResponse([
-			'title' => _('Create new account'),
-		], $result);
+		$result =  new ViewModel(array(
+			'form' => $form,
+			'error' => $this->error,
+			'title' => _('Add New User'),
+		));
+		$result->setTemplate('admin/user/edit.phtml');
+		return $result;
 	}
 
-	
+
 	public function deleteAction() {
 		$id = (int)$this->request->getPost('id', 0);
-		$this->userTable->deleteById($id);
+		$this->userTable->delete($id);
 		return $this->getResponse()->setContent('OK');
 	}
 
@@ -184,7 +156,7 @@ class UserController extends AppController {
 
 		$total = 0;
 		$list = $this->userTable->find($params, $count, $pos, $orderby, $total);
-		
+
 		$xmlResult = new ViewModel(array(
 			'pos' => $pos,
 			'total' => $total,
@@ -194,7 +166,7 @@ class UserController extends AppController {
 		$xmlResult->setTerminal(true);
 		return $xmlResult;
 	}
-	
+
 	/**
 	 * apply filters
 	 * 
@@ -204,45 +176,45 @@ class UserController extends AppController {
 		$params = array();
 
 		$flPid = $this->params()->fromQuery('flPid');
-		if(!empty($flPid)) {
+		if(trim($flPid) !== '') {
 			$params []= array('id', 'LIKE', "{$flPid}%");
 		}
 		$flId = $this->params()->fromQuery('flId');
 		if(!empty($flId)) {
 			$params []= array('id', '=', "{$flId}");
 		}
-		
+
 		$flName = $this->params()->fromQuery('flName');
-		if(!empty($flName)) {
+		if(trim($flName) !== '') {
 			$params []= array('name', 'LIKE', "{$flName}%");
 		}
-		
+
 		$flEmail = $this->params()->fromQuery('flEmail');
-		if(!empty($flEmail)) {
+		if(trim($flEmail) !== '') {
 			$params []= array('email', 'LIKE', "{$flEmail}%");
 		}
-		
+
 		$flRole = $this->params()->fromQuery('flRole');
 		if(!empty($flRole)) {
 			$params []= array('level', '=', $flRole);
 		}
-		
+
 		$flStatus = $this->params()->fromQuery('flStatus', -1);
 		if($flStatus >= 0) {
 			$params []= array('active', '=', $flStatus);
 		}
-		
+
 		$flCreated = $this->params()->fromQuery('flCreated');
 		if(!empty($flCreated)) {
 			$params []= array('created', '>=', strtotime($flCreated.' 00:00:00'));
 			$params []= array('created', '<=', strtotime($flCreated.' 23:59:59'));
 		}
-		
+
 		$flCreatedFrom = $this->params()->fromQuery('flCreatedFrom');
 		if(!empty($flCreatedFrom)) {
 			$params []= array('created', '>=', strtotime($flCreatedFrom.' 00:00:00'));
 		}
-		
+
 		$flCreatedTo = $this->params()->fromQuery('flCreatedTo');
 		if(!empty($flCreatedTo)) {
 			$params []= array('created', '<=', strtotime($flCreatedTo.' 23:59:59'));
@@ -250,15 +222,15 @@ class UserController extends AppController {
 
 		return $params;
 	}
-	
-/**
+
+	/**
 	 * return orderby rule for list ordering
 	 * 
 	 * @return string
 	 */
 	protected function resolveOrderby() {
 		$orderby='id';
-			
+
 		if(isset($_GET['orderby'])) {
 			switch($_GET['order']) {
 				case 'asc': $orderdir='asc'; break;
@@ -272,7 +244,7 @@ class UserController extends AppController {
 			}
 			$orderby.=' '.$orderdir;
 		}
-		
+
 		return $orderby;
 	}
 

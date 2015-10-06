@@ -1,118 +1,106 @@
 <?php
-	$this->myviewalias()->prepareControllerAction();
-	echo $this->doctype();
-	$controller = $this->controller;
-	$this->headTitle(_('Administration Panel'));
-	$titles = $this->headTitle();
-	$title = $titles[0];
+$this->myviewalias()->prepareControllerAction();
+echo $this->doctype();
+$controller = $this->controller;
+$this->headTitle(_('Administration Panel'));
+$titles = $this->headTitle();
+$title = $titles[0];
 
 ?>
 <html>
-  <head>
+	<head>
 		<meta http-equiv="content-type" content="text/html; charset=utf-8">
-    <?php echo $this->headTitle(SITE_NAME)->setSeparator(' | ')->setAutoEscape(false) ?>
+		<?php echo $this->headTitle(SITE_NAME)->setSeparator(' | ')->setAutoEscape(false) ?>
 
-    <!-- Le styles -->
-    <?php echo $this->headLink(array('rel' => 'shortcut icon', 'type' => 'image/vnd.microsoft.icon', 'href' => $this->basePath() . '/favicon.ico'))
-                    ->prependStylesheet($this->basepath('css/admin/codeit-admin.css'))
-                    ->prependStylesheet($this->basePath() . '/js/dhtmlxGrid/customscroll.css')
-										->prependStylesheet($this->basepath('css/admin/checkbox.css?time=2014-03-17-01'))
-										->prependStylesheet($this->basePath() . '/js/dhtmlxGrid/dhtmlxgrid.css')
+		<!-- Le styles -->
+		<?php echo $this->headLink(array('rel' => 'shortcut icon', 'type' => 'image/vnd.microsoft.icon', 'href' => $this->basePath() . '/favicon.ico'))
+						->appendStylesheet($this->basePath() . '/js/dhtmlxGrid/customscroll.css')
+						->appendStylesheet($this->basepath('css/admin/checkbox.css'))
+						->appendStylesheet($this->basePath() . '/js/dhtmlxGrid/dhtmlxgrid.css')
+						->appendStylesheet($this->basepath('css/admin/codeit-admin.css'))
+		;?>
+
+		<!-- Scripts -->
+		<?php echo $this->headScript()->prependFile($this->basePath() . '/js/html5.js', 'text/javascript', array('conditional' => 'lt IE 9',))
+						->prependFile($this->basePath(). '/js/admin/jWindows.js')//custom alert/confirm messages
+						->prependFile($this->basePath(). '/js/admin/chosen.jquery.js', 'text/javascript')
+						->prependFile($this->basePath(). '/js/admin/common.js?time=2014-03-17-01')
+						//->prependFile($this->basePath(). '/js/globalFunc.js?time=2014-03-17-01')
+						//->prependFile($this->basePath(). '/js/ajax.js?time=2014-03-17-01')
+						->prependFile($this->basePath(). '/js/admin/jquery.checkbox.min.js')
+						/* dhtmlxgrid */
+						->prependFile($this->basePath() . '/js/dhtmlxGrid/customscroll.js', 'text/javascript')
+						->prependFile($this->basePath() . '/js/dhtmlxGrid/dhtmlxgrid.js?t=2014111301')
+						->prependFile($this->basePath() . '/js/jquery-2.1.1.min.js')
+
+						->appendScript('dir = "'.$this->basePath().'"; deleteQuestion="'._('Are you sure you want to delete this item?').'"') 
+						->appendScript('closeQuestion="'._('Do you want to save changes before closing?').'"') 
+						->appendScript('siteurl = "'.URL.'";') 
+						->appendScript('errorTitle="'._('Error').'"; notEnoughPermissions="'._('You do not have enough permissions to make changes').'"')
 		?>
 
-    <!-- Scripts -->
-    <?php echo $this->headScript()->prependFile($this->basePath() . '/js/html5.js', 'text/javascript', array('conditional' => 'lt IE 9',))
-                                  ->prependFile($this->basePath(). '/js/admin/jWindows.js')//custom alert/confirm messages
-																	->prependFile($this->basePath(). '/js/admin/chosen.jquery.js', 'text/javascript')
-                                  ->prependFile($this->basePath(). '/js/admin/common.js?time=2014-03-17-01')
-                                  ->prependFile($this->basePath(). '/js/globalFunc.js?time=2014-03-17-01')
-                                  ->prependFile($this->basePath(). '/js/ajax.js?time=2014-03-17-01')
-																	->prependFile($this->basePath(). '/js/admin/jquery.checkbox.min.js')
-																	->prependFile($this->basePath(). '/js/tools/jquery.form.min.js')
-                                  /* dhtmlxgrid */
-                                  ->prependFile($this->basePath() . '/js/dhtmlxGrid/customscroll.js', 'text/javascript')
-                                  ->prependFile($this->basePath() . '/js/dhtmlxGrid/dhtmlxgrid.js?t=2014111301')
-                                  ->prependFile($this->basePath() . '/js/dhtmlxGrid/dhtmlxcommon.js?t=2014111301')
-                                  ->prependFile($this->basePath() . '/js/jquery-2.1.1.min.js')
-                                  
-                                  ->appendScript('dir = "'.$this->basePath().'"; deleteQuestion="'._('Are you sure you want to delete this item?').'"') 
-                                  ->appendScript('closeQuestion="'._('You have unsaved changes. Are you sure you want to close window?').'"') 
-                                  ->appendScript('siteurl = "'.URL.'";') 
-                                  ->appendScript('errorTitle="'._('Error').'"; notEnoughPermissions="'._('You do not have enough permissions to make changes').'"')                
-    ?>
-
-  </head>
+	</head>
 
 	<body id="body" <?php echo (isset($bodyClass)? 'class="'.$bodyClass.'"' : '');?>>
-			<div class="header">
-				<div class="nav-bar">
-					<div class="wrapBox">
+		<div class="header">
+			<div class="nav-bar">
+				<div class="wrapBox">
 					<ul id="nav">
-					<?php
-						$cpath='Admin\Controller\\';
-					?>
-						<?php if ($this->getUser()->isAllowed($cpath.'User', 'index')) {?>
-						<li class="<?=in_array($controller, array('User'))?"active ":''?>parent level0">
-							 <a href="<?php echo $this->basepath('admin/user')?>" class=""><span><?echo _('Manage Users');?></span></a>
-						</li>
-						<?}?>
-						<?php if ($this->getUser()->isAllowed($cpath.'Template', 'index')) {?>
-						<li class="<?=in_array($controller, array('Template'))?"active ":''?>parent level0">
-							 <a href="<?php echo $this->basepath('admin/template')?>" class=""><span><?echo _('Email templates');?></span></a>
-						</li>
-						<?}?>
+						<?php
+							$cpath='Admin\Controller\\';
+						?>
+						<?php if ($this->getUser()->isAllowed($cpath.'User', 'index')) { ?>
+							<li class="<?php echo in_array($controller, array('User'))?"active ":''?>parent level0">
+								<a href="<?php echo $this->basepath('admin/user')?>" class=""><span><?echo _('Manage Users');?></span></a>
+							</li>
+						<?php } ?>
+						<?php if ($this->getUser()->isAllowed($cpath.'Template', 'index')) { ?>
+							<li class="<?=in_array($controller, array('Template'))?"active ":''?>parent level0">
+								<a href="<?php echo $this->basepath('admin/template')?>" class=""><span><?echo _('Email templates');?></span></a>
+							</li>
+						<?php } ?>
 						<?php if ($this->getUser()->getId()) { ?>
 							<li class="parent level0 last"><a href="<?php echo URL.'auth/logout'; ?>" class=""><span><?echo _('Log Out');?></span></a></li>
-						<? } ?>
+						<?php } ?>
 					</ul>
-					</div>
 				</div>
-				<div class="breadcrumps-block">
-  				<div class="breadcrumps <?php echo (isset($breadcrumbsSubclass)? $breadcrumbsSubclass : '');?>">
-  				<?php if (isset($submenu)) {
-						echo $submenu;
-					}?>
-  				<?php if (isset($title_link))
-  				$title = $title_link;
-			  	if (isset($breadcrumbs)) {
-			  		echo '<div class="breadcrumps-div">';
+			</div>
+			<div class="breadcrumps-block">
+				<div class="breadcrumps <?php echo (isset($breadcrumbsSubclass)? $breadcrumbsSubclass : '');?>">
+					<?php if (isset($title_link))
+						$title = $title_link;
+					if (isset($breadcrumbs)) {
+						echo '<div class="breadcrumps-div">';
 						foreach ($breadcrumbs as $url => $link_title) {
 							echo '<a href="'.$url.'">'.$link_title.'</a>'.' / ';
 						}
 						echo $title.'</div>';
-			  	}?>
-					</div>
-  			</div>
-  </div>
-  
-		
-		<div class="wrapBox">
-			<div class="wrapper">
-			  <div class='middle'>
-			      <?php echo $this->content; ?>
-			  </div>
-			  <div class="clear-footer"></div>
+					}?>
+					<?php if (isset($submenu)) {
+						echo $submenu;
+					}?>
+				</div>
 			</div>
 		</div>
-		
-	  <div class="footer">
-  		<div class="copiright-adm">
-  		&copy; 2014 <a href='<?php echo $this->url('home')?>'><?php echo SITE_NAME ?></a>.
-  		</div>
-	  </div>
-	  <!--<div class="line-footer"></div>-->
-	  
-	  <?php echo $this->inlineScript() ?>
-	  <script>
-	  	var main_win_height=0;
-  		$(document).ready(function(){
-						 			var height = $('.xhdr').height();
-						 			$('.objbox').css('padding-top', height);
-									main_win_height=$(window).height();
-									
-							 });
-							 
-	  </script>
-  
+
+
+		<div class="wrapBox">
+			<div class="wrapper">
+				<div class='middle'>
+					<?php echo $this->content; ?>
+				</div>
+				<div class="clear-footer"></div>
+			</div>
+		</div>
+
+		<div class="footer">
+			<div class="copiright-adm">
+				&copy; 2015 <a href='<?php echo $this->url('home')?>'><?php echo SITE_NAME ?></a>.
+			</div>
+		</div>
+		<!--<div class="line-footer"></div>-->
+
+		<?php echo $this->inlineScript() ?>
+
 	</body>
 </html>

@@ -103,6 +103,13 @@ class UserTable extends CachedTable {
 	 * @var array
 	 */
 	public $avatars;
+	
+	/**
+	 * timestamp of last object update
+	 * 
+	 * @var int
+	 */
+	public $updated;
 
 	/**
 	 * List of fields from DB table
@@ -120,11 +127,12 @@ class UserTable extends CachedTable {
 		'newpass',
 		'code',
 		'phone',
-		'birthdate'
+		'birthdate',
+		'updated',
 	);
 
 	public function __construct($userId = null) {
-		parent::__construct('user', $userId);
+		parent::__construct('user', $userId);$this->cacheDeleteByMask('');
 	}
 
 	/**

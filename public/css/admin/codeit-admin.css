@@ -472,7 +472,7 @@ button {
 .add_item_btn a, .add_item_btn .content-buttons{
 	position: absolute;
 	right: 0;
-	top: 5px;
+	top: -35px;
 	overflow: visible;
 }
 /* table */
@@ -1269,3 +1269,9 @@ label.css-label {
 .form-button, .form-button:hover {min-height: 18px; padding: 3px 6px !important; text-decoration: none;}
 .form-button.add span { padding-left:20px; }
 .margTop8{margin-top: 8px;}
+.total-grid-count {float: left;margin-left: 25px; font-weight: bold;}
+.middle .edit-content-wrap {padding: 0 25px 25px 25px;}
+form .input-error + ul, .error li, .error {
+    color: #ba3e3e;
+    list-style: outside none none;
+}

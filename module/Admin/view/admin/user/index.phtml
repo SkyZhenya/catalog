@@ -5,10 +5,9 @@
 					->appendFile($this->basePath() . '/js/changeabledata-checkbox.js')
 					->appendFile(URL . 'js/admin/pages/user.js')
 					->appendFile(URL . 'js/tools/jquery-ui-1.10.4.custom.min.js')
-					->appendFile(URL . 'js/pages/avatarEditor.js', 'text/javascript');
+	;
 	$this->headLink()->prependStylesheet($this->basePath() . '/css/admin/chosen.css')
 					->prependStylesheet(URL . 'css/tools/ui/jquery-ui-1.10.4.custom.css')
-					->appendStylesheet(URL . 'css/admin/avatarEditor.css')
 ;
 ?>
 
@@ -43,8 +42,8 @@
 			<input id="created" readonly="readonly" onchange="adminGrid.filterBy()">
 		</div>
 		<div class="rangeDP">
-			<input id="created_from" readonly="readonly"  style="width:48%" onchange="adminGrid.filterBy()">-
-			<input id="created_to" readonly="readonly"  style="width:48%" onchange="adminGrid.filterBy()">
+			<input id="created_from" readonly="readonly"  style="width:46%" onchange="adminGrid.filterBy()">-
+			<input id="created_to" readonly="readonly"  style="width:46%" onchange="adminGrid.filterBy()">
 		</div>
 		<a href="javascript:void(0);" class="clearDate" onclick="common.clearDate(this); return false;">&nbsp;</a>
 	</div>

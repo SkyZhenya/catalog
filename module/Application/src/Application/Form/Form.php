@@ -5,6 +5,13 @@ abstract class Form extends \Zend\Form\Form {
 	
 	protected $langs = [];
 	
+	/**
+	 * last update timestamp
+	 * 
+	 * @var int
+	 */
+	protected $updated;
+	
 	abstract protected function getInpFilter();
 
 	/**
@@ -30,4 +37,20 @@ abstract class Form extends \Zend\Form\Form {
 		}
 	}
 	
+	/**
+	 * set value for updated field
+	 * 
+	 * @param int $updated
+	 */
+	public function setUpdated($updated) {
+		$this->updated = $updated;
+	}
+
+	/**
+	 * returns updated value for form content
+	 * 
+	 */
+	public function getUpdated() {
+		return $this->updated;
+	}
 }

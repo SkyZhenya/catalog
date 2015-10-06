@@ -30,15 +30,15 @@ class UserEditForm extends \Application\Form\Form {
 	* @param string $level
 	* @return UserEditForm
 	*/
-	public function __construct($action = 'edit') {
+	public function __construct($action = 'edit', $userId = null) {
 		parent::__construct('useredit');
 
 		$this->setAttribute('method', 'post');
 		$this->setAttribute('class', 'formWrapp ajaxForm userEditForm');
-		$this->setAttribute('action', URL.'admin/user/add');
 		$this->setAttribute('enctype', 'multipart/form-data');
 		$this->setAttribute('onsubmit', 'return avatarEditor.beforeSubmitAvatar();');
 		$this->action = $action;
+		$this->userId = $userId;
 
 		$this->add(array(
 			'name' => 'csrf',
@@ -55,6 +55,13 @@ class UserEditForm extends \Application\Form\Form {
 		
 		$this->add(array(
 			'name' => 'id',
+			'attributes' => array(
+				'type' => 'hidden',
+			),
+		));
+		
+		$this->add(array(
+			'name' => 'updated',
 			'attributes' => array(
 				'type' => 'hidden',
 			),
@@ -169,6 +176,7 @@ class UserEditForm extends \Application\Form\Form {
 			'attributes' => array(
 				'value' => _('Cancel'),
 				'class' => 'clear-btn popup_cancel',
+				'onclick' => "common.cancelChanges(".'"'.htmlspecialchars(addslashes(URL.'admin/user')).'")',
 			))
 		);
 	}
@@ -238,15 +246,21 @@ class UserEditForm extends \Application\Form\Form {
 					)),
 				),
 			)));
+			
+			$inputFilter->add([
+				'name' => 'updated',
+				'allow_empty' => ($this->action == 'edit')? false : true,
+				'validators' => [
+					['name' => 'Application\Lib\Validator\NotModified', 'options' => [
+						'comparableTimestamp' => $this->getUpdated(),
+						'messages' => [\Application\Lib\Validator\NotModified::IS_MODIFIED => _('The data was changed, please start edit once again')],
+					],],
+				],
+			]);
 					
 			$this->inputFilter = $inputFilter;
 		}
 
 		return $this->inputFilter;
-	}
-	
-	public function setUserId($userId) {
-		$this->userId = $userId;
-		$this->setAttribute('action', URL.'admin/user/edit/'.$userId); 
 	}
 }

@@ -44,6 +44,8 @@ var common = {
 
 
 	setGridHeight: function(){
+		var height = $('.xhdr').height();
+		$('.objbox').css('padding-top', height);
 		var windowHeight = $(window).height();
 		var headerHeight = $('.header').height();
 		var footerHeight = $('.footer').height();
@@ -135,10 +137,10 @@ var common = {
 
 	beforeCloseFancybox: function(){
 		if ((typeof(parent.adminGrid.grid) !== 'undefined') && (typeof(parent.common.refreshDataLink)!=='undefined') && (!parent.common.refreshGrid)){
-			filterBy();
+			adminGrid.filterBy();
 		}
 		if ((typeof(parent.adminGrid.grid) !== 'undefined') && (parent.common.refreshGrid)){
-			parent.filterBy();
+			adminGrid.filterBy();
 			parent.common.refreshGrid = 0;
 		}
 		parent.common.needClose = 0;
@@ -148,11 +150,19 @@ var common = {
 		parent.common.changedForm = false;
 	},
 
-	selectItemInList: function(contentId, rowNum, urlToContentEdit) {
+	selectItemInList: function(contentId, rowNum, urlToContentEdit, openNewPage, addRedirectToCurrent) {
 		common.selectedRow.id = contentId;
 		common.selectedRow.num = rowNum;
 		var link = urlToContentEdit + contentId;
-		getUserEditForm(contentId);
+		if (addRedirectToCurrent) {
+			link += '?r='+encodeURIComponent(window.location.href);
+		}
+		if (openNewPage) {
+			window.location.href = link;
+		}
+		else {
+			initFancybox(link);
+		}
 		return false;
 	},
 	
@@ -163,20 +173,48 @@ var common = {
 			$("#end_from").datepicker("option", "minDate", null);
 			$("#end_to").datepicker("option", "minDate", null);
 		}
-		filterBy();
+		adminGrid.filterBy();
 	},
 	
 	toggleCustomDatepicker: function(item) {
 		$(item).parent().parent().find(".singleDP").toggle();
 		$(item).parent().parent().find(".rangeDP").toggle();
 		$(item).hasClass("showDatepickersLeft") == true ? $(item).removeClass("showDatepickersLeft").addClass("showDatepickersRight") : $(item).removeClass("showDatepickersRight").addClass("showDatepickersLeft");
+	},
+	
+	setYesNoConfirmButtons: function() {
+		$.alerts.okButton = 'Yes';
+		$.alerts.cancelButton = '&nbsp;No&nbsp;';
+	},
+	
+	setDefaultConfirmButtons: function() {
+		$.alerts.okButton = 'OK';
+		$.alerts.cancelButton = '&nbsp;Cancel&nbsp;';
+	},
+	
+	cancelChanges: function(redirectLink) {
+		$.alerts.okButton = 'Save';
+		if (common.changedForm) {
+			jConfirm(closeQuestion, 'Warning', 'window', function(data){
+				if(data){
+					$('#submit').click();
+				}
+				else {
+					window.location.href = redirectLink;
+				}
+			});
+		}
+		else {
+			window.location.href = redirectLink;
+		}
 	}
 }
 
 $(document).ready(function(){	
-	if (parent.common.needClose>1){
-		common.prepareWindowToClose();
-	}
+	$('form').find('input,select,textarea').change(function(){
+		common.changedForm = true;
+	});
+	
 	if (!$(".loaderWrapp").length) {
 		var loaderTop = parseInt($(window).height()) / 2 + parseInt($(window).scrollTop());
 		$("body").append("<div class='loaderWrapp'><img style='top:" + loaderTop + "px'  src='" + dir + "/images/loading.gif?" + Math.random() + "' /></div>");

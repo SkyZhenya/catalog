@@ -11,6 +11,14 @@ class TemplateTable extends LocalizableTable {
 	 * @var string
 	 */
 	public $name;
+	
+	/**
+	 * timestamp of last object update
+	 * 
+	 * @var int
+	 */
+	public $updated;
+	
 	/**
 	 * List of fields from DB table
 	 * 
@@ -19,6 +27,7 @@ class TemplateTable extends LocalizableTable {
 	protected $goodFields = array(
 		'id',
 		'name',
+		'updated',
 	);
 	
 	/**
