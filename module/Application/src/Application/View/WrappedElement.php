@@ -57,10 +57,9 @@ class WrappedElement extends AbstractHelper {
 		switch ($type) {
 			
 			case 'captcha':
-				$helper = new \Application\View\CaptchaHelper();
-				$image = $helper->getImage($element);
-				$input = $helper->getInput($element);
-				$elementHTML = "<div class='label'>{$image}" . (empty($label) ? '' : $label . ':') . "</div>" . "<div class='el'>$input</div>";
+				$helper = new \Application\Lib\Form\View\Helper\Captcha\InOutputImage();
+				$input = $helper->render($element);
+				$elementHTML = "<div>$input $label</div>";
 				break;
 			case 'checkbox':
 			case 'radio':

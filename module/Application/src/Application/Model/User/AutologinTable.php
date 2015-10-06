@@ -16,7 +16,7 @@ class AutologinTable extends AppTable {
 	const ID_COLUMN = 'id';
 	
 	public function __construct() {
-		parent::__construct('user_autologin');
+		parent::__construct('userAutologin');
 		$this->deleteExpired();
 	}
 	

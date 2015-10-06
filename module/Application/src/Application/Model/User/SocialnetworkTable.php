@@ -40,7 +40,7 @@ class SocialnetworkTable extends AppTable {
 	);
 
 	public function __construct($userId = null) {
-		parent::__construct('user_socialnetwork', $userId);
+		parent::__construct('userSocialNetwork', $userId);
 	}
 
 

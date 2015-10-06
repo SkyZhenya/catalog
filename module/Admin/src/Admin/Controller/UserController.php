@@ -128,6 +128,9 @@ class UserController extends AppController {
 			$form->setData($data);
 			if ($form->isValid()) {
 				$data = $form->getData();
+				if (!empty($data['pass'])) {
+					$data['password'] = $this->user->passwordHash($data['pass']);
+				}
 				$id = $this->userTable->insert($data);
 				$form->setUserId($id);
 				if (!empty($data['avatar']['tmp_name'])) {

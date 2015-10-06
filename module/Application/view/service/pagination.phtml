@@ -1,0 +1,26 @@
+<?php if ($this->pageCount): ?>
+<div class="pagination-centered" style="text-align: center;">
+	<ul class="pagination">
+		<li <?php echo!isset($this->previous) ? 'class="disabled"' : ''; ?>>
+			<a href="<?php echo $this->url($this->route, array('page' => $this->first,)); ?>">&laquo;</a></li>
+		<li <?php echo!isset($this->previous) ? 'class="disabled"' : ''; ?>>
+			<a href="<?php echo $this->url($this->route, array('page' => $this->previous,)); ?>">&lsaquo;</a></li>
+
+		<!-- Numbered page links -->
+		<?php foreach ($this->pagesInRange as $page): ?>
+		<li <?php echo $page == $this->current ? 'class="active"' : ''; ?>>
+			<a href="<?php echo $this->url($this->route, array('page' => $page,)); ?>"><?php echo $page; ?></a>
+		</li>
+		<?php endforeach; ?>
+
+		<!-- Next page link -->
+		<li <?php echo!isset($this->next) ? 'class="disabled"' : ''; ?>>
+			<a href="<?php echo $this->url($this->route, array('page' => $this->next,)); ?>">&rsaquo;</a>
+		</li>
+		<!-- Last page link -->
+		<li <?php echo!isset($this->next) ? 'class="disabled"' : ''; ?>>
+			<a href="<?php echo $this->url($this->route, array('page' => $this->last,)); ?>">&raquo;</a>
+		</li>
+	</ul>
+</div>
+<?php endif; ?>

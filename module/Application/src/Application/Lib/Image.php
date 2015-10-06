@@ -66,7 +66,7 @@ class Image {
 	 * @throws 10003 on Source image seems to be too small
 	 * @throws 10004 on Destination image cannot be saved
 	 */
-	static function resize($srcPath, $dstPath, $width, $height, $method='fill') {
+	static function resize($srcPath, $dstPath, $width, $height, $method='resize') {
 		$source = self::openImage($srcPath);
 		self::resizeResource($source, $dstPath, $width, $height, $method);
 	}
