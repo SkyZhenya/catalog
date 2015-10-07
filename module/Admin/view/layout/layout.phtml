@@ -17,14 +17,14 @@ $title = $titles[0];
 						->appendStylesheet($this->basePath() . '/js/dhtmlxGrid/customscroll.css')
 						->appendStylesheet($this->basepath('css/admin/checkbox.css'))
 						->appendStylesheet($this->basePath() . '/js/dhtmlxGrid/dhtmlxgrid.css')
-						->appendStylesheet($this->basepath('css/admin/codeit-admin.css'))
+						->appendStylesheet($this->basepath('css/admin/codeit-admin.css?v=2015100701'))
 		;?>
 
 		<!-- Scripts -->
 		<?php echo $this->headScript()->prependFile($this->basePath() . '/js/html5.js', 'text/javascript', array('conditional' => 'lt IE 9',))
 						->prependFile($this->basePath(). '/js/admin/jWindows.js')//custom alert/confirm messages
 						->prependFile($this->basePath(). '/js/admin/chosen.jquery.js', 'text/javascript')
-						->prependFile($this->basePath(). '/js/admin/common.js?time=2014-03-17-01')
+						->prependFile($this->basePath(). '/js/admin/common.js?v=2015100701')
 						->prependFile($this->basePath(). '/js/admin/jquery.checkbox.min.js')
 						/* dhtmlxgrid */
 						->prependFile($this->basePath() . '/js/dhtmlxGrid/customscroll.js', 'text/javascript')

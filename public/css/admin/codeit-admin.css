@@ -937,6 +937,7 @@ ul.tabs-horiz li a {
 }
 .invTabs form {
 	margin-left: 15px;
+	margin-right: 15px;
 }
 
 .screen_loader {
