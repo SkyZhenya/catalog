@@ -1,5 +1,6 @@
 <?php
 namespace Admin\Controller;
+
 use Application\Lib\AppController;
 use Application\Model\TemplateTable;
 use Admin\Form\TemplateForm;
@@ -10,23 +11,21 @@ use Zend\View\Model\ViewModel;
  */
 class TemplateController extends AppController {
 	/**
-	* @var \Zend\Form\Form
-	*/
+	 * @var \Zend\Form\Form
+	 */
 	var $form;
-	
+
 	/**
 	 * @var Application\Model\TemplateTable
 	 */
 	var $templateTable;
-	
-	var $url = 'template';
 
 	public function ready() {
 		parent::ready();
 
 		$this->templateTable = new TemplateTable();
 	}
-	
+
 	/**
 	 * return form
 	 * 
@@ -41,96 +40,84 @@ class TemplateController extends AppController {
 
 	public function indexAction() {
 		$this->layout()->bodyClass = 'templates';
-		$this->renderHtmlIntoLayout('submenu', 'admin/template/submenu.phtml');
+
+		$total = 0;
+		$list = $this->templateTable->find([], 1, 0, null, $total);
+		$result = [
+			'total' => $total,
+		];
+
+		$this->renderHtmlIntoLayout('submenu', 'admin/template/submenu.phtml', $result);
+
+		return $result;
 	}
 
-	public function editAction() {	
-		$form = $this->getForm();
+	public function editAction() {
 		$id = $this->params('id',0);
-		$this->setBreadcrumbs(['template' => 'Email Templates'], true);
-		$this->layout()->bodyClass = 'editcontent';
-		
-		
-		if ($id > 0) {
-			try {
-				$data = (array)$this->templateTable->getFullLocalData($id); 
-				$form->setData($data);
-			}
-			catch(\Exception $e) {
-                return $this->notFoundAction();
-			}
+
+		$this->setBreadcrumbs(['template' => 'Email Templates',], true);
+		$form = $this->getForm();
+
+		try {
+			$data = (array)$this->templateTable->getFullLocalData($id);
+			$form->setUpdated($data['updated']);
+			$form->setData($data);
 		}
-		
-		$wasAdded = false;
+		catch(\Exception $e) {
+			return $this->notFoundAction();
+		}
+
 		if ($this->request->isPost()) {
 			$data = $this->request->getPost()->toArray();
 			$form->setData($data);
-			if(isset($data['submit'])) {
+			if ($form->isValid()) {
+				$data = $form->getData();
+				$data['updated'] = TIME;
+				$oldValue = $this->templateTable->setId($id);
+				$this->templateTable->cacheDelete(base64_encode($oldValue->name));
 
-				if ($form->isValid()) {
-					$data = $form->getData();
-					if ($id > 0){
-						$oldValue = $this->templateTable->setId($id);
-						$this->templateTable->cacheDelete(base64_encode($oldValue->name));
-						$this->templateTable->set($data);
-					}
-					else {
-						$id = $this->templateTable->insert($data);
-						$form->setAttribute('action', URL.'admin/'.$this->url.'/edit/'.$id);
-						$form->get('id')->setValue($id);
-						$wasAdded = true;
-					}
-					return $this->redirect()->toUrl(URL.'admin/template');
-				}
+				$this->templateTable->set($data);
+
+				return $this->redirect()->toUrl(URL.'admin/template');
 			}
 		}
-		
+
+		$langsTable = new \Application\Model\LangTable();
+		$langs = $langsTable->getList();
+
 		$view = new ViewModel(array(
 			'form' => $form,
 			'error' => $this->error,
-			'title' => _('Email template'),
+			'langs' => $langs->toArray(),
 			'activeLang' =>\Zend\Registry::get('lang'),
 		));
 		return $view;
 	}
 
-	public function addAction(){
-		$this->setBreadcrumbs(['template' => 'Email Templates'], true);
-		$this->layout()->bodyClass = 'editcontent';
-		
-		$form = $this->getForm();
-		$form->setAttribute('action', URL.'admin/'.$this->url.'/edit/');
-		
-		$langsTable = new \Application\Model\LangTable();
-		$langs = $langsTable->getList();
-		
-		$result = new ViewModel(array(
-			'form' => $form,
-			'title' => _('New email template'),
-			'langs' => $langs,
-			'activeLang' =>\Zend\Registry::get('lang'),
-		));
-		$result->setTemplate('admin/'.$this->url.'/edit');
-		return $result;
-	}
-
-	
-	public function deleteAction() {
-		$id = (int)$this->request->getPost('id');
-
-		$this->templateTable->delete(array(
-			'id' => $id,
-		));
-		return $this->getResponse()->setContent('OK');
-	}
-	
 	/**
 	 * apply filters
 	 * 
 	 * @return array
 	 */
 	protected function resolveParams() {
-		return array();
+		$params = array();
+
+		$flPid = $this->params()->fromQuery('flPid');
+		if(trim($flPid) !== '') {
+			$params []= array('id', 'LIKE', "{$flPid}%");
+		}
+		$flId = $this->params()->fromQuery('flId');
+		if(!empty($flId)) {
+			$params []= array('id', '=', "{$flId}");
+		}
+
+		$flName = $this->params()->fromQuery('flName');
+		if(trim($flName) !== '') {
+			$params []= array('name', 'LIKE', "%{$flName}%");
+		}
+
+
+		return $params;
 	}
 
 	/**
@@ -140,7 +127,7 @@ class TemplateController extends AppController {
 	 */
 	protected function resolveOrderby() {
 		$orderby='id';
-			
+
 		if(isset($_GET['orderby'])) {
 			switch($_GET['order']) {
 				case 'asc': $orderdir='asc'; break;
@@ -153,12 +140,11 @@ class TemplateController extends AppController {
 			}
 			$orderby.=' '.$orderdir;
 		}
-		
+
 		return $orderby;
 	}
-	
+
 	public function listAction() {
-		header("Content-Type: application/json");
 		$count = (int)$this->params()->fromQuery('count', 50);
 		$pos = (int)$this->params()->fromQuery('posStart', 0);
 		$params = $this->resolveParams();
@@ -170,7 +156,7 @@ class TemplateController extends AppController {
 			'pos' => $pos,
 			'total' => $total,
 			'list' => $list,
-			'isAllowedDelete' => $this->user->isAllowed('Admin\Controller\Template', 'delete'),
+			'isAllowedDelete' => false,
 		));
 		$xmlResult->setTerminal(true);
 		return $xmlResult;

@@ -268,7 +268,7 @@ li.level0 {
 	background: none repeat scroll 0 0 #F3F3F4;
   border-top: 1px solid #FFFFFF;
   border-bottom: 1px solid #dadada;
-  height: 45px;
+  height: 70px;
   width: 100%;
 }
 .breadcrumps-div{
@@ -294,7 +294,7 @@ li.level0 {
 	height: auto;
 	margin: 0px auto 0;
   position: relative;
-  padding: 97px 0 0;
+  padding: 122px 0 0;
 }
 
 /* gridbox */
@@ -898,22 +898,32 @@ ul.tabs-horiz li a {
 	background:#e7eaeb;
 }
 #invTabsUl {
-	margin-bottom: -3px;
-	position: relative; 
-	z-index: 0;
+    height: 38px !important;
+    margin-bottom: -3px;
+    position: relative;
+    z-index: 0;
+    list-style: outside none none;
+    margin: 15px 0 0;
+    padding: 2px 15px;
 }
-
+#invTabsUl li {
+    margin-bottom: 0px;
+    display: inline-block;
+    vertical-align: middle;
+}
 #invTabsUl li a {
-	padding: 10px 15px;
+	background: #dadada none repeat scroll 0 0;
+    display: block;
+    text-decoration: none;
+    padding: 10px 15px;
 }
 #invTabsUl li a span {
 	text-transform: uppercase;
 	color: #6e7f8b;
 	font-size: 12px;
 }
-.tab-item-link.active {
-	
-	background: #f9f9f9;
+#invTabsUl li a.active {
+	 background: #c6c6c6 none repeat scroll 0 0;
 }
 .tab-item-link.active span {
 	color: #40525e !important;
@@ -922,15 +932,11 @@ ul.tabs-horiz li a {
 	border: 0 none;
 	position: relative;
 	z-index: 2;
-	background:url('../../images/admin/codeitadmin/line.jpg') repeat-x 0 0px #F9F9F9;;
-	margin-left: -15px;
+	background:url('../../images/admin/codeitadmin/line.jpg') repeat-x 0 0px;;
 	padding: 5px;
 }
 .invTabs form {
 	margin-left: 15px;
-}
-ul.tabs-horiz li a.active {
-	border-bottom: 2px solid #f9f9f9;
 }
 
 .screen_loader {
@@ -1127,12 +1133,6 @@ div.gridbox_light .xhdr {
 #gridbox {
 	min-height: 100%;
 }
-#body.user .breadcrumps-block {
-	height: 70px;
-}
-#body.user .middle {
-	padding-top: 122px;
-}
 /* firefox hack */
 @-moz-document url-prefix() {
 	#useredit.assistant-form .submit {
@@ -1162,7 +1162,7 @@ div.gridbox_light .xhdr {
 								 -moz-user-select: none;
 								 -ms-user-select: none;
 								 user-select: none; }
-#body.user .objbox td {
+#body .objbox td {
 	height: 32px;
 }
 @media screen and (max-width: 1100px) {

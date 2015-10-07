@@ -4,6 +4,9 @@
 ?>
 
 <div id="gridbox"></div>
+<div style="display:none">
+	<div id="name_flt_box"><input class="js-filter-value" onkeyup="adminGrid.filterBy()"></div>
+</div>
 
 <script>
 	$(document).ready(function(){ 
@@ -12,9 +15,13 @@
 			columns: [
 				{'title' : "#", 'width': 15},
 				{'title' : <?php echo json_encode(_('Id'));?>, 'width': 25, 'colSorting': 'int'},
-				{'title' : <?php echo json_encode(_('Template slug'));?>, 'width': 225, 'colSorting': 'str'},
-				{'title' : <? echo json_encode(_('Actions'));?>, 'width': 15},
-				{'title' : "#cspan", 'width': 15},
+				{'title' : <?php echo json_encode(_('Name'));?>, 'width': 225, 'colSorting': 'str',
+					'filter': {
+						'sourceContainerSelector': "#name_flt_box",
+						'values': [{'name':'flName'}]
+					}
+				},
+				{'title' : <? echo json_encode(_('Actions'));?>, 'width': 30},
 			],
 			events: [
 				{

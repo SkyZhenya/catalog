@@ -4,19 +4,19 @@ $i = $pos;
 $data = ['rows' => [], 'total_count' => $total];
 foreach ($list as $item) {
 	$i++;
-	$editActions = "<a class='edit' onclick='getEditForm(".$item->id.")' >" . _("Edit") . "</a> ";
+	$editActions = "<a class='edit' href='#'>" . _("Edit") . "</a> ";
 	if ($isAllowedDelete)
-			$deleteActions = "<a class='del' href='javascript:void(0);' onclick='common.confdel(\"".URL."admin/template/delete/\",{$item->id}, common.removeItem); (arguments[0]||window.event).cancelBubble=true; return false;'>"._('Delete')."</a>";
+		$deleteActions = "<a class='del' href='javascript:void(0);' onclick='common.confdel(\"".URL."admin/template/delete/\",{$item->id}, common.removeItem); (arguments[0]||window.event).cancelBubble=true; return false;'>"._('Delete')."</a>";
 	$row = [
-			$i,
-			$item->id,
-			htmlspecialchars($item->name),
-			$editActions, 
-			(($deleteActions)? $deleteActions : '' ),
+		$i,
+		$item->id,
+		htmlspecialchars($item->name),
+		$editActions, 
+		(($deleteActions)? $deleteActions : '' ),
 	];
 	$data['rows'][] = [
-			'id' => $item->id,
-			'data' => $row,
+		'id' => $item->id,
+		'data' => $row,
 	];
 }
 echo json_encode($data);

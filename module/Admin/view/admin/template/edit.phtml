@@ -1,62 +1,52 @@
+<?php 
+$this->headTitle(_('Edit Email Template'));
+$this->headScript()->appendFile($this->basePath(). '/js/tiny_mce/tiny_mce_src.js')
+->appendFile($this->basePath(). '/js/admin/pages/content-version.js')
+;
+?>
 <div class="temlates">
 	<?php
 	if (isset($error) && !empty($error)){
-		$this->headTitle('Error');
 		echo $error;
 		return;
 	}
-	if (isset($langs)){
-	?>
+	if (isset($langs)){ ?>
 		<ul class='tabs-horiz clearfix' id='invTabsUl'>
-	    <? foreach ($langs as $i => $lang) { ?>
-	      <li><a class='tab-item-link invTabs<?php echo $lang->id;?> <?= ($lang->id == $activeLang) ? 'active' : '' ?>' onclick='return common.changeLang(<?= $lang->id; ?>, "invTabs");' href='#'><span><?= $lang->name; ?></span></a></li>
-	      <? } ?>
-	  </ul>
+			<? foreach ($langs as $i => $lang) { ?>
+				<li><a class='tab-item-link invTabs<?php echo $lang['id'];?> <?= ($lang['id'] == $activeLang) ? 'active' : '' ?>' onclick='return common.changeLang(<?= $lang['id']; ?>, "invTabs");' href='#'><span><?= $lang['name']; ?></span></a></li>
+				<? } ?>
+		</ul>
 	<?php }?>
 	<div class="invTabs">
-	<?php $id = $this->form->get('id')->getValue();
-		$this->headTitle(htmlspecialchars($this->form->get('name')->getValue()));
-		$this->headScript()->appendFile($this->basePath(). '/js/tiny_mce/tiny_mce_src.js');
-		?>
-		<?= $this->form()->openTag($form) ?>
-		<?= $this->wrappedElement($form->get('csrf')) ?>
-		<?= $this->wrappedElement($form->get('id')) ?>
+		<?php echo $this->form()->openTag($form) ?>
+		<?php echo $this->wrappedElement($form->get('csrf')); ?>
+		<?php echo $this->wrappedElement($form->get('id')); ?>
+		<?php echo $this->wrappedElement($form->get('updated')); ?>
 		<div class="formRow clearfix">
-				<?= $this->wrappedElement($form->get('name')) ?>
-			</div>
+			<?php echo $this->wrappedElement($form->get('name')); ?>
+		</div>
 		<?php foreach ($langs as $lang) { ?>
 			<div class="formRow clearfix">
-				<?= $this->wrappedElement($form->get('subject[' . $lang->id . ']')) ?>
+				<?php echo $this->wrappedElement($form->get('subject[' . $lang['id'] . ']')); ?>
 			</div>
 			<div class="formRow clearfix">
-				<?= $this->wrappedElement($form->get('text[' . $lang->id . ']')) ?>
+				<?php echo $this->wrappedElement($form->get('text[' . $lang['id'] . ']')); ?>
 			</div>
 		<?php } ?>
-		
+
 		<div class="clearfix btnsWrapp">
-			<?= $this->wrappedElement($form->get('submit')) ?>
-			<?= $this->wrappedElement($form->get('cancel')) ?>
+			<?php echo $this->wrappedElement($form->get('submit')); ?>
+			<?php echo $this->wrappedElement($form->get('cancel')); ?>
 		</div>
-		<?= $this->form()->closeTag($form) ?>
+		<?php echo $this->form()->closeTag($form); ?>
 	</div>
 	<script>
 		var activeLang = <?php echo json_encode($activeLang);?>;
 		$('.locfields').parent().parent().hide();
-		$('.locfields'+activeLang).parent().parent().show();	
-		<?php if (isset($canClosePage) && $canClosePage){?>
-			parent.common.needClose++;
-		<?} ?>
-		parent.common.refreshGrid = 0;
-		delete parent.common.refreshDataLink;
-		<?php if (isset($wasAdded) && $wasAdded) { ?>
-			parent.common.changedForm = false;
-			parent.common.refreshGrid = 1;
-		<?php }?>
-		<?php if ($id>0){?>
-			parent.common.refreshDataLink = parent.getListLink+"&flPid="+<?php echo json_encode($id);?>;
-		<?php } ?>
+		$('.locfields'+activeLang).parent().parent().show();
 		$(document).ready(function(){
 			common.initTinyMCE();
+			contentVersion.init();
 		});
 	</script>
 

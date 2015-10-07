@@ -9,27 +9,27 @@ class UserEditForm extends \Application\Form\Form {
 	 * @var Zend\InputFilter\InputFilter;
 	 */
 	protected $inputFilter;
-	
+
 	/**
 	 * 
 	 * @var string
 	 */
 	private $action;
-	
+
 	/**
 	 * 
 	 * @var int
 	 */
 	private $userId;
-	
+
 	const MAX_FILE_SIZE = 10485760; // 10 Mb
-	
+
 	/**
-	* constructor
-	* 
-	* @param string $level
-	* @return UserEditForm
-	*/
+	 * constructor
+	 * 
+	 * @param string $level
+	 * @return UserEditForm
+	 */
 	public function __construct($action = 'edit', $userId = null) {
 		parent::__construct('useredit');
 
@@ -45,21 +45,21 @@ class UserEditForm extends \Application\Form\Form {
 			'type' => 'Zend\Form\Element\Csrf',
 			'options' => array(
 				'csrf_options' => array(
-			  	'messages' => array(
-			  		\Zend\Validator\Csrf::NOT_SAME => _('The form submitted did not originate from the expected site'),
-			  	),
-			  	'timeout' => null,
+					'messages' => array(
+						\Zend\Validator\Csrf::NOT_SAME => _('The form submitted did not originate from the expected site'),
+					),
+					'timeout' => null,
 				),
 			),
 		));
-		
+
 		$this->add(array(
 			'name' => 'id',
 			'attributes' => array(
 				'type' => 'hidden',
 			),
 		));
-		
+
 		$this->add(array(
 			'name' => 'updated',
 			'attributes' => array(
@@ -88,7 +88,7 @@ class UserEditForm extends \Application\Form\Form {
 				'class' => 'input-big',
 			)
 		));
-		
+
 		$this->add(array(
 			'name' => 'phone',
 			'options' => array(
@@ -98,7 +98,7 @@ class UserEditForm extends \Application\Form\Form {
 				'class' => 'input-big',
 			)
 		));
-		
+
 		$this->add(array(
 			'name' => 'level',
 			'type' => '\Zend\Form\Element\Select',
@@ -114,7 +114,7 @@ class UserEditForm extends \Application\Form\Form {
 				),
 			)
 		));
-		
+
 		$this->add(array(
 			'name' => 'pass',
 			'type' => 'password',
@@ -125,8 +125,8 @@ class UserEditForm extends \Application\Form\Form {
 				'class' => 'input-big',
 			),
 		));
-			
-		
+
+
 		$this->add(array(
 			'name' => 'active',
 			'type' => '\Zend\Form\Element\Checkbox',
@@ -140,8 +140,8 @@ class UserEditForm extends \Application\Form\Form {
 				'data-inactive' => _('Account is Inactive'),
 			)
 		));
-		
-		
+
+
 		$this->add(array(
 			'name' => 'avatar',
 			'type' => 'file',
@@ -150,7 +150,7 @@ class UserEditForm extends \Application\Form\Form {
 				'accept' => "image/*",
 			),
 		))
-		
+
 		->add(array(
 			'name' => 'removeAvatar',
 			'type' => 'hidden',
@@ -158,7 +158,7 @@ class UserEditForm extends \Application\Form\Form {
 				'value' => '0',
 			),
 		));
-		
+
 		$this->add(array(
 			'name' => 'submit',
 			'attributes' => array(
@@ -166,7 +166,7 @@ class UserEditForm extends \Application\Form\Form {
 				'value' => _('Save'),
 			))
 		);
-		
+
 		$this->add(array(
 			'name' => 'cancel',
 			'type' => '\Zend\Form\Element\Button',
@@ -180,14 +180,23 @@ class UserEditForm extends \Application\Form\Form {
 			))
 		);
 	}
-	
-  	
+
+
 	public function getInpFilter() {
 		if (!$this->inputFilter) {
 			$inputFilter = new InputFilter();
 
 			$factory = new InputFactory();
 
+			$notemptyValidator = array(
+				'name' => 'not_empty',
+				'options' => array (
+					'messages' => array(
+						\Zend\Validator\NotEmpty::IS_EMPTY => _("This field is required"),
+					),
+				),
+				'break_chain_on_failure' => true,
+			);
 
 			$inputFilter->add($factory->createInput(array(
 				'name' => 'email',
@@ -197,6 +206,7 @@ class UserEditForm extends \Application\Form\Form {
 					array('name' => 'StringTrim'),
 				),
 				'validators' => array(
+					$notemptyValidator,
 					new \Application\Lib\Validator\CustomEmailValidator(),
 					new \Application\Lib\Validator\NotExistValidator(new \Application\Model\UserTable(), 'email', $this->userId, 'id', "E-mail already exists"),
 				),
@@ -209,8 +219,11 @@ class UserEditForm extends \Application\Form\Form {
 					array('name' => 'StripTags'),
 					array('name' => 'StringTrim'),
 				),
+				'validators' => array(
+					$notemptyValidator,
+				),
 			)));
-			
+
 			$inputFilter->add($factory->createInput(array(
 				'name' => 'pass',
 				'required' => ($this->action == 'edit')? false : true,
@@ -218,12 +231,15 @@ class UserEditForm extends \Application\Form\Form {
 					array('name' => 'StringTrim'),
 				),
 			)));
-			
+
 			$inputFilter->add($factory->createInput(array(
 				'name' => 'level',
 				'required' => true,
+				'validators' => array(
+					$notemptyValidator,
+				),
 			)));
-			
+
 			$inputFilter->add($factory->createInput(array(
 				'name' => 'avatar',
 				'required' => false,
@@ -246,7 +262,7 @@ class UserEditForm extends \Application\Form\Form {
 					)),
 				),
 			)));
-			
+
 			$inputFilter->add([
 				'name' => 'updated',
 				'allow_empty' => ($this->action == 'edit')? false : true,
@@ -254,10 +270,10 @@ class UserEditForm extends \Application\Form\Form {
 					['name' => 'Application\Lib\Validator\NotModified', 'options' => [
 						'comparableTimestamp' => $this->getUpdated(),
 						'messages' => [\Application\Lib\Validator\NotModified::IS_MODIFIED => _('The data was changed, please start edit once again')],
-					],],
+						],],
 				],
 			]);
-					
+
 			$this->inputFilter = $inputFilter;
 		}
 
