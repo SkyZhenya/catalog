@@ -98,7 +98,7 @@ class TemplateForm extends \Application\Form\MultilanguageForm {
 				'label' => _('Cancel'),
 			),
 			'attributes' => array(
-				'onclick' => 'close_fancybox();',
+				'onclick' => "common.cancelChanges(".'"'.htmlspecialchars(addslashes(URL.'admin/template')).'")',
 				'class' => 'clear-btn',
 			))
 		);
