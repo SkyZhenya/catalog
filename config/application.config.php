@@ -14,7 +14,7 @@ Zend\Registry::set('dbConfig', array(
 	'host' => $config['database']['host'],
 	'dbname' => $config['database']['name'],
 	'driver' => 'Pdo',
-	'dsn' => 'mysql:dbname='.$config['database']['name'].';hostname='.$config['database']['host'],
+	'dsn' => 'mysql:dbname='.$config['database']['name'].';host='.$config['database']['host'],
 	'username' => $config['database']['user'],
 	'password' => $config['database']['password'],
 	'driver_options' => array(
