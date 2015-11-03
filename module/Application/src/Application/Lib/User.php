@@ -148,7 +148,7 @@ class User extends UserTable {
 		$this->setId($userId);
 		$this->isActive();
 		$_SESSION['id'] = $userId;
-		setcookie('LoggedIn', 1, NULL, '/');
+		setcookie('LoggedIn', 1, NULL, '/', '.' . DOMAIN, null, true);
 	}
 
 	/**
@@ -164,8 +164,8 @@ class User extends UserTable {
 		$userAutologinTable->deleteByUser($id);
 		
 		session_destroy();
-		setcookie('LoggedIn', NULL, -1, '/');
-		setcookie('autologin', NULL, -1, '/');
+		setcookie('LoggedIn', NULL, -1, '/', '.' . DOMAIN, null, true);
+		setcookie('autologin', NULL, -1, '/', '.' . DOMAIN, null, true);
 	}
 	
 	/**
@@ -176,7 +176,7 @@ class User extends UserTable {
 	public function rememberMe($userId) {
 		$userAutologinTable = new \Application\Model\User\AutologinTable();
 		$tokenData = $userAutologinTable->createToken($userId);
-		setcookie('autologin', $tokenData['token'], $tokenData['expire'], '/');
+		setcookie('autologin', $tokenData['token'], $tokenData['expire'], '/', '.' . DOMAIN, null, true);
 	}
 
 	/**
@@ -193,7 +193,7 @@ class User extends UserTable {
 			}
 			catch(\Exception $e) {
 				unset($_COOKIE['autologin']);
-				setcookie('autologin', NULL, -1, '/');
+				setcookie('autologin', NULL, -1, '/', '.' . DOMAIN, null, true);
 			}
 		}
 
