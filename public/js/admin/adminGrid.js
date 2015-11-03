@@ -5,9 +5,9 @@ var adminGrid = {
 	
 	enableSmartRendering: true,
 	enablePreRendering: true,
-	awaitedRowHeight: 35,
+	awaitedRowHeight: 33,
 	
-	onpage: 30,
+	onpage: 50,
 	listUrl: '',
 	
 	defaults: {
@@ -27,8 +27,7 @@ var adminGrid = {
 		this.grid = new dhtmlXGridObject('gridbox');
 		this.setOptions(options);
 		this.setColumns(options.columns);
-		this.grid.init();
-		this.grid.setSkin("light");
+		
 		if (this.enableSmartRendering) {
 			this.grid.enableSmartRendering(true,this.onpage);
 		}
@@ -36,6 +35,8 @@ var adminGrid = {
 			this.grid.enablePreRendering(this.onpage);
 		}
 		this.grid.setAwaitedRowHeight(this.awatedRowHeight);
+		
+		this.grid.init();
 		
 		this.grid.attachEvent("onBeforeSorting",function(ind,type,dir){
 			adminGrid.sortOrderBy=ind;
