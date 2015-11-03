@@ -49,6 +49,12 @@ class Authentication {
 		if (!$acl->call('hasResource', array($params['controller']))) {
 			throw new \Exception('Acl resource ' . $params['controller'] . ' not defined');
 		}
+
+		if (isset($params['__NAMESPACE__']) && $params['__NAMESPACE__']==='Admin\Controller') {
+			if (!$acl->call('isAllowed', array($role, 'Admin\Controller'))) {
+				return $controller->redirect()->toUrl(URL);
+			}
+		}
 				
 		if (!$acl->call('isAllowed', array($role, $params['controller'], $params['action']))) {
 			if($role == 'guest') {

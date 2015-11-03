@@ -67,7 +67,7 @@ $role = $currentUser->getRole();
 									<a href="<?php echo URL.'auth/registration'; ?>"><span><?echo _('Sign Up');?></span></a>
 								</li>
 							<?php } ?>
-							<? if ($currentUser->isAllowed('Admin\Controller\User', 'index')) {?>
+							<? if ($currentUser->isAllowed('Admin\Controller', 'index')) {?>
 								<li><a href="<?php echo $this->basepath('admin/')?>" class=""><span><?echo _('Admin panel');?></span></a></li>
 							<?php }?>
 						</ul>
