@@ -1,22 +1,19 @@
 <?php
-header("Content-Type: text/json");
-$i = $pos;
-$data = ['rows' => [], 'total_count' => $total];
-foreach ($list as $item) {
-	$i++;
-	$editActions = "<a class='edit' href='#'>" . _("Edit") . "</a> ";
-	if ($isAllowedDelete)
-		$deleteActions = "<a class='del' href='javascript:void(0);' onclick='common.confdel(\"".URL."admin/template/delete/\",{$item->id}, common.removeItem); (arguments[0]||window.event).cancelBubble=true; return false;'>"._('Delete')."</a>";
-	$row = [
-		$i,
-		$item->id,
-		htmlspecialchars($item->name),
-		$editActions, 
-		(($deleteActions)? $deleteActions : '' ),
-	];
-	$data['rows'][] = [
-		'id' => $item->id,
-		'data' => $row,
-	];
-}
-echo json_encode($data);
+header("Content-Type: text/xml");
+?>
+<rows pos="<?php echo $pos;?>" total_count="<?php echo $total;?>">
+	<?php
+	$i=$pos;
+
+	foreach($list as $item) {
+		$i++;
+		$editActions = "<a class='edit' href='#'>" . _("Edit") . "</a> ";
+		?>
+		<row id='<?php echo $item->id;?>'>
+			<cell><?php echo $i;?></cell>
+			<cell><?php echo $item->id;?></cell>
+			<cell><?php echo htmlspecialchars($item->name);?></cell>
+			<cell><?php echo htmlspecialchars($editActions);?></cell>
+		</row>
+		<?php } ?>
+</rows>

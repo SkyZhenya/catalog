@@ -37,7 +37,7 @@ var adminGrid = {
 		this.grid.setAwaitedRowHeight(this.awatedRowHeight);
 		
 		this.grid.init();
-		
+				
 		this.grid.attachEvent("onBeforeSorting",function(ind,type,dir){
 			adminGrid.sortOrderBy=ind;
 			adminGrid.sortOrder=dir;
@@ -189,7 +189,7 @@ var adminGrid = {
 			adminGrid.grid.setSortImgState(true,adminGrid.sortOrderBy,adminGrid.sortOrder);    //set a correct sorting image
 			$('.objbox').each(function () { dhtmlx.CustomScroll._mouse_out_timed.call(this); });	
 			common.setGridHeight();
-		}, "json");
+		});
 		
 	}
 }

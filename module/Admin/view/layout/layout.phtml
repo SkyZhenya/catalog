@@ -16,7 +16,7 @@ $title = $titles[0];
 		<?php echo $this->headLink(array('rel' => 'shortcut icon', 'type' => 'image/vnd.microsoft.icon', 'href' => $this->basePath() . '/favicon.ico'))
 						->appendStylesheet($this->basePath() . '/js/dhtmlxGrid/customscroll.css')
 						->appendStylesheet($this->basepath('css/admin/checkbox.css'))
-						->appendStylesheet($this->basePath() . '/js/dhtmlxGrid/dhtmlxgrid.css')
+						->appendStylesheet($this->basePath() . '/js/dhtmlxGrid/dhtmlx.css')
 						->appendStylesheet($this->basepath('css/admin/codeit-admin.css?v=2015100701'))
 		;?>
 
@@ -28,7 +28,7 @@ $title = $titles[0];
 						->prependFile($this->basePath(). '/js/admin/jquery.checkbox.min.js')
 						/* dhtmlxgrid */
 						->prependFile($this->basePath() . '/js/dhtmlxGrid/customscroll.js', 'text/javascript')
-						->prependFile($this->basePath() . '/js/dhtmlxGrid/dhtmlxgrid.js?t=2014111301')
+						->prependFile($this->basePath() . '/js/dhtmlxGrid/dhtmlx.js?t=2014111301')
 						->prependFile($this->basePath() . '/js/jquery-2.1.1.min.js')
 
 						->appendScript('dir = "'.$this->basePath().'"; deleteQuestion="'._('Are you sure you want to delete this item?').'"') 
