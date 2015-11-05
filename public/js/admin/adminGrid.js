@@ -1,6 +1,6 @@
 var adminGrid = {
 	grid: null,
-	sortOrder : 'desc',
+	sortOrder : 'des',
 	sortOrderBy : 1,
 	
 	enableSmartRendering: true,
