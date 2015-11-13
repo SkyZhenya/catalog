@@ -132,7 +132,7 @@ class UserTable extends CachedTable {
 	);
 
 	public function __construct($userId = null) {
-		parent::__construct('user', $userId);$this->cacheDeleteByMask('');
+		parent::__construct('user', $userId);
 	}
 
 	/**
