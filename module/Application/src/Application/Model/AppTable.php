@@ -92,24 +92,24 @@ abstract class AppTable extends TableGateway {
 	 */
 	public function __construct($tableName, $id=null, $databaseSchema = null, ResultSet $selectResultPrototype = null) {
 		try {
-			$adapter = \Zend\Registry::get('dbAdapter');
+			$adapter = \Utils\Registry::get('dbAdapter');
 		}
 		catch(\Exception $e) {
 			// create adapter
 			if(defined('DEBUG_SQL') && DEBUG_SQL) {
-				$adapter = new \BjyProfiler\Db\Adapter\ProfilingAdapter(\Zend\Registry::get('dbConfig'));
+				$adapter = new \BjyProfiler\Db\Adapter\ProfilingAdapter(\Utils\Registry::get('dbConfig'));
 				$adapter->setProfiler(new \BjyProfiler\Db\Profiler\Profiler);
 				$adapter->injectProfilingStatementPrototype();
 			}
 			else {
-				$adapter = new \Zend\Db\Adapter\Adapter(\Zend\Registry::get('dbConfig'));
+				$adapter = new \Zend\Db\Adapter\Adapter(\Utils\Registry::get('dbConfig'));
 			}
 
-			\Zend\Registry::set('dbAdapter', $adapter);
+			\Utils\Registry::set('dbAdapter', $adapter);
 		}
 
 		$result = parent::__construct($tableName, $adapter, $databaseSchema, $selectResultPrototype);
-		$this->lang = \Zend\Registry::get('lang');
+		$this->lang = \Utils\Registry::get('lang');
 
 		if(!$this->locTable) $this->locTable = $this->table.'local';
 		if($id) {

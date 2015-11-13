@@ -40,7 +40,7 @@ class Authentication {
 		/**
 		* @var User
 		*/
-		$user = \Zend\Registry::get('User');
+		$user = \Utils\Registry::get('User');
 		$acl = $this->getAclClass();
 		$role = $user->getRole();
 

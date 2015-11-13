@@ -57,7 +57,7 @@ class TemplateForm extends \Application\Form\MultilanguageForm {
 
 		$langsTable = new \Application\Model\LangTable();
 		$langs = $langsTable->getList();
-		$activeLang = \Zend\Registry::get('lang');
+		$activeLang = \Utils\Registry::get('lang');
 
 		foreach ($langs as $lang){
 

@@ -7,7 +7,7 @@ use Application\Model\UserTable;
 class User extends AbstractHelper {
 	public function __invoke() {
 		try {
-			$user = \Zend\Registry::get('User');
+			$user = \Utils\Registry::get('User');
 		}
 		catch(\Exception $e) {
 			$user = new \Application\Lib\User();
@@ -15,11 +15,8 @@ class User extends AbstractHelper {
 				$user->auth(false);
 			}
 			catch(\Exception $e) {}
-			\Zend\Registry::set('User', $user);
+			\Utils\Registry::set('User', $user);
 		}
 		return $user;
-	}
-	public function getId() {
-		return $id;
 	}
 }

@@ -1,0 +1,16 @@
+{
+	"name": "codeit/carcass",
+	"require": {
+		"zendframework/zendframework": "2.4.*",
+		"ext-redis": "^2.2",
+		"ext-mbstring": "^0.0.0",
+		"php": ">=5.6.6",
+		"ruckusing/ruckusing-migrations": "1.1.0",
+		"codeit/utils": "dev-master",
+		"hybridauth/hybridauth": "*"
+	},
+	"repositories" : [{
+		"type" : "vcs",
+		"url" : "/var/lib/git/utils.git"
+	}]
+}

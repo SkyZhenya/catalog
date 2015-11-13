@@ -33,5 +33,5 @@ return array(
     'migrations_dir' => array('default' => $baseDir . 'db'. DIRECTORY_SEPARATOR . 'migrations'),
     'db_dir' => $baseDir . 'db',
     'log_dir' => $baseDir . 'db'. DIRECTORY_SEPARATOR . 'logs',
-    'ruckusing_base' => $baseDir . 'vendor/ruckusing-migrations'
+    //'ruckusing_base' => $baseDir . 'vendor/ruckusing-migrations'
 );

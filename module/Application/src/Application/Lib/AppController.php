@@ -46,12 +46,12 @@ abstract class AppController extends AbstractActionController {
 
 	public function ready() {	
 		try {
-			$user = \Zend\Registry::get('User');
+			$user = \Utils\Registry::get('User');
 		}
 		catch(\Exception $e) {
 			$user = new User();
 			$user->auth($this->forceAuth);
-			\Zend\Registry::set('User', $user);
+			\Utils\Registry::set('User', $user);
 		}
 
 		$this->user = $user;
@@ -80,7 +80,7 @@ abstract class AppController extends AbstractActionController {
 					//use it if there is possibility for site visitirs to change language 
 					/*$langTable = new \Application\Model\LangTable();
 					$controller->lang = $langTable->getByCode($lang);
-					\Zend\Registry::set('lang', $controller->lang->id);
+					\Utils\Registry::set('lang', $controller->lang->id);
 					*/
 
 					setlocale(LC_ALL, $lang.'.UTF-8');

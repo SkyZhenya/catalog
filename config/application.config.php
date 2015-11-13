@@ -1,7 +1,7 @@
 <?php
 
 define('LOCALE', 'en_US'); // ru_RU for russian
-Zend\Registry::set('lang', 1); // 1 is English, 2 is Rissian
+Utils\Registry::set('lang', 1); // 1 is English, 2 is Rissian
 
 define('BASEDIR', dirname(__DIR__).'/');
 
@@ -10,7 +10,7 @@ $config = require_once BASEDIR . 'config/local.php';
 define('PASSWORD_HASH_COST', 12); //algorithmic cost that should be used while hashing password
 define('REMEMBER_ME_PERIOD', 2592000);
 
-Zend\Registry::set('dbConfig', array(
+Utils\Registry::set('dbConfig', array(
 	'host' => $config['database']['host'],
 	'dbname' => $config['database']['name'],
 	'driver' => 'Pdo',
@@ -27,7 +27,7 @@ define('TIME', time());
 
 $config = array_merge_recursive($config, [
 	'modules' => array(
-		'Application',		
+		'Application',
 		'Admin',
 		'Auth',	
 		'Tools',

@@ -13,7 +13,7 @@ class Lang extends AbstractHelper {
 	*/
 	public function __invoke() {
 		try {
-			$lang = \Zend\Registry::get('lang');
+			$lang = \Utils\Registry::get('lang');
 			$langTable = new LangTable($lang);
 		}
 		catch(\Exception $e) {}

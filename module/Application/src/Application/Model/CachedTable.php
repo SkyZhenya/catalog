@@ -18,7 +18,7 @@ class CachedTable extends AppTable {
 	 */
 	public function __construct($tableName, $id=null) {
 		if(!self::$redis) {
-			self::$redis = \Zend\Registry::get('redis');
+			self::$redis = \Utils\Registry::get('redis');
 		}
 
 		parent::__construct($tableName, $id);

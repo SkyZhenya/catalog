@@ -89,7 +89,7 @@ class TemplateController extends AppController {
 			'form' => $form,
 			'error' => $this->error,
 			'langs' => $langs->toArray(),
-			'activeLang' =>\Zend\Registry::get('lang'),
+			'activeLang' =>\Utils\Registry::get('lang'),
 		));
 		return $view;
 	}
