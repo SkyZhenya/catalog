@@ -125,8 +125,8 @@ class Redis implements ServiceLocatorAwareInterface {
 	 */
 	public function deleteByMask($name) {
 		if($this->connected) {
-			$keys = $this->redis->getKeys($this->config['namespace'].$name.'*');
-			$this->redis->delete($keys);
+			$mask = sprintf('%s%s*', $this->config['namespace'], $name);
+			$this->redis->evaluate("return redis.call('del', unpack(redis.call('keys', ARGV[1])))", [$mask]);
 		}
 	}
 
