@@ -1,11 +1,15 @@
 var adminGrid = {
 	grid: null,
+	gridboxId: 'gridbox',
 	sortOrder : 'des',
 	sortOrderBy : 1,
 	
 	enableSmartRendering: true,
 	enablePreRendering: true,
 	awaitedRowHeight: 33,
+	sortable: true,
+	
+	dataType: 'xml',
 	
 	onpage: 50,
 	listUrl: '',
@@ -23,8 +27,12 @@ var adminGrid = {
 	
 	init: function(options) {
 		dhtmlx.CustomScroll.init();
-		common.setGridHeight();  
-		this.grid = new dhtmlXGridObject('gridbox');
+		
+		if (typeof options.gridboxId !== 'undefined') {
+			this.gridboxId = options.gridboxId;
+		}
+		common.setGridHeight(this.gridboxId);
+		this.grid = new dhtmlXGridObject(this.gridboxId);
 		this.setOptions(options);
 		this.setColumns(options.columns);
 		
@@ -37,13 +45,15 @@ var adminGrid = {
 		this.grid.setAwaitedRowHeight(this.awatedRowHeight);
 		
 		this.grid.init();
-				
-		this.grid.attachEvent("onBeforeSorting",function(ind,type,dir){
-			adminGrid.sortOrderBy=ind;
-			adminGrid.sortOrder=dir;
-			adminGrid.filterBy();
-		    return false;
-		});
+		
+		if (this.sortable) {
+			this.grid.attachEvent("onBeforeSorting",function(ind,type,dir){
+				adminGrid.sortOrderBy=ind;
+				adminGrid.sortOrder=dir;
+				adminGrid.filterBy();
+			    return false;
+			});
+		}
 		
 		if (typeof options.events !== 'undefined') {
 			for (var j in options.events) {
@@ -112,7 +122,9 @@ var adminGrid = {
 		this.grid.setInitWidths(widthsLine.join());
 		this.grid.setColAlign(colAlignLine.join());
 		this.grid.setColTypes(colTypeLine.join());
-		this.grid.setColSorting(colSortingLine.join());
+		if (this.sortable) {
+			this.grid.setColSorting(colSortingLine.join());
+		}
 		this.grid.enableResizing(resizingLine.join());
 		
 		this.grid.attachHeader(filtersLine.join());
@@ -120,6 +132,10 @@ var adminGrid = {
 	},
 	
 	setOptions: function(options) {
+		if (typeof options.sortable !== 'undefined') {
+			this.sortable = options.sortable;
+		}
+
 		if (typeof options.sortOrder !== 'undefined') {
 			this.sortOrder = options.sortOrder;
 		}
@@ -146,6 +162,10 @@ var adminGrid = {
 		
 		if (typeof options.awaitedRowHeight !== 'undefined') {
 			this.awaitedRowHeight = options.awaitedRowHeight;
+		}
+		
+		if (typeof options.dataType !== 'undefined') {
+			this.dataType = options.dataType;
 		}
 	},
 	
@@ -186,10 +206,12 @@ var adminGrid = {
 		var getListLinkR = '';
 		getListLinkR = this.listUrl+"&order="+this.sortOrder+"&orderby="+this.sortOrderBy+this.getFilterQuery();
 		this.grid.load(getListLinkR, function() {
-			adminGrid.grid.setSortImgState(true,adminGrid.sortOrderBy,adminGrid.sortOrder);    //set a correct sorting image
+			if (adminGrid.sortable) {
+				adminGrid.grid.setSortImgState(true,adminGrid.sortOrderBy,adminGrid.sortOrder);    //set a correct sorting image
+			}
 			$('.objbox').each(function () { dhtmlx.CustomScroll._mouse_out_timed.call(this); });	
 			common.setGridHeight();
-		});
+		}, this.dataType);
 		
 	}
 }

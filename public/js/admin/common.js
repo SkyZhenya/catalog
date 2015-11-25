@@ -43,7 +43,10 @@ var common = {
 	},
 
 
-	setGridHeight: function(){
+	setGridHeight: function(gridId){
+		if (typeof gridId == 'undefined') {
+			gridId = 'gridbox';
+		}
 		var height = $('.xhdr').height();
 		$('.objbox').css('padding-top', height);
 		var windowHeight = $(window).height();
@@ -54,7 +57,7 @@ var common = {
 		var midleHeight = windowHeight -(headerHeight)-footerHeight-5 +parseInt($('.middle').css("padding-top")) ;
 		var midleHeight2 = windowHeight -(headerHeight)-footerHeight-5  ;
 		$('.middle').css('height', midleHeight);
-		$('#gridbox').css('height', midleHeight2);
+		$('#' + gridId).css('height', midleHeight2);
 		$('.objbox').css({'maxHeight': midleHeight2-blockBtnsHeight-height,"height":"auto"});	
 	},
 
