@@ -12,9 +12,9 @@ $this->headScript()->appendFile($this->basePath(). '/js/tiny_mce/tiny_mce_src.js
 	}
 	if (isset($langs)){ ?>
 		<ul class='tabs-horiz clearfix' id='invTabsUl'>
-			<? foreach ($langs as $i => $lang) { ?>
+			<?php foreach ($langs as $i => $lang) { ?>
 				<li><a class='tab-item-link invTabs<?php echo $lang['id'];?> <?= ($lang['id'] == $activeLang) ? 'active' : '' ?>' onclick='return common.changeLang(<?= $lang['id']; ?>, "invTabs");' href='#'><span><?= $lang['name']; ?></span></a></li>
-				<? } ?>
+				<?php } ?>
 		</ul>
 	<?php }?>
 	<div class="invTabs">
