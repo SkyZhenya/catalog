@@ -6,8 +6,11 @@
 namespace Application\Lib\Captcha\Adapter;
 
 use Zend\Captcha\AbstractWord;
+use Zend\Captcha\Exception\ExtensionNotLoadedException;
+use Zend\Captcha\Exception\InvalidArgumentException;
 use Zend\Captcha\Exception\NoFontProvidedException;
 use Zend\Captcha\Exception\ImageNotLoadableException;
+use Zend\Stdlib\ErrorHandler;
 
 class InOutputImage extends AbstractWord
 {
