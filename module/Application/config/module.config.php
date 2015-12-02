@@ -56,6 +56,11 @@ return array(
 			'Application\Controller\Index' => 'Application\Controller\IndexController',
 		),
 	),
+	'controller_plugins' => [
+		'invokables' => [
+			'background' => 'Application\Lib\Controller\Plugin\Background',
+		],
+	],
 	'view_manager' => array(
 		'display_not_found_reason' => DEBUG,
 		'display_exceptions'       => DEBUG,
