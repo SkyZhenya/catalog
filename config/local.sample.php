@@ -34,11 +34,16 @@ return [
 		'user' => 'ifix',
 		'password' => 'ifix',
 	],
-	'redis' => [
+	'cache' => [
 		'enabled' => true,
-		'host' => '127.0.0.1',
-		'db' => 0,
 		'namespace' => 'codeit-carcass',
-		'debug' => false,
+	],
+	'redis' => [
+		'host' => '127.0.0.1',
+		'port' => 6379,
+		'db' => 0,
+		'options' => [
+			\Redis::OPT_SERIALIZER => \Redis::SERIALIZER_IGBINARY,
+		],
 	],
 ];

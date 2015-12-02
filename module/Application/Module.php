@@ -31,9 +31,8 @@ class Module implements AutoloaderProviderInterface {
 				}
 			}
 		);
-		
-		$redis = $serviceManager->get('Application\Lib\Redis');
-		\Utils\Registry::set('redis', $redis);
+
+		\Utils\Registry::set('cache', $serviceManager->get('cache'));
 	}
 
 	public function getConfig()	{

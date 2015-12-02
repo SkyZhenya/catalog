@@ -62,7 +62,7 @@ abstract class LocalizableTable extends CachedTable {
 		foreach($ids as $id) {
 			$keys[]='table.'.$this->table.'.'.$id.'.'.$this->lang;
 		}
-		$values = self::$redis->mget($keys);
+		$values = self::$cache->mget($keys);
 		$result = [];
 		foreach($ids as $num => $id) {
 			if(isset($values[$num]) && !empty($values[$num])) {

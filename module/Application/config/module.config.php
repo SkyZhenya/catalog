@@ -37,8 +37,17 @@ return array(
 	),
 	'service_manager' => [
 		'factories' => [
-			'Application\Lib\Redis' => function($sm) {
-				return new Application\Lib\Redis();
+			'cache' => function($sm) {
+				return new \Application\Lib\Redis();
+			},
+			'redis' => function($sm) {
+				$config = $sm->get('Application\Config')['redis'];
+				return new \Application\Lib\RedisWrapper(
+					$config['host'],
+					$config['port'],
+					$config['db'],
+					$config['options']
+				);
 			},
 		],
 	],

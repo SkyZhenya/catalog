@@ -6,7 +6,7 @@ use Zend\ServiceManager\ServiceLocatorInterface;
 class Redis implements ServiceLocatorAwareInterface {
 	
 	/**
-	 * @var \Redis
+	 * @var \Application\Lib\RedisWrapper
 	 */
 	protected $redis;
 	protected $namespace;
@@ -20,10 +20,16 @@ class Redis implements ServiceLocatorAwareInterface {
 	 *
 	 */
 	protected function connect() {
-		$res = $this->redis->pconnect($this->config['host']);
-		$this->redis->setOption(\Redis::OPT_SERIALIZER, \Redis::SERIALIZER_IGBINARY);
-		$this->redis->select($this->config['db']);
-		$this->connected = true;
+		if ($this->redis) {
+			$this->redis->connect(true);
+		} else {
+			$this->redis = $this->getServiceLocator()->get('redis');
+			$this->redis->connect();
+			$this->connected = true;
+			if (isset($this->config['namespace']) && $this->config['namespace']) {
+				$this->redis->setOption(\Redis::OPT_PREFIX, $this->config['namespace']);
+			}
+		}
 	}
 
 	/**
@@ -43,15 +49,15 @@ class Redis implements ServiceLocatorAwareInterface {
 		}
 		
 		if($ttl) {
-			$ret = $this->redis->setex($this->config['namespace'].$key, $ttl, $value);
+			$ret = $this->redis->setex($key, $ttl, $value);
 		}
 		else {
-			$ret = $this->redis->set($this->config['namespace'].$key, $value);
+			$ret = $this->redis->set($key, $value);
 		}
 		
 		if(!$ret) {
 			$this->connect();
-			$this->set($this->config['namespace'].$key, ($value), $ttl, $try+1);
+			$this->set($key, $value, $ttl, $try+1);
 		}
 
 		return $ret;
@@ -66,7 +72,7 @@ class Redis implements ServiceLocatorAwareInterface {
 	public function get($key) {
 		if(!$this->config['enabled']) return;
 
-		$ret = $this->redis->get($this->config['namespace'].$key);
+		$ret = $this->redis->get($key);
 		return $ret;
 	}
 
@@ -85,9 +91,7 @@ class Redis implements ServiceLocatorAwareInterface {
 		if(!$this->config['enabled']) return;
 
 		$oldHandler = set_error_handler('\Application\Lib\Redis::myHandler');
-		if(is_array($keys)) foreach($keys as $key => $value) {
-			$keys[$key] = $this->config['namespace'].$value;
-		}
+
 		try {
 			$ret = @$this->redis->mGet($keys);
 		}
@@ -106,12 +110,6 @@ class Redis implements ServiceLocatorAwareInterface {
 	 */
 	public function deleteCache($keys) {
 		if($this->connected) {
-			if(is_array($keys)) foreach($keys as $key => $value) {
-				$keys[$key] = $this->config['namespace'].$value;
-			}
-			else {
-				$keys = $this->config['namespace'] . $keys;
-			}
 			return $this->redis->delete($keys);
 		}
 
@@ -139,9 +137,8 @@ class Redis implements ServiceLocatorAwareInterface {
 	public function setServiceLocator(ServiceLocatorInterface $serviceLocator) {
 		$this->serviceLocator = $serviceLocator;
 
-		$this->config = $serviceLocator->get('Application\Config')['redis'];
+		$this->config = $serviceLocator->get('Application\Config')['cache'];
 		if($this->config['enabled']) {
-			$this->redis = new \Redis();
 			$this->connect();
 		}
 

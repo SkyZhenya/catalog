@@ -6,7 +6,7 @@ class CachedTable extends AppTable {
 	/**
 	 * @var \Application\Lib\Redis
 	 */
-	protected static $redis = null;
+	protected static $cache = null;
 
 	/**
 	 * creates table and sets id if neccessary
@@ -17,8 +17,8 @@ class CachedTable extends AppTable {
 	 * @return {\Zend\Db\TableGateway\TableGateway|ResultSet}
 	 */
 	public function __construct($tableName, $id=null) {
-		if(!self::$redis) {
-			self::$redis = \Utils\Registry::get('redis');
+		if(!self::$cache) {
+			self::$cache = \Utils\Registry::get('cache');
 		}
 
 		parent::__construct($tableName, $id);
@@ -80,7 +80,7 @@ class CachedTable extends AppTable {
 	 */
 	public function cacheGet($key) {
 		//\Application\Lib\Logger::write("AppTable::cacheGet($key [{$this->table}])");
-		return self::$redis->get('table.'.$this->table.'.'.$key);
+		return self::$cache->get('table.'.$this->table.'.'.$key);
 	}
 
 	/**
@@ -94,7 +94,7 @@ class CachedTable extends AppTable {
 	 */
 	public function cacheSet($key, $value, $timeout = 0, $try=0) {
 		//\Application\Lib\Logger::write("AppTable::cacheSet($key [{$this->table}])");
-		return self::$redis->set('table.'.$this->table.'.'.$key, $value, $timeout, $try);
+		return self::$cache->set('table.'.$this->table.'.'.$key, $value, $timeout, $try);
 	}
 
 	/**
@@ -104,7 +104,7 @@ class CachedTable extends AppTable {
 	 */
 	public function cacheDelete($key) {
 		//\Application\Lib\Logger::write("AppTable::cacheDelete($key [{$this->table}])");
-		return self::$redis->deleteCache('table.'.$this->table.'.'.$key);
+		return self::$cache->deleteCache('table.'.$this->table.'.'.$key);
 	}
 
 	/**
@@ -113,7 +113,7 @@ class CachedTable extends AppTable {
 	 * @param string $keyMask
 	 */
 	public function cacheDeleteByMask($keyMask) {
-		return self::$redis->deleteByMask('table.'.$this->table.'.'.$keyMask);
+		return self::$cache->deleteByMask('table.'.$this->table.'.'.$keyMask);
 	}
 
 	/**
@@ -128,7 +128,7 @@ class CachedTable extends AppTable {
 		foreach($ids as $id) {
 			$keys[]='table.'.$this->table.'.'.$id;
 		}
-		$values = self::$redis->mget($keys);
+		$values = self::$cache->mget($keys);
 		$result = [];
 		foreach($ids as $num => $id) {
 			if(isset($values[$num]) && !empty($values[$num])) {
