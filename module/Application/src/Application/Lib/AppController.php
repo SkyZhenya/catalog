@@ -5,6 +5,12 @@ use Zend\Mvc\Controller\AbstractActionController;
 use Zend\EventManager\EventManagerInterface;
 use Zend\View\Model\ViewModel;
 
+/**
+ * Class AppController
+ * @package Application\Lib
+ *
+ * @method \Application\Lib\Controller\Plugin\Background background()
+ */
 abstract class AppController extends AbstractActionController {
 	protected $userId;
 	public $lang;
