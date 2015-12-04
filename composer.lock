@@ -4,16 +4,16 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "1a8914d811331947c8c80f2d6469050e",
-    "content-hash": "2f789ee1bf2ee14472cc090e5ce1ca01",
+    "hash": "2824dd01f7d5ae1a49fb7d91874d01db",
+    "content-hash": "4e008e3665e9725ce129fad3b62984f5",
     "packages": [
         {
             "name": "codeit/utils",
             "version": "dev-master",
             "source": {
                 "type": "git",
-                "url": "/var/lib/git/utils.git",
-                "reference": "c2361dc1d5c381d0f883034ad323d6eceb6c4d62"
+                "url": "git://git.codeit.com.ua:/codeit.git",
+                "reference": "8ee692312f61a2352832f37e4d3a2c92699b096c"
             },
             "type": "utils",
             "autoload": {
@@ -28,7 +28,7 @@
                 }
             ],
             "description": "Additional files",
-            "time": "2015-11-04 15:26:36"
+            "time": "2015-12-04 15:50:49"
         },
         {
             "name": "hybridauth/hybridauth",
@@ -139,16 +139,16 @@
         },
         {
             "name": "zendframework/zendframework",
-            "version": "2.4.8",
+            "version": "2.4.9",
             "source": {
                 "type": "git",
                 "url": "https://github.com/zendframework/zf2.git",
-                "reference": "04909f4ad9f922a602bd4ad6a5d8e6837014af6c"
+                "reference": "4d096d15d01d46b03a69fff00576b31789246364"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/zendframework/zf2/zipball/04909f4ad9f922a602bd4ad6a5d8e6837014af6c",
-                "reference": "04909f4ad9f922a602bd4ad6a5d8e6837014af6c",
+                "url": "https://api.github.com/repos/zendframework/zf2/zipball/4d096d15d01d46b03a69fff00576b31789246364",
+                "reference": "4d096d15d01d46b03a69fff00576b31789246364",
                 "shasum": ""
             },
             "require": {
@@ -252,7 +252,7 @@
                 "framework",
                 "zf2"
             ],
-            "time": "2015-09-15 17:14:50"
+            "time": "2015-11-23 17:34:23"
         },
         {
             "name": "zendframework/zendxml",
