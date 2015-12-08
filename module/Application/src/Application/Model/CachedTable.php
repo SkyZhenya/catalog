@@ -157,7 +157,9 @@ class CachedTable extends AppTable {
 	 * @return int last insert Id
 	 */
 	public function insert($set) {
-		return parent::insert($set);
+		$id = parent::insert($set);
+		$this->cacheDelete('list');
+		return $id;
 	}
 
 	/**
@@ -215,7 +217,7 @@ class CachedTable extends AppTable {
 	}
 
 	/**
-	 * deletes record by id, removes cached data
+	 * Deletes record by id, removes cached data
 	 * 
 	 * @param mixed $id
 	 * @returns bool
@@ -228,7 +230,7 @@ class CachedTable extends AppTable {
 	}
 
 	/**
-	 * returns full items list
+	 * Returns full items list from cache
 	 *
 	 * @param int|bool|false $limit
 	 * @param int $offset
@@ -236,6 +238,18 @@ class CachedTable extends AppTable {
 	 * @return ResultSet
 	 */
 	public function getList($limit=false, $offset=0, &$total=null) {
+		$cachedList = true;
+		if($limit || $offset) {
+			$cachedList = false;
+		}
+
+		if($cachedList && $list = $this->cacheGet($cacheKey)) {
+			if(!is_null($total)) {
+				$total = sizeof($list);
+			}
+			return $list;
+		}
+		
 		$column = static::ID_COLUMN;
 		$select = $this->getSelect($this->table);
 		if($limit !== false) {
@@ -252,7 +266,11 @@ class CachedTable extends AppTable {
 		foreach($list as $item) {
 			$res[$item->$column] = $this->get($item->$column);
 		}
-
+		
+		if ($cachedList) {
+			$this->cacheSet('list', $res);
+		}
+		
 		if(!is_null($total)) {
 			$total = $this->query('select count(*) cnt from '.$this->table)->current()->cnt;
 		}
@@ -261,7 +279,7 @@ class CachedTable extends AppTable {
 	}
 
 	/**
-	 * sets data for current id
+	 * Sets data for current id
 	 *
 	 * @param array $data
 	 * @param int|bool|false $id
