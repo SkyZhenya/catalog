@@ -5,6 +5,10 @@ use Zend\Db\TableGateway\TableGateway;
 use Zend\Db\Adapter\Adapter;
 use Zend\Db\ResultSet\ResultSet;
 use Zend\Db\Sql;
+use Utils\Registry;
+use Zend\Db\Sql\AbstractSql;
+use Zend\Db\Sql\Select;
+use Zend\Db\Sql\Expression;
 
 abstract class AppTable extends TableGateway {
 	/**
@@ -15,47 +19,26 @@ abstract class AppTable extends TableGateway {
 	public $id;
 
 	/**
-	 * Language Id
-	 *
-	 * @var int
-	 */
-	protected $lang=1;
-
-	/**
-	 * Table with local data
-	 *
-	 * @var string
-	 */
-	protected $locTable;
-
-	
-	/**
 	 * List of fields from DB table
 	 * 
 	 * @var array
 	 */
 	protected $goodFields = [];
+
 	/**
-	 * List of fields for data with localized values
-	 * 
-	 * @var array()
-	 */
-	protected $localFields = [];
-	
-	/**
-	 * private fields list that should be removed from passing to clients
+	 * Private fields list that should be removed from passing to clients
 	 * 
 	 * @var []
 	 */
 	protected $privateFields = [];
-	
+
 	/**
 	 * Join clause for find() method, used for local tables
 	 * 
 	 * @var string
 	 */
 	protected $findJoin='';
-	
+
 	/**
 	 * Group by condition for find() method
 	 * 
@@ -83,96 +66,71 @@ abstract class AppTable extends TableGateway {
 	private $transactionsCounter;
 
 	/**
-	 * creates table and sets id if neccessary
+	 * Creates table and sets id if neccessary
 	 * @param string $tableName
 	 * @param int $id
 	 * @param mixed $databaseSchema
 	 * @param ResultSet $selectResultPrototype
-	 * @return {\Zend\Db\TableGateway\TableGateway|ResultSet}
 	 */
 	public function __construct($tableName, $id=null, $databaseSchema = null, ResultSet $selectResultPrototype = null) {
-		try {
-			$adapter = \Utils\Registry::get('dbAdapter');
-		}
-		catch(\Exception $e) {
-			// create adapter
-			if(defined('DEBUG_SQL') && DEBUG_SQL) {
-				$adapter = new \BjyProfiler\Db\Adapter\ProfilingAdapter(\Utils\Registry::get('dbConfig'));
-				$adapter->setProfiler(new \BjyProfiler\Db\Profiler\Profiler);
-				$adapter->injectProfilingStatementPrototype();
-			}
-			else {
-				$adapter = new \Zend\Db\Adapter\Adapter(\Utils\Registry::get('dbConfig'));
-			}
+		parent::__construct($tableName, $this->getAdapter(), $databaseSchema, $selectResultPrototype);
 
-			\Utils\Registry::set('dbAdapter', $adapter);
-		}
-
-		$result = parent::__construct($tableName, $adapter, $databaseSchema, $selectResultPrototype);
-		$this->lang = \Utils\Registry::get('lang');
-
-		if(!$this->locTable) $this->locTable = $this->table.'local';
-		if($id) {
+		if ($id) {
 			$this->setId($id);
 		}
-
-		return $result;
-	}
-
-	public function __get($property) {
-		try {
-			return parent::__get($property);
-		}
-		catch(\Exception $e) {
-			$getter = "get".ucfirst($property);
-			if(isset($this->member[$property])) {
-				if(is_callable($this->member[$getter])) {
-					return $this->$getter;
-				}
-				else {
-					return $this->member[$property];
-				}
-			}
-		}
-
-		return null;
-	}
-
-	public function __set($property, $value) {
-		if ($this->featureSet->canCallMagicSet($property)) {
-			return $this->featureSet->callMagicSet($property, $value);
-		}
-
-		@$this->member[$property] = $value;
 	}
 
 	/**
-	 * returns new \Zend\Db\Sql\Select
+	 * @return \BjyProfiler\Db\Adapter\ProfilingAdapter|Adapter
+	 */
+	public function getAdapter() {
+		if (!$this->adapter) {
+			try {
+				$adapter = Registry::get('dbAdapter');
+			} catch(\Exception $e) {
+				// create adapter
+				if (defined('DEBUG_SQL') && DEBUG_SQL) {
+					$adapter = new \BjyProfiler\Db\Adapter\ProfilingAdapter(Registry::get('dbConfig'));
+					$adapter->setProfiler(new \BjyProfiler\Db\Profiler\Profiler);
+					$adapter->injectProfilingStatementPrototype();
+				} else {
+					$adapter = new Adapter(Registry::get('dbConfig'));
+				}
+
+				Registry::set('dbAdapter', $adapter);
+			}
+			$this->adapter = $adapter;
+		}
+
+		return $this->adapter;
+	}
+
+	/**
+	 * Returns Select instance
 	 *
 	 * @param null|string $table table name
-	 * @return \Zend\Db\Sql\Select
+	 * @return Select
 	 */
 	protected function getSelect($table = null) {
 		if(!$table) {
 			$table = $this->table;
 		}
 
-		return new \Zend\Db\Sql\Select($table);
+		return new Select($table);
 	}
 
 	/**
-	 * runs SQL query
+	 * Runs SQL query
 	 *
-	 * @param \Zend\Db\Sql\AbstractSql $sql Select, Insert, Update etc.
+	 * @param AbstractSql $sql
 	 * @param array $params
-	 * @return ResultSet | last insert id | affected rows
+	 * @return array|ResultSet
+	 * @throws \Exception
 	 */
-	protected function execute(\Zend\Db\Sql\AbstractSql $sql, $params=array()) {
+	protected function execute(AbstractSql $sql, $params=array()) {
 		try {
 			$statement = $this->adapter->createStatement();
 			$sql->prepareStatement($this->adapter, $statement);
-			//echo $sql->getSqlString($this->adapter->platform);
-			//\Zend\Debug::dump($statement);
 
 			$resultSet = new ResultSet();
 			$dataSource = $statement->execute($params);
@@ -200,15 +158,16 @@ abstract class AppTable extends TableGateway {
 	}
 
 	/**
-	 * makes and executes SQL query
+	 * Makes and executes SQL query
 	 *
 	 * @param string $query
 	 * @param mixed $params
-	 * @return ResultSet
+	 * @return mixed
+	 * @throws \Exception
 	 */
 	protected function query($query, $params=false) {
 		if(!$params) {
-			$params = \Zend\Db\Adapter\Adapter::QUERY_MODE_EXECUTE;
+			$params = Adapter::QUERY_MODE_EXECUTE;
 		}
 		try {
 			$resultSet = $this->adapter->query($query, $params);
@@ -221,50 +180,50 @@ abstract class AppTable extends TableGateway {
 				}
 				throw new \Exception('SQL Error: '.$e->getMessage().': '.$previousMessage."<br>
 					SQL Query was:<br><br>\n\n".$query."<br>params: ".print_r($params, true));
-				//\Zend\Debug::dump($e);
 			}
 		}
 		return $resultSet;
 	}
 
+
 	/**
-	 * Aquires lock (mutex)
+	 * Acquires lock (mutex)
 	 *
 	 * @param string $name
-	 * @param array $params
+	 * @param bool|false $params
 	 * @param int $timeout
+	 * @throws \Exception
 	 */
 	public function getLock($name, $params=false, $timeout=10) {
 		$resultSet = $this->query("select GET_LOCK('$name', $timeout) as res", $params);
 		$result = $resultSet->current()->res;
-		if(!$result) {
+		if (!$result) {
 			throw new \Exception('Could not obtain lock on '.$name);
 		}
 	}
 
 	/**
-	 * releases lock (mutex) obtained by getLock
+	 * Releases lock (mutex) obtained by getLock
 	 *
 	 * @param string $name
-	 * @param array $params
+	 * @param array|bool|false $params
 	 */
 	public function releaseLock($name, $params=false) {
 		$this->query("select RELEASE_LOCK('$name')", $params);
 	}
 
 	/**
-	 * starts transaction
+	 * Starts transaction
 	 */
 	public function startTransaction() {
 		if(!$this->transactionsCounter) {
 			$this->query('start transaction');
 		}
 		$this->transactionsCounter++;
-
 	}
 
 	/**
-	 * commits transaction
+	 * Commits transaction
 	 */
 	public function commit() {
 		$this->transactionsCounter--;
@@ -274,7 +233,7 @@ abstract class AppTable extends TableGateway {
 	}
 
 	/**
-	 * rollbacks transaction
+	 * Rollbacks transaction
 	 */
 	public function rollback() {
 		$this->transactionsCounter--;
@@ -286,8 +245,9 @@ abstract class AppTable extends TableGateway {
 	/**
 	 * Inserts a record
 	 *
-	 * @param array $set
-	 * @return int last insert Id
+	 * @param array$set
+	 * @return int
+	 * @throws \Exception
 	 */
 	public function insert($set) {
 		$set = $this->removeUnnecessaryFields($set);
@@ -297,22 +257,16 @@ abstract class AppTable extends TableGateway {
 		throw new \Exception('Insert to "'.$this->table.'" failed. Set was '.print_r($set, true));
 	}
 
-	public function soaparray($param) {
-		if(is_array($param)) return $param;
-		if(is_null($param)) return array();
-		return array($param);
-	}
-
 	/**
-	 * searches for items, fetching them by ::get()
+	 * Searches for items, fetching them by ::get()
 	 * 
 	 * @param array $params, e.g. ['id', '>=', '135']
 	 * @param int $limit, set to 0 or false to no limit
 	 * @param int $offset
-	 * @param string $orderBy
+	 * @param string|bool|false $orderBy
 	 * @param int &$total will be set to total count found
 	 * @param bool $publicOnly should we return full data or non-private fields only
-	 * @return \Zend\Db\ResultSet\ResultSet|[]
+	 * @return ResultSet|[]
 	 */
 	public function find($params, $limit=0, $offset=0, $orderBy=false, &$total=null, $publicOnly=false) {
 		$items = $this->findSimple($params, $limit, $offset, $orderBy, $total, ['*']);
@@ -332,15 +286,15 @@ abstract class AppTable extends TableGateway {
 
 	
 	/**
-	 * searches for items and returns \Zend\Db\ResultSet\ResultSet
+	 * Searches for items and returns ResultSet
 	 * 
 	 * @param array $params, e.g. arrat('id', '>=', '135')
 	 * @param int $limit, set to 0 or false to no limit
 	 * @param int $offset
-	 * @param string $orderBy
+	 * @param string|bool|false $orderBy
 	 * @param int &$total will be set to total count found
 	 * @param array $columns fileds which should be inclued in the result
-	 * @return \Zend\Db\ResultSet\ResultSet
+	 * @return ResultSet
 	 */
 	public function findSimple($params, $limit=0, $offset=0, $orderBy=false, &$total=null, $columns=['id']) {
 		$where = $this->buildWhere($params);
@@ -352,27 +306,26 @@ abstract class AppTable extends TableGateway {
 	}
 
 	/**
-	 * Build where condition string from the $params array
+	 * Builds where condition string from the $params array
 	 * 
 	 * @param array $params
 	 * @return string
 	 */
 	protected function buildWhere($params) {
-		$whereParams = $this->processWhereParams($params);
-
-		if(!empty($whereParams))
+		if ($whereParams = $this->processWhereParams($params)) {
 			return 'where '.implode(' AND ', $whereParams);
+		}
 
 		return '';
 	}
 	
 	/**
-	 * Build the select query from arguments
+	 * Builds the select query from arguments
 	 * 
 	 * @param string $where
 	 * @param integer $limit
 	 * @param integer $offset
-	 * @param string $orderBy
+	 * @param string|bool|false $orderBy
 	 * @param array $columns
 	 * @return string
 	 */
@@ -385,18 +338,18 @@ abstract class AppTable extends TableGateway {
 			($orderBy ? ' order by '.$orderBy : '').
 			($limit ? ' limit '.((int)$offset) .', '.((int)$limit) : '');
 	}
-	
+
 	/**
-	 * Build a select condition using the $columns
+	 * Builds a select condition using the $columns
 	 * 
-	 * @param type $columns
+	 * @param array $columns
 	 * @return type
 	 */
 	protected function buildSelect($columns) {
 		$tColumns=[];
 		foreach($columns as $alias => $column) {
 			$selectColumn = '';
-			if (is_object($column) && get_class($column) == 'Zend\Db\Sql\Expression') {
+			if (is_object($column) && ($column instanceof Expression)) {
 				$expression = $column->getExpression();//
 				$selectColumn = $expression;
 			}
@@ -413,10 +366,10 @@ abstract class AppTable extends TableGateway {
 			}
 			$tColumns[] = $selectColumn;
 		}
-		
+
 		return implode(', ', $tColumns);
 	} 
-	
+
 	/**
 	 * process array of where paramethers and 
 	 * convert to array of paramethers as strings 
@@ -431,19 +384,22 @@ abstract class AppTable extends TableGateway {
 		}
 		return $whereParams;
 	}
-	
-	/*
-	 * process condition array into string
-	 * @param array $param
+
+	/**
+	 * Processes condition array into string
+	 *
+	 * @param mixed $param
+	 * @return string
+	 * @throws \Exception
 	 */
 	protected function prepareParam($param) {
 		$platform = $this->getAdapter()->getPlatform();
-		if ($param instanceof \Zend\Db\Sql\Expression) {
+		if ($param instanceof Expression) {
 			$set = $param->getExpression();
 		} elseif (is_string($param)) {
 			$set = $param;
 		} else {
-			if (is_object($param[0]) && get_class($param[0]) == 'Zend\Db\Sql\Expression') {
+			if (is_object($param[0]) && ($param[0] instanceof Expression)) {
 				$expression = $param[0]->getExpression();
 				$param[0] = $expression;
 			}
@@ -484,12 +440,12 @@ abstract class AppTable extends TableGateway {
 		}
 		return $set;
 	}
-	
+
 	/**
 	 * Returns the row counts by the $params
 	 *
-	 * @param type $params
-	 * @return type
+	 * @param array|string $params
+	 * @return mixed
 	 */
 	public function count($params = '') {
 		$where = '';
@@ -500,26 +456,26 @@ abstract class AppTable extends TableGateway {
 		
 		return $this->query('select count(*) cnt from `'.$this->table.'` '.$this->findJoin.' '.$where. ($this->getGroupBy() ? $this->getGroupBy() : '').' '.($this->getHaving() ? $this->getHaving() : ''))->current()->cnt;
 	}
-	
-	/*
-	 * set group by closer
-	 * @param string $having
+
+	/**
+	 * Sets group by closer
+	 * @param string $group
 	 */
 	public function setGroupBy($group) {
 		$this->groupBy = $group;
 	}
 
-	/*
-	 * get group by closer
+	/**
+	 * Gets group by closer
 	 * 
 	 * @return string
 	 */
 	public function getGroupBy() {
 		return $this->groupBy;
 	}
-	
+
 	/**
-	 * set having closer
+	 * Sets having closer
 	 * 
 	 * @param string $having
 	 */
@@ -528,16 +484,16 @@ abstract class AppTable extends TableGateway {
 	}
 
 	/**
-	 * get having closer
+	 * Gets having closer
 	 * 
 	 * @return string $having
 	 */
 	public function getHaving() {
 		return $this->having;
 	}
-	
+
 	/**
-	 * creates item, sets id.
+	 * Creates item, sets id.
 	 *
 	 * @param array $params
 	 * @return id
@@ -549,7 +505,7 @@ abstract class AppTable extends TableGateway {
 	}
 
 	/**
-	 * returns current id
+	 * Returns current id
 	 *
 	 * @return $id int
 	 */
@@ -558,7 +514,7 @@ abstract class AppTable extends TableGateway {
 	}
 
 	/**
-	 * sets Id. Checks whether entry exists.
+	 * Sets Id. Checks whether entry exists.
 	 *
 	 * @param int $id
 	 * @returns item
@@ -577,18 +533,18 @@ abstract class AppTable extends TableGateway {
 	}
 
 	/**
-	 * returns row from db with specified id
+	 * Returns row from db with specified id
 	 *
 	 * @param int $id
-	 * @param bool $publicOnly remove private fields
+	 * @param bool|false $publicOnly
 	 * @return \ArrayObject
+	 * @throws \Exception
 	 */
 	public function get($id, $publicOnly=false) {
 		$row = $this->select(array(static::ID_COLUMN => $id))
-					->current();
+			->current();
 		if(!$row) {
 			throw new \Exception(ucfirst($this->table).' '.$id.' not found');
-
 		}
 
 		if ($publicOnly) {
@@ -597,9 +553,9 @@ abstract class AppTable extends TableGateway {
 		
 		return $row;
 	}
-	
-	/**	
-	 * removes fields marked as private from public content (used in ::get())
+
+	/**
+	 * Removes fields marked as private from public content (used in ::get())
 	 * 
 	 * @param \ArrayObject $item
 	 * @returns \ArrayObject $item
@@ -613,15 +569,13 @@ abstract class AppTable extends TableGateway {
 		}
 		
 		return $item;
-
-
 	}
 
 	/**
 	 * sets data for current id
 	 *
 	 * @param array $data
-	 * @param int $id
+	 * @param int|bool|false $id
 	 * @param bool $setDataToObject perform setId() call after update
 	 */
 	public function set($data, $id=false, $setDataToObject=true) {
@@ -633,7 +587,6 @@ abstract class AppTable extends TableGateway {
 		if(($myId == $this->id) && $setDataToObject)
 			$this->setId($this->id);
 	}
-
 
 	/**
 	 * Update
@@ -648,9 +601,8 @@ abstract class AppTable extends TableGateway {
 		return $result;
 	}
 
-
 	/**
-	 * deletes record by id
+	 * Deletes record by id
 	 * 
 	 * @param mixed $id
 	 * @returns altered rows
@@ -662,7 +614,7 @@ abstract class AppTable extends TableGateway {
 	}
 	
 	/**
-	 * deletes item
+	 * Deletes item
 	 *
 	 * @param Where|\Closure|string|array $where: Item ID or expression
 	 * @return bool: true on OK, false on item not found
@@ -679,43 +631,48 @@ abstract class AppTable extends TableGateway {
 	}
 
 	/**
-	 * returns full items list
+	 * Returns full items list
 	 *
-	 * @param int $limit
+	 * @param int|bool|false $limit
 	 * @param int $offset
+	 * @param int|null $total
 	 * @return ResultSet
+	 * @throws \Exception
 	 */
-	public function getList($limit=false, $offset=0) {
+	public function getList($limit=false, $offset=0, &$total=null) {
 		$select = $this->getSelect($this->table);
-		if($limit !== false) {
+		if ($limit !== false) {
 			$select->limit($limit);
 		}
-		if($offset) {
+		if ($offset) {
 			$select->offset($offset);
 		}
 
 		$list = $this->execute($select);
-		return $list;
+		if (!is_null($total)) {
+			$total = $this->query('select count(*) cnt from '.$this->table)->current()->cnt;
+		}
 
+		return $list;
 	}
 
 	/**
-	 * return column value from 1st line of query
+	 * Returns column value from 1st line of query
 	 * 
 	 * @param string $query
 	 * @param array $params
 	 * @returns string value
 	 */
 	public function getCell($query, $params=array()) {
-
 		$q = (array)$this->query($query, $params)->current();
 		return current($q);
 	}
 
 	/**
-	 * replace for bad platform function
+	 * Replace for bad platform function
 	 * 
 	 * @param string $value
+	 * @return string
 	 */
 	function quoteValue($value) {
 		$res = str_replace('\\', '\\\\', $value);
@@ -737,10 +694,9 @@ abstract class AppTable extends TableGateway {
 		}
 		return $params;
 	}
-	
 
 	/**
-	 * set join expression for find() method
+	 * Sets join expression for find() method
 	 * 
 	 * @param string $join
 	 */
@@ -749,7 +705,7 @@ abstract class AppTable extends TableGateway {
 	}
 
 	/**
-	 * return join expression for find() method
+	 * Returns join expression for find() method
 	 * 
 	 * @return string
 	 */

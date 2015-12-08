@@ -1,31 +1,33 @@
 <?php
 namespace Application\Model;
 
+use Application\Lib\Redis as RedisCache;
+use Utils\Registry;
+use Zend\Db\ResultSet\ResultSet;
+
 class CachedTable extends AppTable {
 
 	/**
-	 * @var \Application\Lib\Redis
+	 * @var RedisCache
 	 */
 	protected static $cache = null;
 
 	/**
-	 * creates table and sets id if neccessary
+	 * Creates table and sets id if necessary
+	 *
 	 * @param string $tableName
 	 * @param int $id
-	 * @param mixed $databaseSchema
-	 * @param ResultSet $selectResultPrototype
-	 * @return {\Zend\Db\TableGateway\TableGateway|ResultSet}
 	 */
 	public function __construct($tableName, $id=null) {
-		if(!self::$cache) {
-			self::$cache = \Utils\Registry::get('cache');
+		if (!self::$cache) {
+			self::$cache = Registry::get('cache');
 		}
 
 		parent::__construct($tableName, $id);
 	}
 
 	/**
-	 * returns row from db with specified id
+	 * Returns row from db with specified id
 	 *
 	 * @param int $id
 	 * @param bool $publicOnly remove private fields
@@ -54,16 +56,17 @@ class CachedTable extends AppTable {
 	}
 
 	/**
-	 * return unique lock name for record id
+	 * Returns unique lock name for record id
 	 * 
 	 * @param int $id
+	 * @return string
 	 */
 	private function getLockName($id) {
 		return SITE_NAME.'.'.$this->table.'.'.$id;
 	}
 
 	/**
-	 * returns row from db with specified id
+	 * Returns row from db with specified id
 	 *
 	 * @param int $id
 	 * @return \ArrayObject
@@ -73,78 +76,72 @@ class CachedTable extends AppTable {
 	}
 
 	/**
-	 * get cached value
+	 * Gets cached value
 	 *
-	 * @param string $name
+	 * @param string $key
 	 * @return string
 	 */
 	public function cacheGet($key) {
-		//\Application\Lib\Logger::write("AppTable::cacheGet($key [{$this->table}])");
 		return self::$cache->get('table.'.$this->table.'.'.$key);
 	}
 
 	/**
-	 * assigns a value to a specified cached param
+	 * Assigns a value to a specified cached param
 	 *
-	 * @param string $name param name
+	 * @param string $key
 	 * @param string $value param value
 	 * @param int $timeout TTL in seconds
 	 * @param int $try
 	 * @return bool true on success, false on fail MAX_TRIES times
 	 */
 	public function cacheSet($key, $value, $timeout = 0, $try=0) {
-		//\Application\Lib\Logger::write("AppTable::cacheSet($key [{$this->table}])");
 		return self::$cache->set('table.'.$this->table.'.'.$key, $value, $timeout, $try);
 	}
 
 	/**
-	 * deletes cached value
+	 * Deletes cached value
 	 *
 	 * @param string $key
+	 * @return int
 	 */
 	public function cacheDelete($key) {
-		//\Application\Lib\Logger::write("AppTable::cacheDelete($key [{$this->table}])");
 		return self::$cache->deleteCache('table.'.$this->table.'.'.$key);
 	}
 
 	/**
-	 * deletes cached values with keys that start with name
+	 * Deletes cached values with keys that start with name
 	 *
 	 * @param string $keyMask
 	 */
 	public function cacheDeleteByMask($keyMask) {
-		return self::$cache->deleteByMask('table.'.$this->table.'.'.$keyMask);
+		self::$cache->deleteByMask('table.'.$this->table.'.'.$keyMask);
 	}
 
 	/**
-	 * returns rows from db with specified id
+	 * Returns rows from db with specified id
 	 *
 	 * @param array $ids
 	 * @param bool $publicOnly remove private fields
-	 * @return \ArrayObject
+	 * @return \ArrayObject[]
 	 */
 	public function mget($ids, $publicOnly=false) {
 		$keys = [];
-		foreach($ids as $id) {
+		foreach ($ids as $id) {
 			$keys[]='table.'.$this->table.'.'.$id;
 		}
 		$values = self::$cache->mget($keys);
 		$result = [];
-		foreach($ids as $num => $id) {
-			if(isset($values[$num]) && !empty($values[$num])) {
-				if($publicOnly) {
+		foreach ($ids as $num => $id) {
+			if (isset($values[$num]) && !empty($values[$num])) {
+				if ($publicOnly) {
 					$result[$id] = $this->removePrivateFields($values[$num]);
-				}
-				else {
+				} else {
 					$result[$id] = $values[$num];
 				}
-			}
-			else {
+			} else {
 				try {
 					$result[$id] = $this->get($id, $publicOnly);
-				}
-				catch(\Exception $e) {
-					// echo "Bad id: $id\n";
+				} catch(\Exception $e) {
 					$this->delete($id);
 				}
 			}
@@ -160,18 +157,16 @@ class CachedTable extends AppTable {
 	 * @return int last insert Id
 	 */
 	public function insert($set) {
-		parent::insert($set);
-		//$this->cacheDelete('list');
-		return $this->lastInsertValue;
+		return parent::insert($set);
 	}
 
 	/**
-	 * searches for items, fetching them by ::get()
+	 * Searches for items, fetching them by ::get()
 	 * 
-	 * @param array $params, e.g. arrat('id', '>=', '135')
+	 * @param array $params, e.g. array('id', '>=', '135')
 	 * @param int $limit, set to 0 or false to no limit
 	 * @param int $offset
-	 * @param string $orderBy
+	 * @param string|bool|false $orderBy
 	 * @param int &$total will be set to total count found
 	 * @param bool $publicOnly should we return full data or non-private fields only
 	 * @return \ArrayObject
@@ -201,7 +196,7 @@ class CachedTable extends AppTable {
 	}
 
 	/**
-	 * deletes item
+	 * Deletes item
 	 *
 	 * @param Where|\Closure|string|array $where: Item ID or expression
 	 * @return bool: true on OK, false on item not found
@@ -223,20 +218,19 @@ class CachedTable extends AppTable {
 	 * deletes record by id, removes cached data
 	 * 
 	 * @param mixed $id
-	 * @returns altered rows
+	 * @returns bool
 	 */
 	public function deleteById($id) {
 		$rowsAffected = parent::delete([static::ID_COLUMN => $id]);
 		$this->cacheDelete($id);
 		$this->cacheDelete('list');
-
 		return $rowsAffected;
 	}
 
 	/**
 	 * returns full items list
 	 *
-	 * @param int $limit
+	 * @param int|bool|false $limit
 	 * @param int $offset
 	 * @param int $total callback value: total items
 	 * @return ResultSet
@@ -244,7 +238,6 @@ class CachedTable extends AppTable {
 	public function getList($limit=false, $offset=0, &$total=null) {
 		$column = static::ID_COLUMN;
 		$select = $this->getSelect($this->table);
-		//$select->columns([$column]);
 		if($limit !== false) {
 			$select->limit($limit);
 		}
@@ -271,18 +264,19 @@ class CachedTable extends AppTable {
 	 * sets data for current id
 	 *
 	 * @param array $data
-	 * @param int $id
+	 * @param int|bool|false $id
 	 * @param bool $setDataToObject perform setId() call after update
 	 */
 	public function set($data, $id=false, $setDataToObject=true) {
 		parent::set($data, $id, false);
 		$myId = $this->id;
-		if($id) {
+		if ($id) {
 			$myId = $id;
 		}
 		$this->cacheDelete($myId);
-		if(($myId == $this->id) && $setDataToObject)
+		if ($myId == $this->id && $setDataToObject) {
 			$this->setId($this->id);
+		}
 	}
 
 }

@@ -1,12 +1,33 @@
 <?php
 namespace Application\Model;
 
-abstract class LocalizableTable extends CachedTable { 
+abstract class LocalizableTable extends CachedTable {
+
 	/**
-	 * returns row from db with specified slug
+	 * Table with localized data
+	 *
+	 * @var string
+	 */
+	protected $locTable;
+
+	/**
+	 * Language Id
+	 *
+	 * @var int
+	 */
+	protected $lang = 1;
+
+	/**
+	 * List of fields for data with localized values
+	 *
+	 * @var array()
+	 */
+	protected $localFields = [];
+
+	/**
+	 * Returns row from db with specified slug
 	 *
 	 * @param string $name
-	 * @param int $lang
 	 * @return \ArrayObject
 	 */
 	public function getByNameWithLang($name) {
@@ -25,7 +46,7 @@ abstract class LocalizableTable extends CachedTable {
 	}
 
 	/**
-	 * returns row from db with specified id
+	 * Returns row from db with specified id
 	 *
 	 * @param int $id
 	 * @return \ArrayObject
@@ -52,7 +73,7 @@ abstract class LocalizableTable extends CachedTable {
 	}
 
 	/**
-	 * returns rows from db with specified id
+	 * Returns rows from db with specified id
 	 *
 	 * @param array $ids
 	 * @return \ArrayObject
@@ -77,12 +98,14 @@ abstract class LocalizableTable extends CachedTable {
 	}
 
 	/**
-	 * deletes cached value and all its local values
+	 * Deletes cached value and all its local values
 	 *
 	 * @param string $key
+	 * @return bool
 	 */
 	public function cacheDelete($key) {
-		return parent::cacheDeleteByMask($key);
+		parent::cacheDeleteByMask($key);
+		return true;
 	}
 
 	/**
@@ -91,6 +114,7 @@ abstract class LocalizableTable extends CachedTable {
 	 * @param array $params
 	 * @param int limit
 	 * @param int $offset
+	 * @return array
 	 */
 	public function getLocalData($params=[], $limit = null, $offset = 0) {
 		$select = new \Zend\Db\Sql\Select;
@@ -135,10 +159,9 @@ abstract class LocalizableTable extends CachedTable {
 		foreach($row->localData as $locItem){
 			foreach ( $this->localFields as $field){
 				if (!isset($row->{$field}) || !is_array($row->{$field})){
-					//echo 'array';
 					$row->{$field} = array();
 				}
-				//var_dump($row->{$field});
+
 				$row->{$field}[$locItem->lang] = $locItem->$field;
 			}
 		}
@@ -146,17 +169,17 @@ abstract class LocalizableTable extends CachedTable {
 	}
 
 	/**
-	 * sets data for current id
+	 * Sets data for current id
 	 *
 	 * @param array $data
 	 */
 	public function set($data) {
 		$this->updateLocData($data);
-		return parent::set($data);
+		parent::set($data);
 	}
 
 	/**
-	 * update or insert local data for localized items
+	 * Update or insert local data for localized items
 	 * 
 	 * @param mixed $data
 	 */
@@ -187,7 +210,6 @@ abstract class LocalizableTable extends CachedTable {
 			$this->cacheDelete(base64_encode($this->name));
 		}
 	}
-
 
 	/**
 	 * Inserts a record
