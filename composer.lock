@@ -4,16 +4,16 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "2824dd01f7d5ae1a49fb7d91874d01db",
-    "content-hash": "4e008e3665e9725ce129fad3b62984f5",
+    "hash": "92cf2775a1a421d863a70a0067558bc4",
+    "content-hash": "33d99f885dd1c5f7d1c7f40ad848f170",
     "packages": [
         {
             "name": "codeit/utils",
-            "version": "dev-master",
+            "version": "0.0.1",
             "source": {
                 "type": "git",
                 "url": "git://git.codeit.com.ua:/codeit.git",
-                "reference": "8ee692312f61a2352832f37e4d3a2c92699b096c"
+                "reference": "e2129a22d8998929355e266f9318344ea6add5cf"
             },
             "type": "utils",
             "autoload": {
@@ -28,7 +28,7 @@
                 }
             ],
             "description": "Additional files",
-            "time": "2015-12-04 15:50:49"
+            "time": "2015-12-10 14:12:37"
         },
         {
             "name": "hybridauth/hybridauth",
@@ -303,9 +303,7 @@
     "packages-dev": [],
     "aliases": [],
     "minimum-stability": "stable",
-    "stability-flags": {
-        "codeit/utils": 20
-    },
+    "stability-flags": [],
     "prefer-stable": false,
     "prefer-lowest": false,
     "platform": {
