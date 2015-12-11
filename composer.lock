@@ -4,15 +4,15 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "3e5211d7abaa0f68842ff18e0f3fac17",
-    "content-hash": "a7989283e60044c8324303c0bf3fedb1",
+    "hash": "4f2f4dacd3667c97ad00a2240075619a",
+    "content-hash": "7cb85227fa1957a0f84d9abda565162e",
     "packages": [
         {
             "name": "codeit/utils",
             "version": "0.0.1",
             "source": {
                 "type": "git",
-                "url": "git://git.codeit.com.ua:/codeit.git",
+                "url": "git://git.codeit.com.ua/codeit.git",
                 "reference": "e2129a22d8998929355e266f9318344ea6add5cf"
             },
             "type": "utils",

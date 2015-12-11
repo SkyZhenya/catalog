@@ -12,6 +12,6 @@
 	},
 	"repositories" : [{
 		"type" : "vcs",
-		"url" : "git://git.codeit.com.ua:/codeit.git"
+		"url" : "git://git.codeit.com.ua/codeit.git"
 	}]
 }
