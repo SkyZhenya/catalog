@@ -9,3 +9,5 @@ nbproject
 .log
 public/user
 vendor
+config/static_versions.php
+public/cache

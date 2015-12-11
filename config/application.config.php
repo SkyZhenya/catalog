@@ -7,6 +7,13 @@ define('BASEDIR', dirname(__DIR__).'/');
 
 $config = require_once BASEDIR . 'config/local.php';
 
+if (defined('JS_COMBINE') && JS_COMBINE) {
+	require_once BASEDIR .  'config/static_versions.php';
+	foreach ($staticVersions as $name => $version) {
+		define(strtoupper($name), $version);
+	}
+}
+
 define('PASSWORD_HASH_COST', 12); //algorithmic cost that should be used while hashing password
 define('REMEMBER_ME_PERIOD', 2592000);
 

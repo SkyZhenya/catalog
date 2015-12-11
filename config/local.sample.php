@@ -2,7 +2,7 @@
 define('IS_CLI', php_sapi_name() == 'cli');
 
 define('DOMAIN', 'dcodeit.net');
-define('BASE_URL', '/codeit-carcass-natali/public'); //set to '/' on live
+define('BASE_URL', '/codeit-carcass-natali/public'); //leave it empty on live
 //define('HTTP_SCHEMA', 'http'); // uncomment if you need concrete scheme
 define('DEFAULT_HTTP_SCHEMA', 'http');
 
@@ -27,6 +27,7 @@ define('GA_SECRET', 'jmJuDR4spQmHNJ70fldJB-Jj');
 
 //define('SESSION_NAME', '');//do not need this constant on production
 
+define('JS_COMBINE', true);
 return [
 	'database' => [
 		'host' => 'dcodeit.net',
