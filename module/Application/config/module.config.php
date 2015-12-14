@@ -49,6 +49,28 @@ return array(
 					$config['options']
 				);
 			},
+			'dbAdapter' => function($sm) {
+				$config = $sm->get('Application\Config')['database'];
+				$dbConfig = [
+					'host' => $config['host'],
+					'dbname' => $config['name'],
+					'driver' => 'Pdo',
+					'dsn' => 'mysql:dbname='.$config['name'].';host='.$config['host'],
+					'username' => $config['user'],
+					'password' => $config['password'],
+					'driver_options' => array(
+						PDO::MYSQL_ATTR_INIT_COMMAND => 'SET NAMES \'UTF8\''
+					),
+				];
+				if (defined('DEBUG_SQL') && DEBUG_SQL) {
+					$adapter = new \BjyProfiler\Db\Adapter\ProfilingAdapter($dbConfig);
+					$adapter->setProfiler(new \BjyProfiler\Db\Profiler\Profiler);
+					$adapter->injectProfilingStatementPrototype();
+				} else {
+					$adapter = new Zend\Db\Adapter\Adapter($dbConfig);
+				}
+				return $adapter;
+			}
 		],
 	],
 	'controllers' => array(

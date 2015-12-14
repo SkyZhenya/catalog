@@ -20,7 +20,7 @@ class CachedTable extends AppTable {
 	 */
 	public function __construct($tableName, $id=null) {
 		if (!self::$cache) {
-			self::$cache = Registry::get('cache');
+			self::$cache = Registry::get('sm')->get('cache');
 		}
 
 		parent::__construct($tableName, $id);

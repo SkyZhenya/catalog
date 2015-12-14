@@ -1,17 +1,17 @@
 <?php
+
 namespace Application;
 
 use Zend\Mvc\ModuleRouteListener;
 use Zend\Mvc\MvcEvent;
 use Zend\ModuleManager\Feature\AutoloaderProviderInterface;
-use Zend\EventManager\StaticEventManager;
 
 class Module implements AutoloaderProviderInterface {
 	public function onBootstrap(MvcEvent $e) {
 		$eventManager        = $e->getApplication()->getEventManager();
 		$moduleRouteListener = new ModuleRouteListener();
 		$moduleRouteListener->attach($eventManager);
-        
+
 		$app = $e->getApplication();
 		$serviceManager = $app->getServiceManager();
 		$serviceManager->get('viewhelpermanager')->setFactory('myviewalias', function($sm) use ($e) {
@@ -32,10 +32,10 @@ class Module implements AutoloaderProviderInterface {
 			}
 		);
 
-		\Utils\Registry::set('cache', $serviceManager->get('cache'));
+		\Utils\Registry::set('sm', $serviceManager);
 	}
 
-	public function getConfig()	{
+	public function getConfig() {
 		return include __DIR__ . '/config/module.config.php';
 	}
 
@@ -48,10 +48,10 @@ class Module implements AutoloaderProviderInterface {
 			),
 		);
 	}
+
 	public function getViewHelperConfig() {
 		return array(
 			'factories' => array(
-
 				'getLang' => function ($sm) {
 					$viewHelper = new \Application\View\Helper\Lang;
 					return $viewHelper;

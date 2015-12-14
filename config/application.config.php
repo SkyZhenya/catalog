@@ -17,18 +17,6 @@ if (defined('JS_COMBINE') && JS_COMBINE) {
 define('PASSWORD_HASH_COST', 12); //algorithmic cost that should be used while hashing password
 define('REMEMBER_ME_PERIOD', 2592000);
 
-Utils\Registry::set('dbConfig', array(
-	'host' => $config['database']['host'],
-	'dbname' => $config['database']['name'],
-	'driver' => 'Pdo',
-	'dsn' => 'mysql:dbname='.$config['database']['name'].';host='.$config['database']['host'],
-	'username' => $config['database']['user'],
-	'password' => $config['database']['password'],
-	'driver_options' => array(
-		PDO::MYSQL_ATTR_INIT_COMMAND => 'SET NAMES \'UTF8\''
-	),
-));
-
 umask(002);
 define('TIME', time());
 

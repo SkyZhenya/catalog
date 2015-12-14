@@ -85,21 +85,7 @@ abstract class AppTable extends TableGateway {
 	 */
 	public function getAdapter() {
 		if (!$this->adapter) {
-			try {
-				$adapter = Registry::get('dbAdapter');
-			} catch(\Exception $e) {
-				// create adapter
-				if (defined('DEBUG_SQL') && DEBUG_SQL) {
-					$adapter = new \BjyProfiler\Db\Adapter\ProfilingAdapter(Registry::get('dbConfig'));
-					$adapter->setProfiler(new \BjyProfiler\Db\Profiler\Profiler);
-					$adapter->injectProfilingStatementPrototype();
-				} else {
-					$adapter = new Adapter(Registry::get('dbConfig'));
-				}
-
-				Registry::set('dbAdapter', $adapter);
-			}
-			$this->adapter = $adapter;
+			$this->adapter = Registry::get('sm')->get('dbAdapter');
 		}
 
 		return $this->adapter;
