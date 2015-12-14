@@ -33,6 +33,8 @@ class Module implements AutoloaderProviderInterface {
 		);
 
 		\Utils\Registry::set('sm', $serviceManager);
+		
+		if(defined('GZIP_OUTPUT') && GZIP_OUTPUT)$eventManager->attach("finish", array($this, "compressOutput"), 100);
 	}
 
 	public function getConfig() {
@@ -47,6 +49,20 @@ class Module implements AutoloaderProviderInterface {
 				),
 			),
 		);
+	}
+	
+	public function compressOutput($e) {
+		$response = $e->getResponse();
+		if (get_class($response) !== 'Zend\Console\Response') {
+			$content = $response->getBody();
+			$content = str_replace("  ", " ", str_replace("\r", " ", str_replace("\t", " ", $content)));
+			if(@strpos($_SERVER['HTTP_ACCEPT_ENCODING'], 'gzip') !== false) {
+				header('Content-Encoding: gzip');
+				$content = gzencode($content, 9);
+			}
+			
+			$response->setContent($content);
+		}
 	}
 
 	public function getViewHelperConfig() {

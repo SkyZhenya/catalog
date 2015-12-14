@@ -28,6 +28,8 @@ define('GA_SECRET', 'jmJuDR4spQmHNJ70fldJB-Jj');
 //define('SESSION_NAME', '');//do not need this constant on production
 
 define('JS_COMBINE', true);
+define('GZIP_OUTPUT', true);
+
 return [
 	'database' => [
 		'host' => 'dcodeit.net',
