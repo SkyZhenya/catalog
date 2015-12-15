@@ -25,6 +25,15 @@ abstract class LocalizableTable extends CachedTable {
 	protected $localFields = [];
 
 	/**
+	 * LocalizableTable constructor.
+	 * @param string $table
+	 */
+	public function __construct($table) {
+		parent::__construct($table);
+		$this->locTable = $this->table.'local';
+	}
+
+	/**
 	 * Returns row from db with specified slug
 	 *
 	 * @param string $name
