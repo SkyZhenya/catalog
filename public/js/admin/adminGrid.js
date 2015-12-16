@@ -12,6 +12,7 @@ var adminGrid = {
 	dataType: 'xml',
 	
 	onpage: 50,
+	preRenderingAmount: 25,
 	listUrl: '',
 	
 	defaults: {
@@ -27,7 +28,6 @@ var adminGrid = {
 	
 	init: function(options) {
 		dhtmlx.CustomScroll.init();
-		
 		if (typeof options.gridboxId !== 'undefined') {
 			this.gridboxId = options.gridboxId;
 		}
@@ -40,7 +40,7 @@ var adminGrid = {
 			this.grid.enableSmartRendering(true,this.onpage);
 		}
 		if (this.enablePreRendering) {
-			this.grid.enablePreRendering(this.onpage);
+			this.grid.enablePreRendering(this.preRenderingAmount);
 		}
 		this.grid.setAwaitedRowHeight(this.awatedRowHeight);
 		
@@ -51,7 +51,7 @@ var adminGrid = {
 				adminGrid.sortOrderBy=ind;
 				adminGrid.sortOrder=dir;
 				adminGrid.filterBy();
-			    return false;
+				return false;
 			});
 		}
 		
@@ -167,23 +167,27 @@ var adminGrid = {
 		if (typeof options.dataType !== 'undefined') {
 			this.dataType = options.dataType;
 		}
+		
+		if (typeof options.preRenderingAmount !== 'undefined') {
+			this.preRenderingAmount = options.preRenderingAmount;
+		}
 	},
 	
 	addFilter: function(filter) {
-		 for (var i in filter.values) {
-			 if (typeof (filter.values[i].fieldSelector) == 'undefined') {
-				 filter.values[i].field = $(filter.sourceContainerSelector).find('.js-filter-value');
-			 }
-			 else {
+		for (var i in filter.values) {
+			if (typeof (filter.values[i].fieldSelector) == 'undefined') {
+				filter.values[i].field = $(filter.sourceContainerSelector).find('.js-filter-value');
+			}
+			else {
 				filter.values[i].field = $(filter.values[i].fieldSelector); 
-			 }
-			 
-			 this.filters.push({
-				 name: filter.values[i].name,
-				 field: filter.values[i].field
-			 });
-			 filter.values[i].field.attr('onclick', '(arguments[0]||window.event).cancelBubble=true;');
-		 }
+			}
+
+			this.filters.push({
+				name: filter.values[i].name,
+				field: filter.values[i].field
+			});
+			filter.values[i].field.attr('onclick', '(arguments[0]||window.event).cancelBubble=true;');
+		}
 	},
 	
 	attachFilters: function(filtersBoxes) {
