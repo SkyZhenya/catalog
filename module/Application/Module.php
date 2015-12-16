@@ -36,7 +36,7 @@ class Module implements AutoloaderProviderInterface {
 		\Utils\Registry::set('sm', $serviceManager);
 
 		if(defined('GZIP_OUTPUT') && GZIP_OUTPUT) {
-			$eventManager->attach('finish', array($this, 'compressOutput'), 100);
+			$eventManager->attach('finish', array($this, 'compressOutput'), -100000);
 		}
 	}
 
@@ -59,7 +59,8 @@ class Module implements AutoloaderProviderInterface {
 		if (get_class($response) !== 'Zend\Console\Response') {
 			$content = $response->getBody();
 			$content = str_replace('  ', ' ', str_replace("\r", ' ', str_replace("\t", ' ', $content)));
-			if($e->getRequest()->getHeader('Accept-Encoding')->hasEncoding('gzip')) {
+
+			if($e->getRequest()->getHeader('Accept-Encoding') && $e->getRequest()->getHeader('Accept-Encoding')->hasEncoding('gzip')) {
 				$response->getHeaders()->addHeader(new ContentEncoding('gzip'));
 				$content = gzencode($content, 9);
 			}

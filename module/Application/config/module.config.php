@@ -50,6 +50,7 @@ return array(
 				);
 			},
 			'dbAdapter' => function($sm) {
+				/** @var $sm \Zend\ServiceManager\ServiceManager */
 				$config = $sm->get('Application\Config')['database'];
 				$dbConfig = [
 					'host' => $config['host'],
@@ -66,11 +67,12 @@ return array(
 					$adapter = new \BjyProfiler\Db\Adapter\ProfilingAdapter($dbConfig);
 					$adapter->setProfiler(new \BjyProfiler\Db\Profiler\Profiler);
 					$adapter->injectProfilingStatementPrototype();
+					$sm->setAlias('Zend\Db\Adapter\Adapter', 'dbAdapter');
 				} else {
 					$adapter = new Zend\Db\Adapter\Adapter($dbConfig);
 				}
 				return $adapter;
-			}
+			},
 		],
 	],
 	'controllers' => array(
