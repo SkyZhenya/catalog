@@ -243,7 +243,7 @@ class CachedTable extends AppTable {
 			$cachedList = false;
 		}
 
-		if($cachedList && $list = $this->cacheGet($cacheKey)) {
+		if($cachedList && $list = $this->cacheGet('list')) {
 			if(!is_null($total)) {
 				$total = sizeof($list);
 			}
