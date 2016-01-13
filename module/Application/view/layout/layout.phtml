@@ -21,8 +21,8 @@ $role = $currentUser->getRole();
 			;
 		?>
 		<?php if (defined('JS_COMBINE') && JS_COMBINE) {
-			echo $this->headLink()->prependStylesheet($this->basePath() . '/cache/layout.css?' . CSS_LAYOUT);
-			echo $this->headScript()->prependFile($this->basePath() . '/cache/layout.js?' . JS_LAYOUT);
+			echo $this->headLink()->prependStylesheet($this->basePath() . '/cache/layout-'.CSS_LAYOUT.'.css');
+			echo $this->headScript()->prependFile($this->basePath() . '/cache/layout-'.JS_LAYOUT.'.js');
 		} else {
 			echo $this->headLink()
 				->prependStylesheet($this->basePath() . '/css/style.css')

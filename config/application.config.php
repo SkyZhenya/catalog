@@ -10,7 +10,7 @@ $config = require_once BASEDIR . 'config/local.php';
 if (defined('JS_COMBINE') && JS_COMBINE) {
 	require_once BASEDIR .  'config/static_versions.php';
 	foreach ($staticVersions as $name => $version) {
-		define(strtoupper($name), $version);
+		define(strtoupper($name), $version[0]);
 	}
 }
 
