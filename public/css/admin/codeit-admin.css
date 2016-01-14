@@ -667,9 +667,9 @@ filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#74aa52', end
 	margin-bottom: 0px;
 }
 
-.formWrapp input:not([type=submit]), .formWrapp .chzn-container{width:100%; min-width: 100%;}
+.formWrapp input:not([type=submit]), .formWrapp .chosen-container{width:100%; min-width: 100%;}
 /* select style */
-.formWrapp .chzn-container{
+.formWrapp .chosen-container{
 	margin: 0px 2px 0;
 }
 
@@ -1002,39 +1002,38 @@ ul.tabs-horiz li a {
 #gridbox .xhdr {
 	overflow: visible !important;
 }
-.hdr .chzn-drop {
+.hdr .chosen-drop {
 	/*width: 180px !important;*/
 	text-align: left;
 }
-.hdr .chzn-drop .chzn-search input {
+.hdr .chosen-drop .chosen-search input {
 	/*width: 144px !important;*/
 }
-.hdr .chzn-container {
+.hdr .chosen-container {
 	text-align: left;
 }
-.hdr .chzn-container-single .chzn-single {
-	height: 21px;
+.hdr .chosen-container-single .chosen-single {
+	height: 24px;
 	line-height: 21px;
 }
-.hdr .chzn-container-single {
+.hdr .chosen-container-single {
 	position: relative;
-    top: 2px;
 }
-.hdr .chzn-container-single .chzn-single div b {
-	background: url('chosen/chosen-sprite.png') no-repeat 6px 2px;
+.hdr .chosen-container-single .chosen-single div b {
+	background-position: 6px 2px;
 }
 
-.small-popup .chzn-container-active .chzn-choices {
+.small-popup .chosen-container-active .chosen-choices {
 	 -webkit-box-shadow: 0 0 0 !important;
   -moz-box-shadow   : 0 0 0 !important;
   box-shadow        : 0 0 0 !important;
   border:  1px solid #dcdde1 !important;
 } 
-.small-popup .chzn-drop {
+.small-popup .chosen-drop {
 	border:  1px solid #dcdde1 !important;
 	border-top:0 none;
 }
-.small-popup .chzn-container-multi .chzn-choices {
+.small-popup .chosen-container-multi .chosen-choices {
 	border:  1px solid #dcdde1 !important;
 }
 .button.cancel.element .el, .remove-link {
@@ -1152,7 +1151,7 @@ div.gridbox_light .xhdr {
  .error {
 	width: 164px;
 }
-#gridbox .chzn-container {
+#gridbox .chosen-container {
 	width: 99% !important;
 }
 .hor-line-without-extramargin {
@@ -1185,13 +1184,13 @@ div.gridbox_light .xhdr {
 }
 
 .content-iframe{position: relative; }
-.chzn-search{min-width: 90%;}
-.chzn-search input{min-width: 80%;}
+.chosen-search{min-width: 90%;}
+.chosen-search input{min-width: 80%;}
 
 .popup_header_cust + .popup_content .popup_message {
     text-align: center;
 }
-.content-iframe input[readonly="readonly"], .chzn-disabled > a,.chzn-disabled > .chzn-choices, select[disabled="disabled"]{
+.content-iframe input[readonly="readonly"], .chosen-disabled > a,.chosen-disabled > .chosen-choices, select[disabled="disabled"]{
 	  opacity:0.75 !important;
 	  background-color: #FcFcFc !important;
 }

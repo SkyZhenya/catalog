@@ -4,8 +4,7 @@
 	$this->headScript()->appendFile($this->basePath(). '/js/admin/pages/content-version.js')
 					->appendFile(URL . 'js/pages/avatarEditor.js', 'text/javascript')
 	;
-	$this->headLink()->prependStylesheet($this->basePath() . '/css/admin/chosen.css')
-					->appendStylesheet(URL . 'css/admin/avatarEditor.css')
+	$this->headLink()->appendStylesheet(URL . 'css/admin/avatarEditor.css')
 					->appendStylesheet(URL . 'css/admin/pages/user.css')
 	;
 ?>

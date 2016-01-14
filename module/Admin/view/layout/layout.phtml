@@ -16,6 +16,7 @@ $title = $titles[0];
 		<?php echo $this->headLink(array('rel' => 'shortcut icon', 'type' => 'image/vnd.microsoft.icon', 'href' => $this->basePath() . '/favicon.ico'))
 						->appendStylesheet($this->basePath() . '/js/dhtmlxGrid/customscroll.css')
 						->appendStylesheet($this->basepath('css/admin/checkbox.css'))
+						->appendStylesheet($this->basePath() . '/css/tools/chosen/chosen.css')
 						->appendStylesheet($this->basePath() . '/js/dhtmlxGrid/dhtmlx.css')
 						->appendStylesheet($this->basepath('css/admin/codeit-admin.css?v=2015100701'))
 		;?>
@@ -23,7 +24,7 @@ $title = $titles[0];
 		<!-- Scripts -->
 		<?php echo $this->headScript()->prependFile($this->basePath() . '/js/html5.js', 'text/javascript', array('conditional' => 'lt IE 9',))
 						->prependFile($this->basePath(). '/js/admin/jWindows.js')//custom alert/confirm messages
-						->prependFile($this->basePath(). '/js/admin/chosen.jquery.js', 'text/javascript')
+						->prependFile($this->basePath(). '/js/tools/chosen.jquery.min.js', 'text/javascript')
 						->prependFile($this->basePath(). '/js/admin/common.js?v=2015112501')
 						->prependFile($this->basePath(). '/js/admin/jquery.checkbox.min.js')
 						/* dhtmlxgrid */
