@@ -38,11 +38,13 @@ return array(
 	'service_manager' => [
 		'factories' => [
 			'cache' => function($sm) {
-				return new \Application\Lib\Redis();
+				$redis = new CodeIT\Cache\Redis();
+				$redis->setServiceLocator($sm);
+				return $redis;
 			},
 			'redis' => function($sm) {
 				$config = $sm->get('Application\Config')['redis'];
-				return new \Application\Lib\RedisWrapper(
+				return new \CodeIT\Cache\RedisWrapper(
 					$config['host'],
 					$config['port'],
 					$config['db'],

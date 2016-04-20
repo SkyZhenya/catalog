@@ -2,12 +2,12 @@
 
 namespace Auth\Controller;
 
-use Auth\Service\UserWrapperFactory;
-use Zend\View\Model\ViewModel;
-use Auth\Service\AuthServiceController;
 use Application\Model\User\SocialnetworkTable;
 use Application\Lib\User;
-use \Application\Lib\Image;
+use Application\Lib\Image;
+use Auth\Service\UserWrapperFactory;
+use Auth\Service\AuthServiceController;
+use Zend\View\Model\ViewModel;
 
 /**
  * Login or out using a standart login form or social service

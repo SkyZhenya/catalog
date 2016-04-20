@@ -1,6 +1,7 @@
 <?php
 namespace Application\Model\User;
 
+use CodeIT\Model\AppTable;
 use Zend\Db\Adapter\Adapter;
 use Zend\Db\ResultSet\ResultSet;
 use Zend\Debug;
@@ -8,7 +9,6 @@ use Zend\Db\Sql\Expression;
 use Zend\Db\Sql\Update;
 use Zend\Db\Sql\Insert;
 use Zend\Db\Sql\Delete;
-use Application\Model\AppTable;
 
 class SocialnetworkTable extends AppTable {
 	/**

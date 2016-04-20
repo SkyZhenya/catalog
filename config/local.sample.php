@@ -2,7 +2,7 @@
 define('IS_CLI', php_sapi_name() == 'cli');
 
 define('DOMAIN', 'dcodeit.net');
-define('BASE_URL', '/codeit-carcass-natali/public'); //leave it empty on live
+define('BASE_URL', '/carcass/public'); //leave it empty on live
 //define('HTTP_SCHEMA', 'http'); // uncomment if you need concrete scheme
 define('DEFAULT_HTTP_SCHEMA', 'http');
 
@@ -16,7 +16,7 @@ define('URL', HTTP_SCHEMA . '://' . DOMAIN . BASE_URL . '/');
 
 define('DEBUG', true);
 
-define('SUPPORT_EMAIL', 'natali.ringel@codeit.com.ua');
+define('SUPPORT_EMAIL', 'test@example.com');
 define('SITE_NAME', 'CodeIT Carcass');
 
 define('FACEBOOK_APP_ID', 1474956179385717);

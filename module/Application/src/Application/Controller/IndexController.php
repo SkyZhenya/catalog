@@ -2,9 +2,9 @@
 namespace Application\Controller;
 
 use Zend\View\Model\ViewModel;
-use Application\Lib\AppController;
+use CodeIT\Controller\AbstractController;
 
-class IndexController extends AppController {
+class IndexController extends AbstractController {
 
 	public function indexAction() {
 		$result = new ViewModel();

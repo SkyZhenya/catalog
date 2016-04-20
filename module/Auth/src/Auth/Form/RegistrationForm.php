@@ -1,9 +1,8 @@
 <?php
 namespace Auth\Form;
 
-use Application\Form\Form;
+use CodeIT\Form\Form;
 use Zend\Form\Element;
-use Application\Form\CustomDecorator;
 use Zend\InputFilter\InputFilter;
 use Zend\InputFilter\Factory as InputFactory;
 
@@ -186,11 +185,11 @@ class RegistrationForm extends Form {
 				),
 				'validators' => array(
 					$notemptyValidator,
-					new \Application\Lib\Validator\CustomEmailValidator(),
-					new \Application\Lib\Validator\NotExistValidator(
+					new \CodeIT\Validator\EmailSimpleValidator(),
+					new \CodeIT\Validator\NotExistValidator(
 					new \Application\Model\UserTable(), 
 						'email', 
-						false, 
+						false,
 						false, 
 						_("Profile with such email already exists")
 					)

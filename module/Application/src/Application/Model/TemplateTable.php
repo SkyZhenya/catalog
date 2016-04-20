@@ -1,6 +1,7 @@
 <?php
 namespace Application\Model;
 
+use CodeIT\Model\LocalizableTable;
 use Zend\Db\Adapter\Adapter;
 
 class TemplateTable extends LocalizableTable {

@@ -1,7 +1,7 @@
 <?php
 namespace Auth\Form;
 
-use Application\Form\Form;
+use CodeIT\Form\Form;
 use Zend\InputFilter\InputFilter;
 use Zend\InputFilter\Factory as InputFactory;
 
@@ -100,7 +100,7 @@ class LoginForm extends Form {
 				'validators' => array(
 					$notemptyValidator,
 					array (
-						'name' => 'Application\Lib\Validator\CustomEmailValidator',
+						'name' => '\CodeIT\Validator\EmailSimpleValidator',
 					),
 				),
 			)))

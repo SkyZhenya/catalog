@@ -1,11 +1,12 @@
 <?php
 namespace Admin\Controller;
 
+use CodeIT\Controller\AbstractController;
 use Application\Lib\AppController;
 use Application\Lib\User;
 use Zend\View\Model\ViewModel;
 
-class UserController extends AppController {
+class UserController extends AbstractController {
 	/**
 	 * @var \Zend\Form\Form
 	 */

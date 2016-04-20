@@ -1,10 +1,11 @@
 <?php
 namespace Admin\Form;
 
+use CodeIT\Form\MultilanguageForm;
 use Zend\InputFilter\Factory as InputFactory;
 use Zend\InputFilter\InputFilter;
 
-class TemplateForm extends \Application\Form\MultilanguageForm {
+class TemplateForm extends MultilanguageForm {
 	/**
 	 * @var Zend\InputFilter\InputFilter;
 	 */
@@ -57,7 +58,6 @@ class TemplateForm extends \Application\Form\MultilanguageForm {
 
 		$langsTable = new \Application\Model\LangTable();
 		$langs = $langsTable->getList();
-		$activeLang = \Utils\Registry::get('lang');
 
 		foreach ($langs as $lang){
 

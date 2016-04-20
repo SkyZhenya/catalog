@@ -1,5 +1,4 @@
 <?php
-
 namespace Admin;
 
 use Zend\Mvc\ModuleRouteListener;

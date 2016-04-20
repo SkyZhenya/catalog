@@ -1,10 +1,12 @@
 <?php
 namespace Admin\Form;
+
 use Application\Lib\User;
+use CodeIT\Form\Form;
 use Zend\InputFilter\Factory as InputFactory;
 use Zend\InputFilter\InputFilter;
 
-class UserEditForm extends \Application\Form\Form {
+class UserEditForm extends Form {
 	/**
 	 * @var Zend\InputFilter\InputFilter;
 	 */
@@ -207,8 +209,8 @@ class UserEditForm extends \Application\Form\Form {
 				),
 				'validators' => array(
 					$notemptyValidator,
-					new \Application\Lib\Validator\CustomEmailValidator(),
-					new \Application\Lib\Validator\NotExistValidator(new \Application\Model\UserTable(), 'email', $this->userId, 'id', "E-mail already exists"),
+					new \CodeIT\Validator\EmailSimpleValidator(),
+					new \CodeIT\Validator\NotExistValidator(new \Application\Model\UserTable(), 'email', $this->userId, 'id', "E-mail already exists"),
 				),
 			)));
 

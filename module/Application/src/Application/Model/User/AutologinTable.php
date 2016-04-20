@@ -1,9 +1,9 @@
 <?php
 namespace Application\Model\User;
 
+use CodeIT\Model\AppTable;
 use Zend\Db\Adapter\Adapter;
 use Zend\Db\ResultSet\ResultSet;
-use \Application\Model\AppTable;
 
 class AutologinTable extends AppTable {
 	

@@ -3,13 +3,13 @@
 namespace Auth\Service;
 
 use Auth\Service\UserWrapperFactory;
+use CodeIT\Controller\AbstractController;
 use Zend\View\Model\ViewModel;
-use Application\Lib\AppController;
 
 /**
  * Login or out using a standart login form or social service
  */
-abstract class AuthServiceController extends AppController
+abstract class AuthServiceController extends AbstractController
 {
 	/**
 	 * Stores the Hybrid_Auth-Instance

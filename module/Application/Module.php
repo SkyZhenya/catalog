@@ -1,13 +1,14 @@
 <?php
-
 namespace Application;
 
+use CodeIT\Utils\Registry;
 use Zend\Http\Header\ContentEncoding;
 use Zend\Mvc\ModuleRouteListener;
 use Zend\Mvc\MvcEvent;
 use Zend\ModuleManager\Feature\AutoloaderProviderInterface;
 
 class Module implements AutoloaderProviderInterface {
+
 	public function onBootstrap(MvcEvent $e) {
 		$eventManager        = $e->getApplication()->getEventManager();
 		$moduleRouteListener = new ModuleRouteListener();
@@ -16,7 +17,7 @@ class Module implements AutoloaderProviderInterface {
 		$app = $e->getApplication();
 		$serviceManager = $app->getServiceManager();
 		$serviceManager->get('viewhelpermanager')->setFactory('myviewalias', function($sm) use ($e) {
-			return new \Application\View\AppViewHelper($e->getRouteMatch());
+			return new \CodeIT\View\Helper\AppViewHelper($e->getRouteMatch());
 		});
 
 		$sharedManager = $app->getEventManager()->getSharedManager();
@@ -33,7 +34,7 @@ class Module implements AutoloaderProviderInterface {
 			}
 		);
 
-		\Utils\Registry::set('sm', $serviceManager);
+		Registry::set('sm', $serviceManager);
 
 		if(defined('GZIP_OUTPUT') && GZIP_OUTPUT) {
 			$eventManager->attach('finish', array($this, 'compressOutput'), -100000);
@@ -56,6 +57,10 @@ class Module implements AutoloaderProviderInterface {
 	
 	public function compressOutput($e) {
 		$response = $e->getResponse();
+
+		if(is_a($response, '\Zend\Console\Response'))return;
+		if(is_a($response, '\Zend\Http\Response\Stream'))return;
+		
 		if (get_class($response) !== 'Zend\Console\Response') {
 			$content = $response->getBody();
 			$content = str_replace('  ', ' ', str_replace("\r", ' ', str_replace("\t", ' ', $content)));
@@ -71,24 +76,23 @@ class Module implements AutoloaderProviderInterface {
 
 	public function getViewHelperConfig() {
 		return array(
-			'factories' => array(
+			'factories' => [
 				'getLang' => function ($sm) {
-					$viewHelper = new \Application\View\Helper\Lang;
-					return $viewHelper;
-				},
-				'wrappedElement' => function ($sm) {
-					$viewHelper = new \Application\View\WrappedElement;
-					return $viewHelper;
-				},
-				'wrappedForm' => function ($sm) {
-					$viewHelper = new \Application\View\WrappedForm;
+					$viewHelper = new \CodeIT\View\Helper\Lang;
 					return $viewHelper;
 				},
 				'getUser' => function ($sm) {
-					$viewHelper = new \Application\View\Helper\User;
+					return new \CodeIT\View\Helper\User;
+				},
+				'wrappedElement' => function ($sm) {
+					$viewHelper = new \CodeIT\View\Helper\WrappedElement;
 					return $viewHelper;
 				},
-			)
+				'wrappedForm' => function ($sm) {
+					$viewHelper = new \CodeIT\View\Helper\WrappedForm;
+					return $viewHelper;
+				},
+			],
 		);
 	}
 

@@ -1,7 +1,7 @@
 <?php
 
 define('LOCALE', 'en_US'); // ru_RU for russian
-Utils\Registry::set('lang', 1); // 1 is English, 2 is Rissian
+\CodeIT\Utils\Registry::set('lang', 1); // 1 is English, 2 is Rissian
 
 define('BASEDIR', dirname(__DIR__).'/');
 

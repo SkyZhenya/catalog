@@ -1,14 +1,12 @@
 <?php
 namespace Auth;
 
-use Zend\ModuleManager\ModuleManager,
-    Zend\EventManager\StaticEventManager,
-    Zend\Mvc\ModuleRouteListener;
+use Zend\ModuleManager\ModuleManager;
+use Zend\EventManager\StaticEventManager;
+use Zend\Mvc\ModuleRouteListener;
 use Auth\View\Helper\HybridAuth as HybridAuthViewManager;
 
-
-
-class Module
+class Module 
 {
 
     public function initializeView($e)

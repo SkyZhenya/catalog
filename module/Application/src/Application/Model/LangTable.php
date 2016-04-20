@@ -1,12 +1,12 @@
 <?php
 namespace Application\Model;
 
+use CodeIT\Model\AppTable;
 use Zend\Db\Adapter\Adapter;
 use Zend\Db\ResultSet\ResultSet;
 use Zend\Db\TableGateway\AbstractTableGateway;
 use Zend\Db\Sql\Sql;
 use Zend\Db\Sql\Where;
-use Application\Model\AppTable;
 
 class LangTable extends AppTable {
 

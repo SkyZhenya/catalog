@@ -1,7 +1,8 @@
 <?php
 namespace Admin\Controller;
 
-use Application\Lib\AppController;
+use CodeIT\Controller\AbstractController;
+use CodeIT\Utils\Registry;
 use Application\Model\TemplateTable;
 use Admin\Form\TemplateForm;
 use Zend\View\Model\ViewModel;
@@ -9,7 +10,7 @@ use Zend\View\Model\ViewModel;
 /**
  * email templates management
  */
-class TemplateController extends AppController {
+class TemplateController extends AbstractController {
 	/**
 	 * @var \Zend\Form\Form
 	 */
@@ -89,7 +90,7 @@ class TemplateController extends AppController {
 			'form' => $form,
 			'error' => $this->error,
 			'langs' => $langs->toArray(),
-			'activeLang' =>\Utils\Registry::get('lang'),
+			'activeLang' => Registry::get('lang'),
 		));
 		return $view;
 	}

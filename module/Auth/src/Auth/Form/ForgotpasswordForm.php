@@ -1,7 +1,7 @@
 <?php
 namespace Auth\Form;
 
-use \Application\Form\Form;
+use CodeIT\Form\Form;
 use Zend\Form\Element;
 use Application\Form\CustomDecorator;
 use Zend\InputFilter\InputFilter;
@@ -90,7 +90,7 @@ class ForgotpasswordForm extends Form {
 				'validators' => array(
 					$notemptyValidator,
 					array (
-						'name' => 'Application\Lib\Validator\CustomEmailValidator',
+						'name' => '\CodeIT\Validator\EmailSimpleValidator',
 					),
 				),
 			)));

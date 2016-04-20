@@ -1,6 +1,8 @@
 <?php
 namespace Application\Model;
 
+use CodeIT\Model\CachedTable;
+
 abstract class LocalizableTable extends CachedTable {
 
 	/**

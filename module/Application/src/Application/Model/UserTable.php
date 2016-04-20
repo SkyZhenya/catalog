@@ -1,6 +1,8 @@
 <?php
 namespace Application\Model;
 
+use CodeIT\Model\CachedTable;
+
 use Zend\Db\Adapter\Adapter;
 use Zend\Db\ResultSet\ResultSet;
 use Zend\Debug;
@@ -10,6 +12,7 @@ use Zend\Db\Sql\Insert;
 use Zend\Db\Sql\Delete;
 
 class UserTable extends CachedTable {
+
 	use UserConf;
 	use \Application\Traits\Avatar;
 	
