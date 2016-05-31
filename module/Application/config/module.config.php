@@ -1,4 +1,5 @@
 <?php
+use Zend\ServiceManager\ServiceManager;
 
 return array(
 	'router' => array(
@@ -37,13 +38,13 @@ return array(
 	),
 	'service_manager' => [
 		'factories' => [
-			'cache' => function($sm) {
+			'cache' => function(ServiceManager $serviceManager) {
 				$redis = new CodeIT\Cache\Redis();
-				$redis->setServiceLocator($sm);
+				$redis->setServiceLocator($serviceManager);
 				return $redis;
 			},
-			'redis' => function($sm) {
-				$config = $sm->get('Application\Config')['redis'];
+			'redis' => function(ServiceManager $serviceManager) {
+				$config = $serviceManager->get('Application\Config')['redis'];
 				return new \CodeIT\Cache\RedisWrapper(
 					$config['host'],
 					$config['port'],
@@ -51,9 +52,8 @@ return array(
 					$config['options']
 				);
 			},
-			'dbAdapter' => function($sm) {
-				/** @var $sm \Zend\ServiceManager\ServiceManager */
-				$config = $sm->get('Application\Config')['database'];
+			'dbAdapter' => function(ServiceManager $serviceManager) {
+				$config = $serviceManager->get('Application\Config')['database'];
 				$dbConfig = [
 					'host' => $config['host'],
 					'dbname' => $config['name'],
@@ -61,15 +61,16 @@ return array(
 					'dsn' => 'mysql:dbname='.$config['name'].';host='.$config['host'],
 					'username' => $config['user'],
 					'password' => $config['password'],
-					'driver_options' => array(
-						PDO::MYSQL_ATTR_INIT_COMMAND => 'SET NAMES \'UTF8\''
-					),
+					'driver_options' => [
+						PDO::MYSQL_ATTR_INIT_COMMAND => 'SET NAMES \'UTF8\'',
+						PDO::ATTR_EMULATE_PREPARES => false,
+					],
 				];
 				if (defined('DEBUG_SQL') && DEBUG_SQL) {
 					$adapter = new \BjyProfiler\Db\Adapter\ProfilingAdapter($dbConfig);
 					$adapter->setProfiler(new \BjyProfiler\Db\Profiler\Profiler);
 					$adapter->injectProfilingStatementPrototype();
-					$sm->setAlias('Zend\Db\Adapter\Adapter', 'dbAdapter');
+					$serviceManager->setAlias('Zend\Db\Adapter\Adapter', 'dbAdapter');
 				} else {
 					$adapter = new Zend\Db\Adapter\Adapter($dbConfig);
 				}
