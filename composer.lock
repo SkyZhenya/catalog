@@ -4,16 +4,16 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "7b1dbdb63357b72dee88f649eb019558",
-    "content-hash": "06be727bea7f5b04a9b98914b8763b1e",
+    "hash": "566f9c011bf322ece0eec637f6121a52",
+    "content-hash": "a9f1389f39cf37f85c22f22cb214ec17",
     "packages": [
         {
             "name": "codeit/base",
-            "version": "0.1.9",
+            "version": "0.1.13",
             "source": {
                 "type": "git",
                 "url": "https://gitlab.codeit.com.ua/Gerasimov/codeit.git",
-                "reference": "51771828caf68987b0b62f3f114f4f4ce2459805"
+                "reference": "168f4aa5f68204809e2ae1d81781f7beefd7174d"
             },
             "require": {
                 "zendframework/zendframework": "2.5.*"
@@ -31,7 +31,7 @@
                 }
             ],
             "description": "CodeIT Carcass base files",
-            "time": "2016-05-11 10:35:35"
+            "time": "2016-05-31 10:47:01"
         },
         {
             "name": "container-interop/container-interop",
@@ -366,16 +366,16 @@
         },
         {
             "name": "phpunit/php-code-coverage",
-            "version": "3.3.1",
+            "version": "3.3.3",
             "source": {
                 "type": "git",
                 "url": "https://github.com/sebastianbergmann/php-code-coverage.git",
-                "reference": "2431befdd451fac43fbcde94d1a92fb3b8b68f86"
+                "reference": "44cd8e3930e431658d1a5de7d282d5cb37837fd5"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/sebastianbergmann/php-code-coverage/zipball/2431befdd451fac43fbcde94d1a92fb3b8b68f86",
-                "reference": "2431befdd451fac43fbcde94d1a92fb3b8b68f86",
+                "url": "https://api.github.com/repos/sebastianbergmann/php-code-coverage/zipball/44cd8e3930e431658d1a5de7d282d5cb37837fd5",
+                "reference": "44cd8e3930e431658d1a5de7d282d5cb37837fd5",
                 "shasum": ""
             },
             "require": {
@@ -425,7 +425,7 @@
                 "testing",
                 "xunit"
             ],
-            "time": "2016-04-08 08:14:53"
+            "time": "2016-05-27 16:24:29"
         },
         {
             "name": "phpunit/php-file-iterator",
@@ -1346,16 +1346,16 @@
         },
         {
             "name": "symfony/yaml",
-            "version": "v3.0.6",
+            "version": "v3.1.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/yaml.git",
-                "reference": "0047c8366744a16de7516622c5b7355336afae96"
+                "reference": "eca51b7b65eb9be6af88ad7cc91685f1556f5c9a"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/yaml/zipball/0047c8366744a16de7516622c5b7355336afae96",
-                "reference": "0047c8366744a16de7516622c5b7355336afae96",
+                "url": "https://api.github.com/repos/symfony/yaml/zipball/eca51b7b65eb9be6af88ad7cc91685f1556f5c9a",
+                "reference": "eca51b7b65eb9be6af88ad7cc91685f1556f5c9a",
                 "shasum": ""
             },
             "require": {
@@ -1364,7 +1364,7 @@
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "3.0-dev"
+                    "dev-master": "3.1-dev"
                 }
             },
             "autoload": {
@@ -1391,7 +1391,7 @@
             ],
             "description": "Symfony Yaml Component",
             "homepage": "https://symfony.com",
-            "time": "2016-03-04 07:55:57"
+            "time": "2016-05-26 21:46:24"
         },
         {
             "name": "zendframework/zend-authentication",
@@ -4284,8 +4284,8 @@
     "prefer-stable": false,
     "prefer-lowest": false,
     "platform": {
-        "ext-redis": "^2.2",
-        "ext-mbstring": "^0.0.0",
+        "ext-redis": "*",
+        "ext-mbstring": "*",
         "ext-zlib": "*",
         "php": ">=5.6.6"
     },
