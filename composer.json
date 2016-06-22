@@ -15,5 +15,10 @@
 	"repositories" : [{
 		"type" : "vcs",
 		"url" : "https://gitlab.codeit.com.ua/Gerasimov/codeit.git"
-	}]
+	}],
+	"scripts": {
+		"ruckusing": [
+			"oldPath=`pwd` && cd db/ && php ../vendor/bin/ruckus.php && cd $oldPath"
+		]
+	}
 }
