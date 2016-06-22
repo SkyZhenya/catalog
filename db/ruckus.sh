@@ -1,4 +1,7 @@
 #!/bin/bash
 
-cd $(dirname $0)
-php ../vendor/bin/ruckus.php $@
+OLDDIR=$(pwd)
+ROOTDIR="$(dirname "$(dirname "$(readlink -f "$0")")")"
+cd $ROOTDIR
+composer ruckusing
+cd $OLDDIR
