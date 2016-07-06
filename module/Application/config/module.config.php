@@ -38,13 +38,14 @@ return array(
 	),
 	'service_manager' => [
 		'factories' => [
-			'cache' => function(ServiceManager $serviceManager) {
-				$redis = new CodeIT\Cache\Redis();
-				$redis->setServiceLocator($serviceManager);
+			'cache' => function($serviceLocator) {
+				$config = $serviceLocator->get('ApplicationConfig')['cache'];
+				$redisWrapper = $serviceLocator->get('redis');
+				$redis = new CodeIT\Cache\Redis($config, $redisWrapper);
 				return $redis;
 			},
 			'redis' => function(ServiceManager $serviceManager) {
-				$config = $serviceManager->get('Application\Config')['redis'];
+				$config = $serviceManager->get('ApplicationConfig')['redis'];
 				return new \CodeIT\Cache\RedisWrapper(
 					$config['host'],
 					$config['port'],
@@ -53,7 +54,7 @@ return array(
 				);
 			},
 			'dbAdapter' => function(ServiceManager $serviceManager) {
-				$config = $serviceManager->get('Application\Config')['database'];
+				$config = $serviceManager->get('ApplicationConfig')['database'];
 				$dbConfig = [
 					'host' => $config['host'],
 					'dbname' => $config['name'],

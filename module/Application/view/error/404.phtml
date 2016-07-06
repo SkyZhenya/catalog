@@ -49,7 +49,7 @@ if(DEBUG):
 
 	<?php if (isset($this->display_exceptions) && $this->display_exceptions): ?>
 
-		<?php if(isset($this->exception) && $this->exception instanceof Exception): ?>
+		<?php if(isset($this->exception)): ?>
 			<hr/>
 			<h2><?php echo _('Additional information') ?>:</h2>
 			<h3><?php echo get_class($this->exception); ?></h3>
