@@ -22,6 +22,15 @@ define('TIME', time());
 
 $config = array_merge_recursive($config, [
 	'modules' => array(
+		'Zend\I18n',
+		'Zend\Session',
+		'Zend\Form',
+		'Zend\InputFilter',
+		'Zend\Filter',
+		'Zend\Cache',
+		'Zend\Db',
+		'Zend\Router',
+		'CodeIT',
 		'Application',
 		'Admin',
 		'Auth',	

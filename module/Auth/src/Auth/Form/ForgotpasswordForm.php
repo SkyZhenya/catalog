@@ -71,7 +71,7 @@ class ForgotpasswordForm extends Form {
 			$factory = new InputFactory();
 			
 			$notemptyValidator = array(
-				'name' => 'not_empty',
+				'name' => 'notEmpty',
 				'options' => array (
 					'messages' => array(
 						\Zend\Validator\NotEmpty::IS_EMPTY => _("This field is required"),

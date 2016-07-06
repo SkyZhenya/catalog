@@ -16,9 +16,6 @@ class Module implements AutoloaderProviderInterface {
 
 		$app = $e->getApplication();
 		$serviceManager = $app->getServiceManager();
-		$serviceManager->get('viewhelpermanager')->setFactory('myviewalias', function($sm) use ($e) {
-			return new \CodeIT\View\Helper\AppViewHelper($e->getRouteMatch());
-		});
 
 		$sharedManager = $app->getEventManager()->getSharedManager();
 		$sharedManager->attach('Zend\Mvc\Application', 'dispatch.error',

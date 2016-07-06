@@ -9,23 +9,11 @@ use Auth\View\Helper\HybridAuth as HybridAuthViewManager;
 class Module 
 {
 
-    public function initializeView($e)
-    {
-        $servicemanager = $e->getApplication()->getServiceManager();
-        $helperManager = $servicemanager->get('viewhelpermanager');
-
-    }
-
     public function onBootstrap($e)
     {
     	$eventManager        = $e->getApplication()->getEventManager();
     	$moduleRouteListener = new ModuleRouteListener();
     	$moduleRouteListener->attach($eventManager);
-
-        $servicemanager = $e->getApplication()->getServiceManager();
-        $helperManager  = $servicemanager->get('viewhelpermanager');
-        $router         = $servicemanager->get('Application')->getMvcEvent();
-
     }
 
     public function getConfig()
