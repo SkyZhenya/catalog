@@ -19,7 +19,7 @@
         "zendframework/zend-math": "^3.0",
         "zendframework/zend-validator": "^2.8",
         "zendframework/zend-session": "^2.7",
-        "zendframework/zend-i18n": "^2.7" 	
+        "zendframework/zend-i18n": "^2.7"
     },
     "repositories" : [{
         "type" : "vcs",

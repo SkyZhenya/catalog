@@ -63,7 +63,7 @@ return array(
 					'username' => $config['user'],
 					'password' => $config['password'],
 					'driver_options' => [
-						PDO::MYSQL_ATTR_INIT_COMMAND => 'SET NAMES \'UTF8\'',
+						PDO::MYSQL_ATTR_INIT_COMMAND => 'SET NAMES "UTF8", SQL_MODE="TRADITIONAL"',
 						PDO::ATTR_EMULATE_PREPARES => false,
 					],
 				];
