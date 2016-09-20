@@ -9,10 +9,8 @@ var newModal = {
 		contentSourceType: "ajax" /* ajax(link to source) or html(DOM selector) */,
 		contentSourse: "",
 		afterUploadCallback: function(){
-			console.log("newModal init");
 		},
 		afterCloseCallback: function(){
-			console.log("newModal close");
 		},
 
 		/* for ajax  */
