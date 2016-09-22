@@ -27,10 +27,11 @@ var newModal = {
 		container.one("webkitTransitionEnd otransitionend oTransitionEnd msTransitionEnd transitionend", function(){
 			container.hide();
 			container.remove();
+			main.params = main.options;
 			main.params.afterCloseCallback();
 		});
 
-		main.modalWrap.removeClass("in");
+		container.removeClass("in");
 	},
 
 	showSpinner: function(){
@@ -106,7 +107,7 @@ var newModal = {
 
 		if (main.params.contentSourceType == "ajax") {
 			$.ajax({
-				type: "POST",
+				type: main.params.requestType,
 				url: main.params.contentSourse,
 				success: function(data) {
 					main.hideSpinner();
@@ -174,9 +175,11 @@ $(function(){
 
 		if (btn.attr("data-newmodal-options") != undefined) {
 			options = btn.attr("data-newmodal-options");
+			options = $.parseJSON(options);
 		}
-		options = $.parseJSON(options);
+
 		options = $.extend(options, contentSourseObj);
+
 		newModal.show(options);
 	});
 });
