@@ -1,6 +1,6 @@
 <?php
 
-return array(
+return [
 	'router' => array(
 		'routes' => array(
 			// The following is a route to simplify getting started creating
@@ -27,14 +27,7 @@ return array(
 			),
 		),
 	),
-
-	'controllers' => array(
-		'invokables' => array(
-			'Admin\Controller\User' => 'Admin\Controller\UserController',
-			'Admin\Controller\Template' => 'Admin\Controller\TemplateController',
-		),
-	),
-	'view_manager' => array(
+	'view_manager' => [
 		'display_not_found_reason' => DEBUG,
 		'display_exceptions' => DEBUG,
 		'doctype' => 'HTML5',
@@ -50,7 +43,7 @@ return array(
 			__DIR__ . '/../view',
 		),
 		'strategies' => array(
-					'ViewJsonStrategy',
-			),
-	),
-);
+			'ViewJsonStrategy',
+		),
+	],
+];

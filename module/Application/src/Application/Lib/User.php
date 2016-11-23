@@ -14,7 +14,7 @@ class User extends UserTable {
 	 * @param bool $forceAuth
 	 * @return bool
 	 */
-	public function auth($forceAuth = true) {
+	public function auth($forceAuth = false) {
 
 		if (defined('SESSION_NAME')) {
 			session_name(SESSION_NAME);

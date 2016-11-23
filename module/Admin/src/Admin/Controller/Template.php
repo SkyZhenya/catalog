@@ -10,7 +10,7 @@ use Zend\View\Model\ViewModel;
 /**
  * email templates management
  */
-class TemplateController extends AbstractController {
+class Template extends AbstractController {
 	/**
 	 * @var \Zend\Form\Form
 	 */

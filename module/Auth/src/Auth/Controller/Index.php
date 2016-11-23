@@ -12,7 +12,7 @@ use Zend\View\Model\ViewModel;
 /**
  * Login or out using a standart login form or social service
  */
-class IndexController extends AuthServiceController
+class Index extends AuthServiceController
 {
 	/**
 	 *

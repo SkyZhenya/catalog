@@ -79,11 +79,6 @@ return array(
 			},
 		],
 	],
-	'controllers' => array(
-		'invokables' => array(
-			'Application\Controller\Index' => 'Application\Controller\IndexController',
-		),
-	),
 	'controller_plugins' => [
 		'invokables' => [
 			'background' => 'Application\Lib\Controller\Plugin\Background',

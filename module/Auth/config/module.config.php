@@ -82,11 +82,6 @@ return array(
 			),
 		),
 	),
-	'controllers' => array(
-		'invokables' => array(
-			'Auth\Controller\Index' => 'Auth\Controller\IndexController',
-		),
-	),
 	'service_manager' => array(
 		'invokables' => array(
 			'Auth\Service\UserWrapperFactory' => 'Auth\Service\UserWrapperFactory',

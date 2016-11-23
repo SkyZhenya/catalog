@@ -3,10 +3,10 @@ namespace Admin\Controller;
 
 use CodeIT\Controller\AbstractController;
 use Application\Lib\AppController;
-use Application\Lib\User;
+use Application\Lib\User as UserLib;
 use Zend\View\Model\ViewModel;
 
-class UserController extends AbstractController {
+class User extends AbstractController {
 	/**
 	 * @var \Zend\Form\Form
 	 */
@@ -22,7 +22,7 @@ class UserController extends AbstractController {
 	public function ready() {
 		parent::ready();
 
-		$this->userTable = new User();
+		$this->userTable = new UserLib();
 	}
 
 	/**
