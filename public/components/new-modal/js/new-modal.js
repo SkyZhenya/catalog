@@ -7,10 +7,10 @@ var newModal = {
 		addClass: false,
 		modalId : "newModal",
 		contentSourceType: "ajax" /* ajax(link to source) or html(DOM selector) */,
-		contentSourse: "",
-		afterUploadCallback: function(){
+		contentSource: "",
+		afterUploadCallback: function() {
 		},
-		afterCloseCallback: function(){
+		afterCloseCallback: function() {
 		},
 
 		/* for ajax  */
@@ -21,19 +21,20 @@ var newModal = {
 
 	modalWrap : {},
 
-	closeModal : function (){
+	closeModal : function() {
 		var main = this;
 		var container = $("[data-newmodal='container']");
-		container.one("webkitTransitionEnd otransitionend oTransitionEnd msTransitionEnd transitionend", function(){
+		container.one("webkitTransitionEnd otransitionend oTransitionEnd msTransitionEnd transitionend", function() {
 			container.hide();
 			container.remove();
+			main.params = main.options;
 			main.params.afterCloseCallback();
 		});
 
-		main.modalWrap.removeClass("in");
+		container.removeClass("in");
 	},
 
-	showSpinner: function(){
+	showSpinner: function() {
 		var main = this;
 		var spinner = $("<div></div>").addClass("newModalSpiner");
 
@@ -66,7 +67,6 @@ var newModal = {
 
 		topBtnClose.appendTo(modalContent);
 
-
 		if (main.params.showHeader) {
 			var headerContent = $("<span></span>").addClass("newModalHeaderContent").html(main.params.headerContent);
 			var modalHeader = $("<div></div>").addClass("newModalHeader")
@@ -85,18 +85,14 @@ var newModal = {
 		}
 
 		modalDialod.html(modalContent);
-
 		modalDialod.appendTo(main.modalWrap);
-
 		main.modalWrap.appendTo("body");
-		main.modalWrap.on("click", function(event){
+		main.modalWrap.on("click", function(event) {
 			if (!$(event.target).closest(".newModalContent").length) {
 				main.closeModal(modalWrap);
 			}
 		});
-
 		main.uploadContent(modalBody);
-
 		return main.modalWrap;
 	},
 
@@ -106,57 +102,51 @@ var newModal = {
 
 		if (main.params.contentSourceType == "ajax") {
 			$.ajax({
-				type: "POST",
-				url: main.params.contentSourse,
+				type: main.params.requestType,
+				url: main.params.contentSource,
 				success: function(data) {
 					main.hideSpinner();
-					$.when(modalBody.html(data)).then(function(){
+					$.when(modalBody.html(data)).then(function() {
 						main.params.afterUploadCallback();
 					});
 				},
-				error: function(){
+				error: function() {
 					console.log(data);
 				}
 			})
 		} else if (main.params.contentSourceType == "html") {
 			main.hideSpinner();
-
-
-			$.when($(newModal.params.contentSourse).clone().appendTo(modalBody)).then(function(){
+			$.when($(newModal.params.contentSource).clone().appendTo(modalBody)).then(function() {
 				main.params.afterUploadCallback();
 			});
 		}
-
 	},
 
-	show : function(options){
+	show : function(options) {
 		var main = this;
 
 		$(".newModal").hide();
 		main.params = $.extend({}, main.options, options);
 
-
 		if (!$(main.params.modalId).length && !$(main.params.modalId).hasClass("newModal")) {
 			var modalElem = main.createModal(main.params);
 		} else {
 			modalElem = $(main.params.modalId);
-			console.log(123);
 		}
-
 		$.when(modalElem.show())
-			.then(function(){
+			.then(function() {
 			modalElem.addClass("in");
 		});
 	},
 };
 
-$(function(){
-	$(document).on("click", "[data-newmodal='hide']", function(event){
+$(function() {
+	$(document).on("click", "[data-newmodal='hide']", function(event) {
 		event.preventDefault();
 		newModal.closeModal()
 	});
 
-	$(document).on("click", "[data-newmodal='show']", function(event){
+	$(document).on("click", "[data-newmodal='show']", function(event) {
 		event.preventDefault();
 		var btn = $(this);
 		var contentSource;
@@ -167,16 +157,14 @@ $(function(){
 		if (btn.attr("data-href") != undefined) {
 			contentSource = btn.attr("data-href")
 		}
-
-		var contentSourseObj = {
-			contentSourse: contentSource
+		var contentSourceObj = {
+			contentSource: contentSource
 		};
-
 		if (btn.attr("data-newmodal-options") != undefined) {
 			options = btn.attr("data-newmodal-options");
+			options = $.parseJSON(options);
 		}
-		options = $.parseJSON(options);
-		options = $.extend(options, contentSourseObj);
+		options = $.extend(options, contentSourceObj);
 		newModal.show(options);
 	});
 });
