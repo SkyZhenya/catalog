@@ -1,10 +1,10 @@
 <div class="txt_al_c">
 <h1><?php echo _('An error occurred') ?></h1>
-<h2><?php echo  ((isset($this->exception) && ($this->exception instanceof Exception) ))? $this->exception->getMessage(): $this->message ?></h2>
+<h2><?php echo  (isset($this->exception)? $this->exception->getMessage(): $this->message ?></h2>
 
 <?php if (isset($this->display_exceptions) && $this->display_exceptions): ?>
 
-<?php if(isset($this->exception) && $this->exception instanceof Exception): ?>
+<?php if(isset($this->exception)) : ?>
 <hr/>
 <h2><?php echo _('Additional information') ?>:</h2>
 <h3><?php echo get_class($this->exception); ?></h3>

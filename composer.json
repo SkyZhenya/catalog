@@ -1,7 +1,7 @@
 {
     "name": "codeit/carcass",
     "require": {
-        "codeit/base": "^0.2",
+        "codeit/base": "^0.3",
         "ext-redis": "*",
         "ext-mbstring": "*",
         "ext-zlib": "*",
