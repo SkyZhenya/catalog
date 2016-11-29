@@ -1,6 +1,8 @@
 <?php
-  
 namespace Application\Lib;
+
+use Intervention\Image\ImageManager;
+use Intervention\Image\Image as InterventionImage;
 
 /**
  * Exports some image processing methods
@@ -8,11 +10,11 @@ namespace Application\Lib;
 class Image {
 	
 	/**
-	* list of md5 codes of images to exclude (like FB default avatars) 
-	* 
-	* @var mixed
-	*/
-	static $exclusions = [
+	 * list of md5 codes of images to exclude (like FB default avatars) 
+	 * 
+	 * @var mixed
+	 */
+	protected static $exclusions = [
 		'517d3357f71886953d7f2ace7ecb09e0', //FB big man avatar
 		'3c8edaf4784c1d88187c17fef2ca5a36', //FB big woman avatar
 	];
@@ -21,35 +23,26 @@ class Image {
 	 * open image file and return GD resource
 	 * 
 	 * @param string $srcPath
-	 * @throws 10001 on Source image file could not be read
-	 * @throws 10002 on Source image cannot be opened as JPEG, GIF or PNG
+	 * @throws Exception code 10001 on Source image file could not be read
+	 * @throws Exception code 10002 on Source image cannot be opened as JPEG, GIF or PNG
+	 * @returns \Intervention\Image\Image
 	 */
-	static function openImage($srcPath) {
-		if(!is_readable($srcPath)) {
+	public static function openImage($srcPath) {
+		if(!is_readable($srcPath) && !preg_match('#^https?\:\/\/#', $srcPath)) {
 			throw new \Exception(_('Source image file could not be read ('.$srcPath.')'), 10001);
 		}
-		
-		$source = @imagecreatefromjpeg($srcPath);
-		if (!$source) {
-			$source = @imagecreatefrompng($srcPath);
-		}
-		if (!$source) {
-			$source = @imagecreatefromgif($srcPath);
-		}
-		
-		if(!$source) {
-			throw new \Exception(_('Wrong file format'), 10002);
-		}
-		
+
+		$imageManager = new ImageManager();
+		$source = $imageManager->make($srcPath);
 		$exif = @exif_read_data($srcPath);
 		if($exif && isset($exif['Orientation'])) {
 			switch($exif['Orientation']) {
-				case 3: $source = imagerotate($source, 180, 0); break;
-				case 6: $source = imagerotate($source, 270, 0); break;
-				case 8: $source = imagerotate($source, 90, 0); break;
+				case 3: $source->rotate(180, 0); break;
+				case 6: $source->rotate(270, 0); break;
+				case 8: $source->rotate(90, 0); break;
 			}
 		}
-		
+
 		return $source;
 	}
 	
@@ -64,67 +57,59 @@ class Image {
 	 * @throws 10001 on Source image file could not be read
 	 * @throws 10002 on Source image cannot be opened as JPEG or PNG
 	 * @throws 10003 on Source image seems to be too small
-	 * @throws 10004 on Destination image cannot be saved
+	 * @throws \Intervention\Image\Exception\NotWritableException on Destination image cannot be saved
 	 */
-	static function resize($srcPath, $dstPath, $width, $height, $method='resize') {
+	public static function resize(string $srcPath, string $dstPath, int $width, int $height, string $method='fill') {
 		$source = self::openImage($srcPath);
 		self::resizeResource($source, $dstPath, $width, $height, $method);
 	}
 	
 	/**
-	 * create thumbnail from image resource
+	 * create thumbnail from image resource and save as file
 	 * 
-	 * @param resource $source
+	 * @param \Intervention\Image\Image $source
 	 * @param string $dstPath
 	 * @param int $width
 	 * @param int $height
 	 * @param string $method: fill/resize
-	 * @throws 10003 on Source image seems to be too small
-	 * @throws 10004 on Destination image cannot be saved
+	 * @throws Exception code 10003 on Source image seems to be too small
+	 * @throws \Intervention\Image\Exception\NotWritableException on Destination image cannot be saved
 	 */
-	static function resizeResource($source, $dstPath, $width, $height, $method='resize') {
-		$picX = imagesx($source); $picY = imagesy($source);
+	public static function resizeResource(InterventionImage $source, string $dstPath, int $width, int $height, string $method='fill') {
+		$thumb = self::resizeResourceAndReturn($source, $width, $height, $method);
+		$thumb->save($dstPath, 96);
+	}
+
+	/**
+	 * create thumbnail from image resource and return resized resource
+	 * 
+	 * @param \Intervention\Image\Image $source
+	 * @param string $dstPath
+	 * @param int $width
+	 * @param int $height
+	 * @param string $method: fill/resize
+	 * @returns \Intervention\Image\Image $thumbnail
+	 * @throws Exception code 10003 on Source image seems to be too small
+	 */
+	protected static function resizeResourceAndReturn(InterventionImage $source, int $width, int $height, string $method='fill') {
+		$picX = $source->getWidth(); $picY = $source->getHeight();
 		
 		if(!$picX || !$picY) {
 			throw new \Exception('Source image seems to be too small', 10003);
 		}
-		
-		$idealRatio = $width/$height;
+
+		$thumb = clone $source;
 		if($method == 'fill') {
-			$myH = $height; $myW = $width;
-			if($picX/$picY > $idealRatio) {
-				$srcY = 0; $srcX = round($picX - $picY*$width/$height)/2;
-				$srcH = $picY; $srcW = $picY * $width/$height;
-			}
-			else {
-				$srcX = 0; $srcY = round($picY - $picX*$height/$width)/2;
-				$srcW = $picX; $srcH = $picX * $height/$width;
-			}
+			$thumb->fit($width, $height, null, 'top');
 		}
 		else { // just resize
-			if($picX/$picY > $idealRatio) {
-				$myW = min($picX, $width);
-				$myH = $myW * $picY / $picX;
-				$srcY = 0; $srcX = 0; $srcH = $picY; $srcW = $picX;
-			}
-			else {
-				$myH = min($picY, $height);
-				$myW = $myH * $picX / $picY;
-				$srcX = 0; $srcY = 0; $srcW = $picX; $srcH = $picY;
-			}
+			$thumb->resize($width, $height);
 		}
-		
-		$thumb = imagecreatetruecolor($myW, $myH);
-		imagecopyresampled($thumb, $source, 0, 0, $srcX, $srcY, $myW, $myH, $srcW, $srcH);
 
-		$result = @imagejpeg($thumb, $dstPath, 96);
-		imagedestroy($thumb);
-		if(!$result) {
-			throw new \Exception('Destination image '.$dstPath.' cannot be saved', 10003);
-		}
+		return $thumb;
 	}
-	
-	static function simpleImageUpload($from, $to){
+
+	public static function simpleImageUpload($from, $to){
 	  $in = fopen($from, "rb");
 	  $out = fopen($to, "wb");
 	  while ($chunk = fread($in, 8192)){
@@ -134,7 +119,7 @@ class Image {
 	  fclose($out);
 	}
 
-	static function checkForExclusion($img) {
+	public static function checkForExclusion($img) {
 		$hash = md5_file($img);
 		if(!in_array($hash, self::$exclusions)) { 
 			return true; 
