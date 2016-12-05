@@ -56,13 +56,6 @@ class UserEditForm extends Form {
 		));
 
 		$this->add(array(
-			'name' => 'id',
-			'attributes' => array(
-				'type' => 'hidden',
-			),
-		));
-
-		$this->add(array(
 			'name' => 'updated',
 			'attributes' => array(
 				'type' => 'hidden',
