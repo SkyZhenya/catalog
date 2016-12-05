@@ -43,6 +43,16 @@ class RegistrationForm extends Form {
 			))
 
 			->add(array(
+				'name' => 'phone',
+				'options' => array(
+					'label' => _('Phone'),
+				),
+				'attributes' => array(
+					'class' => 'form-control',
+				),
+			))
+
+			->add(array(
 				'name' => 'password',
 				'type' => 'password',
 				'options' => array(
@@ -193,6 +203,14 @@ class RegistrationForm extends Form {
 						false, 
 						_("Profile with such email already exists")
 					)
+				)
+			)))
+
+			->add($factory->createInput(array(
+				'name' => 'phone',
+				'required' => true,
+				'validators' => array(
+					$notemptyValidator
 				)
 			)))
 			

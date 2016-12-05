@@ -256,6 +256,8 @@ class UserTable extends CachedTable {
 			'password' => isset($data['password']) ? $this->passwordHash($data['password']) : '',
 			'level' => isset($data['level']) ? $data['level'] : 'user',
 			'email' => $data['email'],
+			'code' => isset($code)? $code : null,
+			'phone' => isset($data['phone'])? $data['phone'] : null,
 			'created' => TIME,
 			'gender' => isset($data['gender'])? $data['gender'] : null,
 			'country' => isset($data['country'])? $data['country'] : '',
