@@ -56,9 +56,6 @@ class User extends AbstractController {
 	public function editAction() {
 		$id = $this->params('id',0);
 
-		if(!$id)
-		return $this->redirect()->toRoute('admin', array('controller' => 'user', 'action' => 'add'));
-
 		$this->setBreadcrumbs(['user' => 'Users',], true);
 		$form = $this->getForm('edit', $id);
 		$canEdit = $this->user->isAllowed('Admin\Controller\User', 'save');
@@ -118,6 +115,8 @@ class User extends AbstractController {
 			if ($form->isValid()) {
 				$data = $form->getData();
 				$data['updated'] = TIME;
+				$data['created'] = TIME;
+				$data['code'] = \Application\Lib\Utils::generatePassword(32);
 				if (!empty($data['pass'])) {
 					$data['password'] = $this->user->passwordHash($data['pass']);
 				}

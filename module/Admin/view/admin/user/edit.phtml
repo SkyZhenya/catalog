@@ -19,7 +19,6 @@
 	<div class="user-wrap">
 		<?php echo $this->form()->openTag($form) ?>
 		<?php echo $this->wrappedElement($form->get('csrf')) ?>
-		<?php echo $this->wrappedElement($form->get('id')) ?>
 		<?php echo $this->wrappedElement($form->get('updated')) ?>
 		<div class="avatar_container">
 			<div class="avatar_image" style="background-image: url('<?php echo isset($item)? $item->avatars[140] : URL.'images/user/default140.png';?>')" id="avatarImage"></div>
