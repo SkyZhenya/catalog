@@ -53,6 +53,18 @@ $title = $titles[0];
 								<a href="<?php echo $this->basepath('admin/user')?>" class=""><span><?= _('Manage Users');?></span></a>
 							</li>
 						<?php } ?>
+						<?php if ($this->getUser()->isAllowed($cpath.'Category', 'index')) { ?>
+							<li class="<?php echo in_array($controller, array('Category'))?"active ":''?>parent level0">
+								<a href="<?php echo $this->basepath('admin/category')?>" class=""><span><?= _('Manage categories');?></span></a>
+								<ul>
+									<?php if ($this->getUser()->isAllowed($cpath.'Category', 'add')) { ?>
+									<li>
+										<a href="<?php echo $this->basepath('admin/category/add')?>"><span><?= _('Add New Category');?></span></a>
+									</li>
+									<?php } ?>
+								</ul>
+							</li>
+						<?php } ?>
 						<?php if ($this->getUser()->isAllowed($cpath.'Template', 'index')) { ?>
 							<li class="<?=in_array($controller, array('Template'))?"active ":''?>parent level0">
 								<a href="<?php echo $this->basepath('admin/template')?>" class=""><span><?= _('Email templates');?></span></a>

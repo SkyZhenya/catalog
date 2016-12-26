@@ -75,6 +75,8 @@ class User extends AbstractController {
 				if ($form->isValid()) {
 					$data = $form->getData();
 					$data['updated'] = TIME;
+					$data['created'] = TIME;
+					$data['code'] = \Application\Lib\Utils::generatePassword(32);
 					if (!empty($data['pass'])) {
 						$data['password'] = $this->user->passwordHash($data['pass']);
 					}
@@ -156,7 +158,6 @@ class User extends AbstractController {
 
 		$total = 0;
 		$list = $this->userTable->find($params, $count, $pos, $orderby, $total);
-
 		$xmlResult = new ViewModel(array(
 			'pos' => $pos,
 			'total' => $total,

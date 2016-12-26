@@ -1,0 +1,43 @@
+<?php
+	$this->headTitle(_('Email templates'));
+	$this->headScript()->appendFile(URL . 'js/admin/adminGrid.js?v=2015112501');
+?>
+
+<div id="gridbox"></div>
+<div style="display:none">
+	<div id="name_flt_box"><input class="js-filter-value" onkeyup="adminGrid.filterBy()"></div>
+</div>
+
+<script>
+	$(document).ready(function(){
+		var gridColumns = [
+			{'title' : "#", 'width': 15},
+			{'title' : <?php echo json_encode(_('Id'));?>, 'width': 25, 'colSorting': 'int'},
+			{'title' : <?php echo json_encode(_('Name'));?>, 'width': 225, 'colSorting': 'str',
+				'filter': {
+					'sourceContainerSelector': "#name_flt_box",
+					'values': [{'name':'flName'}]
+				}
+			},
+			{'title' : <?php echo json_encode(_('Actions'));?>, 'width': <?php echo ($canDelete)? '30' : '60';?>}
+		];
+		<?php if ($canDelete) {?>
+			gridColumns.push({
+				'title' : "#cspan", 'width': 30
+			});
+		<?php } ?>
+	
+		adminGrid.init({
+			listUrl: <?php echo json_encode($this->basePath('admin/category/list'));?>+"?action=list",
+			columns: gridColumns,
+			events: [
+				{
+					'name': "onBeforeSelect", 'callback': function(id,ind){
+						var rowNum = adminGrid.grid.cellById(id,0).getValue();
+						return common.selectItemInList(id, rowNum, <?=json_encode($this->basePath('admin/category/edit/'));?>, true);
+					}
+				}
+			]
+		});
+	});
+</script>

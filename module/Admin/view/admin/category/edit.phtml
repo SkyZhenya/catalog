@@ -1,0 +1,20 @@
+<?php
+$this->headTitle(_('Edit Category'));
+$this->headScript()->appendFile($this->basePath(). '/js/tiny_mce/tiny_mce_src.js')
+->appendFile($this->basePath(). '/js/admin/pages/content-version.js')
+;
+?>
+<div class="category">
+	<div class="invTabs">
+		<?php echo $this->form()->openTag($form) ?>
+		<?php echo $this->wrappedElement($form->get('csrf')); ?>
+		<div class="formRow clearfix">
+			<?php echo $this->wrappedElement($form->get('name')); ?>
+		</div>
+		<div class="clearfix btnsWrapp">
+			<?php echo $this->wrappedElement($form->get('submit')); ?>
+			<?php echo $this->wrappedElement($form->get('cancel')); ?>
+		</div>
+		<?php echo $this->form()->closeTag($form); ?>
+	</div>
+</div>
