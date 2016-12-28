@@ -42,7 +42,7 @@ class CategoryTable extends CachedTable {
 		return parent::delete($id);
 	}
 
-	public function getCategoryById() {
+	public function getCategoryById() { 
 		TODO();
 	}
 

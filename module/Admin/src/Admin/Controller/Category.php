@@ -3,6 +3,7 @@ namespace Admin\Controller;
 
 use CodeIT\Controller\AbstractController;
 use Application\Model\CategoryTable;
+use Application\Model\AttributeTable;
 use Application\Lib\AppController;
 use Application\Lib\User as UserLib;
 use Zend\View\Model\ViewModel;
@@ -11,11 +12,12 @@ class Category extends AbstractController {
 
 	var $form;
 	var $categoryTable;
+	var $attributeTable;
 
 	public function ready() {
 		parent::ready();
-
 		$this->categoryTable = new CategoryTable();
+		$this->attributeTable = new AttributeTable();
 	}
 
 	public function indexAction() {
@@ -48,11 +50,16 @@ class Category extends AbstractController {
 			$form->setData($data);
 			if ($form->isValid()) {
 				$data = $form->getData();
-//				var_dump($data); die;
+				$attribute['name'] = $data['attributeName'];
 				$id = $this->categoryTable->insert($data);
-				//var_dump($id);
+				$attribute['categoryId'] = $id;
+				foreach ($attribute['name'] as $item){
+					$dataAtr=[];
+					$dataAtr['name'] = $item;
+					$dataAtr['categoryId'] = $id;
+					$attr = $this->attributeTable->insert($dataAtr);
+				}
 			}
-			
 			$this->redirect()->toUrl(URL.'admin/category/');
 		}
 
@@ -70,7 +77,8 @@ class Category extends AbstractController {
 		$this->setBreadcrumbs(['category' => 'Category',], true);
 		$form = $this->getForm('edit', $id);
 		$canEdit = $this->user->isAllowed('Admin\Controller\Category', 'save');
-
+		$attribute = $this->getAttribute($id);
+		//var_dump($attribute); die;
 		try {
 			$category = $this->categoryTable->setId($id);
 			$form->setData($category);
@@ -85,7 +93,21 @@ class Category extends AbstractController {
 				$form->setData($data);
 				if ($form->isValid()) {
 					$data = $form->getData();
-					$id = $this->categoryTable->set($data);
+					//var_dump($data); die;
+					$attribute['name'] = $data['attributeName'];
+					$rez = $this->categoryTable->set($data);
+					foreach ($attribute['name'] as $key => $item){
+						$dataAtr=[];
+						$dataAtr['name'] = $item;
+						$dataAtr['categoryId'] = $id;
+						//var_dump($key);
+						if($key > 0) {
+							$this->attributeTable->setId($key);
+							$this->attributeTable->set($dataAtr);
+						} else {
+							$this->attributeTable->insert($dataAtr);
+						}
+					}
 					$this->redirect()->toUrl(URL.'admin/category/');
 				}
 				
@@ -95,6 +117,7 @@ class Category extends AbstractController {
 			}
 		}
 		return  new ViewModel(array(
+			'attribute' => $attribute,
 			'form' => $form,
 			'error' => $this->error,
 			'item' => $category,
@@ -105,6 +128,12 @@ class Category extends AbstractController {
 	public function deleteAction() {
 		$id = (int)$this->request->getPost('id', 0);
 		$this->categoryTable->delete($id);
+		return $this->getResponse()->setContent('OK');
+	}
+
+	public function deleteAttributeAction() {
+		$id = $this->request->getPost('id', 0);
+		$this->attributeTable->delete($id);
 		return $this->getResponse()->setContent('OK');
 	}
 
@@ -121,5 +150,11 @@ class Category extends AbstractController {
 		));
 		$result->setTerminal(true);
 		return $result;
+	}
+
+	public function getAttribute($id) {
+		$params = ["categoryId=$id"];
+		$attribute = $this->attributeTable->find($params);
+		return $attribute;
 	}
 }

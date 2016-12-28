@@ -2,14 +2,49 @@
 $this->headTitle(_('Edit Category'));
 $this->headScript()->appendFile($this->basePath(). '/js/tiny_mce/tiny_mce_src.js')
 ->appendFile($this->basePath(). '/js/admin/pages/content-version.js')
-;
+		;
 ?>
+
+<style>
+   .formWrapp .input-big.prop {
+		margin-bottom: 10px;
+		min-width: 97%;
+   }
+
+   .property {
+	   position: relative;
+   }
+
+   .formWrapp .property .del {
+		position: absolute;
+		top: 9px;
+		right: 0;
+   }
+  </style>
 <div class="category">
-	<div class="invTabs">
+	<div class="invTabs">		
 		<?php echo $this->form()->openTag($form) ?>
 		<?php echo $this->wrappedElement($form->get('csrf')); ?>
 		<div class="formRow clearfix">
-			<?php echo $this->wrappedElement($form->get('name')); ?>
+			<div class="halfWidthBlock"><?php echo $this->wrappedElement($form->get('name')); ?>
+				<div id="property">Property for categories</div>
+				<?php if(!empty($attribute)) {
+					foreach ($attribute as $item) {
+					?>
+				<div class="property">
+					<input name="attributeName[<?= $item['id'] ?>]"  class="input-big prop" type="text" value="<?= $item['name'] ?>">
+					<?php $deleteActions = "<a class='del' href='javascript:void(0);' onclick='common.confdelAttribute(\"".URL."admin/category/deleteAttribute/\",{$item['id']});"
+					. " (arguments[0]||window.event).cancelBubble=true; return false;'>"._('Delete')."</a>"; ?>
+					<?php  echo $deleteActions;?>
+				</div>
+				<?php
+						}
+					} ?>
+					
+				<div class="clearfix btnsWrapp btnadd">
+					<?php echo $this->wrappedElement($form->get('addAtributes')); ?>
+				</div>
+			</div>
 		</div>
 		<div class="clearfix btnsWrapp">
 			<?php echo $this->wrappedElement($form->get('submit')); ?>
@@ -18,3 +53,13 @@ $this->headScript()->appendFile($this->basePath(). '/js/tiny_mce/tiny_mce_src.js
 		<?php echo $this->form()->closeTag($form); ?>
 	</div>
 </div>
+<script>
+	var i=-10000;
+	$('#addAtributes').on('click', function() {
+		var input;
+		input = '<input name="attributeName[' + i + ']" required="required" id="attrName'+ i +'" class="input-big prop" type="text" value="">';
+		$('.btnadd').prepend(input);
+		i++;
+	});
+
+</script>

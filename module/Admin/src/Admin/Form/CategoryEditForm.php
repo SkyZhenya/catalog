@@ -5,8 +5,9 @@ namespace Admin\Form;
 use CodeIT\Form\MultilanguageForm;
 use Zend\InputFilter\Factory as InputFactory;
 use Zend\InputFilter\InputFilter;
+use CodeIT\Form\Form;
 
-class CategoryEditForm extends MultilanguageForm {
+class CategoryEditForm extends Form {
 
 	protected $inputFilter;
 
@@ -38,6 +39,30 @@ class CategoryEditForm extends MultilanguageForm {
 			'attributes' => array(
 				'required' => 'required',
 				'class' => 'input-big',
+			),
+		));
+
+		$this->add(array(
+			'name' => 'addAtributes',
+			'type' => '\Zend\Form\Element\Button',
+			'options' => array (				
+				'label' => _('Add property'),
+			),
+			'attributes' => array(
+				'value' => _('AddAtributes'),
+				'id' => 'addAtributes',
+			),
+		));
+
+		$this->add(array(
+			'name' => 'attributeName',
+			//'type' => 'Zend\Form\Element\Collection',
+			'options' => array(
+				'label' => _('Property for category'),
+			),
+			'attributes' => array(
+				'class' => 'input-big',
+				'id' => 'attrName',
 			),
 		));
 

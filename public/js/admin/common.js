@@ -38,6 +38,20 @@ var common = {
 		});
 	},
 
+	confdelAttribute: function (url, id) {
+		jConfirm(deleteQuestion, 'Delete', 'window', function(data){
+			$.ajax({
+				url: url,
+				type: 'POST',
+				data: ({id : id}),
+				success: function(result) {
+					$('.prop[name="attributeName[' + id + ']"]').parents('.property').remove();
+				}
+			});
+		});
+	},
+
+
 	reloadPage: function(){
 		window.location.reload();
 	},
