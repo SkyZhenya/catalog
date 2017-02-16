@@ -9,6 +9,7 @@ class AttributeTable extends CachedTable {
 		'id',
 		'name',
 		'categoryId',
+		'type',
 	);
 
 	public function __construct($id = null) {
@@ -21,6 +22,7 @@ class AttributeTable extends CachedTable {
 		$uid = parent::create([
 			'name' => $data['name'],
 			'categoryId' => $data['categoryId'],
+			'type' => $data['type'],
 		]);
 		$this->commit();
 

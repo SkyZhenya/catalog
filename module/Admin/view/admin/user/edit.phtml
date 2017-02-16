@@ -39,9 +39,32 @@
 			<div class="halfWidthBlock"><?php echo $this->wrappedElement($form->get('level')) ?> 	</div>
 		</div>
 		<div class="clearfix">
-			<div class="halfWidthBlock"><?php echo $this->wrappedElement($form->get('pass')) ?></div>
+			<div class="halfWidthBlock"><?php echo $this->wrappedElement($form->get('pass')) ?></div>			
 			<div class="halfWidthBlock"><span class="label">&nbsp;</span><?php echo $this->wrappedElement($form->get('active'), 'element margTop8 label') ?></div>
 		</div>
+		<?php if(isset($favouriteProduct)) { ?>
+			<h3>Selected Product: </h3>
+			<div class="content col-sm-12">
+				<?php  foreach($favouriteProduct as $prod){	?>
+					<div class="product" style="width:250px;">
+						<div class="col-sm-6">
+							<div class="thumbnail">
+								<img src="<?= $prod->avatars['140'] ?>" alt="...">
+								<div class="caption">
+								  <h3>Name: <?= $prod->name ?></h3>
+								  <!--<p>Description: <?php //echo $prod->description ?></p>-->
+								  <h3>Price: <?= $prod->price ?></h3>
+								  <p>
+									<a href="<?= $this->url('product', array('id' => $prod->id)); ?>" class="btn btn-default" role="button">More info</a>
+								  </p>
+								</div>
+							</div>
+						</div>
+					</div>
+				<?php } ?>
+			
+			</div>
+		<?php } ?>
 		<div class="clearfix btnsWrapp">
 			<?php echo $this->wrappedElement($form->get('submit')) ?>
 			<?php echo $this->wrappedElement($form->get('cancel')) ?>

@@ -51,6 +51,25 @@ var common = {
 		});
 	},
 
+	confdelValue: function (url, id) {
+		jConfirm(deleteQuestion, 'Delete', 'window', function(data){
+			$.ajax({
+				url: url,
+				type: 'POST',
+				data: ({id : id}),
+				success: function(result) {
+					window.location.reload();
+					//$('.prop[name="attributeValue[' + id + ']"]').parents('.property').remove();
+					//$('.value[name="val['+ id +']"]').remove();
+					
+				}
+			});
+		});
+	},
+
+	confdelInput: function (id) {
+		$('.delValue'+ id +'').remove();
+	},
 
 	reloadPage: function(){
 		window.location.reload();

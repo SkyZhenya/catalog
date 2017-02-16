@@ -18,6 +18,7 @@ trait UserConf {
 	public static $roleDescriptions = array(
 		'user' => 'User',
 		'admin' => 'Admin',
+		'manager' => 'Manager',
 	);
 
 }

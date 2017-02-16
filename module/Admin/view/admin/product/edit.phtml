@@ -1,0 +1,197 @@
+<?php
+$this->headTitle(_('Edit Product'));
+$this->headScript()->appendFile($this->basePath(). '/js/admin/pages/content-version.js')
+	->appendFile(URL . 'js/pages/avatarEditor.js', 'text/javascript')
+	->appendFile(URL . 'js/pages/photoEditor.js', 'text/javascript')
+;
+$this->headLink()->appendStylesheet(URL . 'css/admin/avatarEditor.css')
+	->appendStylesheet(URL . 'css/admin/pages/user.css')
+;
+?>
+
+
+<style>
+	#description {
+		margin: 0px;
+		width: 680px;
+		height: 130px;
+		resize: both;
+	}
+	
+
+	.value {
+	   position: relative;
+   }
+
+   .formWrapp .input-big.val {
+	    margin-top: 10px;
+		margin-bottom: 15px;
+		width: 50%;
+		min-width: 50%;
+		height: 25px;
+   }
+
+	.input-big.valueAttribute {
+		margin-bottom: 10px;
+	}
+
+	.formWrapp .value .del {
+		position: absolute;
+		top: 33px;
+		right: 0;
+   }
+
+  
+
+
+</style>
+
+<div class="product">
+	<div class="invTabs">
+		<div class="halfWidthBlock">
+			<?php echo $this->form()->openTag($form); ?>
+			<?php echo $this->wrappedElement($form->get('csrf')); ?>
+			<div class="avatar_container">
+				<div class="avatar_image" style="background-image: url('<?php echo isset($item)? $item->avatars[140] : URL.'images/product/pic.jpg';?>')" id="avatarImage"></div>
+				<label><?php echo $this->formInput($form->get('avatar')); ?></label>
+				<div class="remove-button" onclick="return avatarEditor.removeFile('<?php echo URL.'images/product/pic.jpg';?>');">&nbsp;</div>
+				<?php if (!empty($this->formElementErrors($form->get('avatar')))) {?>
+					<div class="error"><?php echo $this->formElementErrors($form->get('avatar'));?></div>
+					<?php } ?>
+				<?php echo $this->wrappedElement($form->get('removeAvatar')); ?>
+			</div>
+			<?php if(isset($item->img['image'][140])){ ?>
+				<?php foreach($item->img['image'][140] as $key=>$name) {?>
+				<div class="photo_container" name="photo[<?= $key ?>]">
+					<div class="photo_image" style="background-image: url('<?php echo $name;?>')" ></div>
+					<label><?php echo $this->formInput($form->get('photo')); ?></label>
+					<div class="remove-button" onclick='photoEditor.removePhoto("<?=URL?>admin/product/deletePhoto/", "<?= $key ?>", "<?= $name ?>", "<?= $item->id ?>");'>&nbsp;</div>
+				</div>
+				<?php }?>
+			<?php } ?>
+			
+			<div class="addPh">
+				<?php echo $this->wrappedElement($form->get('addPhoto')); ?>
+			</div>
+			<div class="clear"></div>
+			<div class="clearfix">
+			<?php echo $this->wrappedElement($form->get('name')); ?>
+			<?php echo $this->wrappedElement($form->get('manufacturer')); ?>
+			<?php echo $this->wrappedElement($form->get('price')); ?>
+			<?php echo $this->wrappedElement($form->get('description')); ?>
+			<?php echo $this->wrappedElement($form->get('categoryId')); ?>
+			<?php echo $this->wrappedElement($form->get('flag')) ?>
+			</div>
+
+			<?php if (!empty($value)) {	?>
+				<div id="value">Attribute</div>
+				<hr/>
+				<?php foreach ($value as $val) { ?>
+				<?php $deleteActions = "<a class='del' style='left: 390px;' href='javascript:void(0);' onclick='common.confdelValue(\"".URL."admin/product/deleteValue/\",{$val['valueId']});"
+				. " (arguments[0]||window.event).cancelBubble=true; return false;'>"._('Delete')."</a>"; ?>
+				<div class="value" name="val[<?= $val['valueId'] ?>]"> <?= $val['name'] ?>
+					<?php if(isset($val['attributeValue'])){ ?>
+						<?php if($val['type']== 'int'){ ?>
+							<p><input name="attributeValue[<?= $val['valueId'] ?>]" required class="input-big val" type="number" value="<?= $val['attributeValue'] ?>"></input>
+								<?php  echo $deleteActions;?>
+							</p>
+						<?php } elseif ($val['type']=='string'){ ?>
+							<p><input name="attributeValue[<?= $val['valueId'] ?>]" required class="input-big val" type="text" value="<?= $val['attributeValue'] ?>"></input>
+								<?php  echo $deleteActions;?>
+							</p>
+						<?php } elseif($val['type']=='float'){?>
+							<p><input name="attributeValue[<?= $val['valueId'] ?>]" required class="input-big val" type="number" step="0.1" value="<?= $val['attributeValue'] ?>"></input>
+								<?php  echo $deleteActions;?>
+							</p>
+						<?php } elseif ($val['type']=='Ггц'){?>
+							<p><input name="attributeValue[<?= $val['valueId'] ?>]" required class="input-big val" type="number" step="0.1" value="<?= $val['attributeValue'] ?>"> Ггц </input>
+								<?php  echo $deleteActions;?>
+							</p>
+						<?php } elseif ($val['type']=='дюймы'){?>
+							<p><input name="attributeValue[<?= $val['valueId'] ?>]" required class="input-big val" type="number" step="0.1" value="<?= $val['attributeValue'] ?>">″</input>
+								<?php  echo $deleteActions;?>
+							</p>
+						<?php } elseif ($val['type']=='гц'){ ?>
+							<p><input name="attributeValue[<?= $val['valueId'] ?>]" required class="input-big val" type="text" value="<?= $val['attributeValue'] ?>">гц</input>
+								<?php  echo $deleteActions;?>
+							</p>
+						<?php } elseif($val['type']=='см'){ ?>
+							<p><input name="attributeValue[<?= $val['valueId'] ?>]" required class="input-big val" type="number" step="0.1" value="<?= $val['attributeValue'] ?>">см</input>
+								<?php  echo $deleteActions;?>
+							</p>
+						<?php } elseif($val['type']=='кг'){ ?>
+							<p><input name="attributeValue[<?= $val['valueId'] ?>]" required class="input-big val" type="number" value="<?= $val['attributeValue'] ?>">кг</input>
+								<?php  echo $deleteActions;?>
+							</p>
+						<?php } ?>
+					<?php } else { ?>
+					<p><input name="attributeValueNew[<?= $val['id'] ?>]"  required class="input-big val" type="text" ></input></p>
+					<?php  }?>
+				</div>
+			<?php }
+				}
+			?>
+			
+			<div class="clearfix btnsWrapp">
+				<?php if(isset($item)) {
+						if($item->flag == 'in edit') {?>
+						<a href="<?= $this->url('product', array('id' => $item->id)); ?>" target="_blank" >Preview</a>
+				<?php }
+					} ?>
+				<?php echo $this->wrappedElement($form->get('submit')); ?>
+				<?php echo $this->wrappedElement($form->get('cancel')); ?>
+			</div>
+		</div>
+		<?php echo $this->form()->closeTag($form); ?>
+	</div>
+</div>
+<script>
+	function attributeFields() {
+		var idCategory = document.getElementById("categoryId").value;
+		$('.valueAttribute').remove();
+		$.ajax({
+				url: "/trainee-borovoy/jackson/public/admin/product/getAttribute",
+				type: 'POST',
+				data: ({id : idCategory}),
+				success: function(result) {
+					console.log(result);
+					var input;
+					$.each(result, function(key, value){
+						if (value['type'] == 'string'){
+							input = '<div class="valueAttribute"><p>'+ value.name +'</p><input required style="min-width: 50% !important; width: 50px; height: 25px;" id="' + value.id + '" name="attributeValueNew['+ value.id + ']" class="input-big valueAttribute"></input></div>';
+						}
+						if (value['type'] == 'int'){
+							input = '<div class="valueAttribute"><p>'+ value.name +'</p><input required style="min-width: 50% !important; width: 50px; height: 25px;" placeholder="1" type="number" id="' + value.id + '" name="attributeValueNew['+ value.id + ']" class="input-big valueAttribute"></input></div>';
+						}
+						if (value['type'] == 'float'){
+							input = '<div class="valueAttribute"><p>'+ value.name +'</p><input required style="min-width: 50% !important; width: 50px; height: 25px;" placeholder="0.1" type="number" style="width: 35px; !important" step=0.1 id="' + value.id + '" name="attributeValueNew['+ value.id + ']" class="input-big valueAttribute"></input></div>';
+						}
+						if (value['type'] == 'text'){
+							input = '<div class="valueAttribute"><p>'+ value.name +'</p><textarea required style="resize: both;"></textarea></div>';
+						}
+						if (value['type'] == 'Ггц'){
+							input = '<div class="valueAttribute"><p>'+ value.name +'</p><input required style="min-width: 50% !important; width: 50px; height: 25px;" placeholder="0.1" type="number" id="' + value.id + '" name="attributeValueNew['+ value.id + ']" class="input-big valueAttribute"></input></div>';
+						}
+						if (value['type'] == 'дюймы'){
+							input = '<div class="valueAttribute"><p>'+ value.name +'</p><input required style="min-width: 50% !important; width: 50px; height: 25px;"  placeholder="\'\'" type="number" step=0.1 id="' + value.id + '" name="attributeValueNew['+ value.id + ']" class="input-big valueAttribute"></input></div>';
+						}
+						$('.clearfix.btnsWrapp').prepend(input);
+					});
+				}
+			});
+	};
+	var i = -10000;
+	$('#addPhoto').on('click', function(){
+		var input;
+		
+		input = '<div class="photo_container" name="photoContainer['+ i +']">\n\
+				<div class="photo_image" style="background-image" id="photoImage'+ i +'" name="photoImage[' + i + ']"></div>\n\
+				<label><input type="file" name="photo'+ i +'" onchange="photoEditor.showF(this, '+ i +')" accept="image/*" value=""></label> \n\
+				<div class="remove-button" onclick="photoEditor.removeFile('+ i +');">&nbsp</div> \n\
+				</div>';
+		$('.addPh').prepend(input);
+		i++;
+	});
+
+
+</script>

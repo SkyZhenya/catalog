@@ -1,0 +1,88 @@
+<div class="create" style="margin-top: 20px; margin-bottom: 20px;">
+	<input type="text" placeholder="Новый список" id="newList">
+	<input name="" type="submit" value="+" onclick="addList()" class="glyphicon glyphicon-plus">
+</div>
+<div class="list col-sm-2" >
+<?php if(!empty($list)) { ?>
+<?php foreach ($list as $item) { ?>
+	<ul class="nav nav-pills nav-stacked">
+		<li><a class="list" onclick="getProduct(<?= $item->id ?>)" ><?= $item->name ?></a></li><a class="deleteList glyphicon glyphicon-remove" onclick="deleteList(<?= $item->id ?>)"></a>
+	</ul>
+<?php } } else {?>
+	<h5>You can create a list of product</h5>
+<?php } ?>
+</div>
+<div class="content col-sm-10">
+	<div class="product">
+	</div>
+</div>
+<script>
+	function getProduct(listId){
+		$('.product').remove();
+		$.ajax({
+			type: 'post',
+			url: 'http://dcodeit.net/trainee-borovoy/jackson/public/favourite/getContent',
+			data: {'listId':listId},
+			success: function(data){
+				for(var el in data){
+					$('.content').append('<div class="product"><div class="col-sm-6 col-md-4"><div class="thumbnail"><img src="'+ data[el]['avatars'][140] +'">\n\
+									<div class="caption">\n\
+									<h3>'+ data[el]['name'] +'</h3>\n\
+									<h3>Price: '+ data[el]['price'] +'$</h3>\n\
+									<p>\n\
+										<a href="http://dcodeit.net/trainee-borovoy/jackson/public/product/'+ data[el]['id'] +'" target="_blank" class="btn btn-primary" role="button">More info</a>\n\
+										<a onclick="deleteProduct('+ data[el]['id'] +','+ listId +')" class="delete btn btn-info" role="button">Delete</a>\n\
+									</p>\n\
+								</div></div></div></div>');
+				}
+			}
+		});
+	}
+
+	function addList(){
+		var name = $('#newList').val();
+		$.ajax({
+			type: 'post',
+			url: 'http://dcodeit.net/trainee-borovoy/jackson/public/favourite/addList',
+			data: {'name':name},
+			success: function() {
+				window.location.reload();
+			}
+		});
+	}
+
+	function deleteList(id) {
+		$.ajax({
+			type: 'post',
+			url: 'http://dcodeit.net/trainee-borovoy/jackson/public/favourite/deleteList',
+			data: {'id':id},
+			success: function() {
+				window.location.reload();
+			}
+		});
+	}
+
+	function deleteProduct(productId, listId) {
+		$.ajax({
+			type: 'post',
+			url: 'http://dcodeit.net/trainee-borovoy/jackson/public/favourite/delete',
+			data: {'productId': productId, 'listId':listId},
+			success: function(data) {
+				window.location.reload();
+			}
+		});
+	}
+
+	$('.delete').on('click', function() {
+		var productId = $(this).attr('data-id');
+		var listId = $(this).attr('list-id');
+		$.ajax({
+			type: 'post',
+			url: 'http://dcodeit.net/trainee-borovoy/jackson/public/favourite/delete',
+			data: {'productId': productId, 'listId':listId},
+			success: function(data) {
+				window.location.reload();
+			}
+		});
+	});
+</script>

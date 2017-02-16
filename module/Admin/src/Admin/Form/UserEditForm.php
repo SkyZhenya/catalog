@@ -106,6 +106,7 @@ class UserEditForm extends Form {
 				'options' => array(
 					'user' => _('User'),
 					'admin' => _('Admin'),
+					'manager' => _('Manager'),
 				),
 			)
 		));

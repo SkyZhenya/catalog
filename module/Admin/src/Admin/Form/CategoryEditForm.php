@@ -16,6 +16,7 @@ class CategoryEditForm extends Form {
 
 		$this->setAttribute('method', 'post');
 		$this->setAttribute('class', 'formWrapp');
+		
 
 		$this->add(array(
 			'name' => 'csrf',
@@ -56,13 +57,23 @@ class CategoryEditForm extends Form {
 
 		$this->add(array(
 			'name' => 'attributeName',
-			//'type' => 'Zend\Form\Element\Collection',
 			'options' => array(
 				'label' => _('Property for category'),
 			),
 			'attributes' => array(
 				'class' => 'input-big',
 				'id' => 'attrName',
+			),
+		));
+
+		$this->add(array(
+			'name' => 'attributeType',
+			'options' => array(
+				'label' => _('data type'),
+			),
+			'attributes' => array(
+				'required' => 'required',
+				'class' => 'chosen-select type-select',
 			),
 		));
 
@@ -92,7 +103,31 @@ class CategoryEditForm extends Form {
 	protected  function getInpFilter() {
 		if (!$this->inputFilter) {
 			$inputFilter = new InputFilter();
+
 			$factory = new InputFactory();
+
+			$notemptyValidator = array(
+				'name' => 'notEmpty',
+				'options' => array (
+					'messages' => array(
+						\Zend\Validator\NotEmpty::IS_EMPTY => _("This field is required"),
+					),
+				),
+				'break_chain_on_failure' => true,
+			);
+
+			$inputFilter->add($factory->createInput(array(
+				'name' => 'name',
+				'required' => true,
+				'filters' => array(
+					array('name' => 'StripTags'),
+					array('name' => 'StringTrim'),
+				),
+				'validators' => array(
+					$notemptyValidator,
+				),
+			)));
+
 			$this->inputFilter = $inputFilter;
 		}
 

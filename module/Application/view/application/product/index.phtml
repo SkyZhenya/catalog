@@ -1,0 +1,200 @@
+<h1><?php echo _('Welcome to My Shop!'); ?></h1>
+
+<style>
+	input, button, select, textarea {
+		font-family: initial;
+		font-size: x-large;
+		line-height: normal;
+	}
+
+	a, a:hover {
+		color: #003399;
+	}
+
+	.btn-primary, .btn-primary:hover {
+		background-image: linear-gradient(#003399, #003399 6%, #003399);
+		border-color: #003399;
+	}
+	#search_result {
+		margin-left: 122px;
+		margin-top: 3px;
+		background-color: white;
+		list-style-type: none;
+		border: 1px solid grey;
+		margin-bottom: 10px;
+		width: 333px;
+		position: absolute;
+		z-index: 2;
+		top: 34px;
+	}
+
+	.modal {
+		display: none; /* Hidden by default */
+		position: fixed; /* Stay in place */
+		z-index: 3; /* Sit on top */
+		left: 0;
+		top: 0;
+		width: 100%; /* Full width */
+		height: 100%; /* Full height */
+		overflow: auto; /* Enable scroll if needed */
+		background-color: rgb(0,0,0); /* Fallback color */
+		background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+	}
+
+	/* Modal Content/Box */
+	.modal-content {
+		width: 777px;
+		height: 122px;
+		background-color: #fefefe;
+		margin: 15% auto; /* 15% from the top and centered */
+		padding: 20px;
+		border: 1px solid #888;
+		/*width: 80%;  Could be more or less, depending on screen size */
+	}
+
+	/* The Close Button */
+	.close {
+		color: #aaa;
+		float: right;
+		font-size: 28px;
+		font-weight: bold;
+	}
+
+	.close:hover,
+	.close:focus {
+		color: black;
+		text-decoration: none;
+		cursor: pointer;
+	}
+</style>
+
+<div class="row">
+	<div class="search input-group col-sm-12" >
+		<form method="get" action="#" target="_self">
+			<input id="form-query" class="search form-control" autocomplete="off" value="" placeholder="поиск по сайту" style="width: 777px; margin-bottom: 25px; margin-top: 3px; margin-left: 122px">
+			<input src="<?= URL?>/images/search.png" type="image" style="vertical-align: bottom; padding: 0; margin-bottom: 25px; margin-top: 5px;"/>			
+		</form>
+		<ul id="search_result" style="display: none;"></ul>
+	</div>
+
+	<div class="category col-sm-2" >
+		<ul class="nav nav-pills nav-stacked">	
+			<?php if(isset($categoryId)) { ?>
+			<h3>Sort by:</h3>
+			<li><a href="<?= $this->url($this->route, array('controller' => 'product', 'category' => $categoryId, 'sort' => 'popular')); ?>" category-id="<?= $categoryId ?>" class="popular">Most popular</a></li>
+			<li><a href="<?= $this->url($this->route, array('controller' => 'product', 'category' => $categoryId, 'sort' => 'new')); ?>" category-id="<?= $categoryId ?>" class="new">New</a></li>
+			<li><a href="<?= $this->url($this->route, array('controller' => 'product', 'category' => $categoryId, 'sort' => 'name')); ?>" category-id="<?= $categoryId ?>" class="alphabet">A-Z</a></li>
+			<li>Price: </li>
+			<li>
+				<form method="post" action="<?= $this->url($this->route, array('controller' => 'product', 'category' => $categoryId)); ?>">
+					<input name="priceFrom" style="width:46%; height: 20px" type="number" > -
+					<input name="priceTo" style="width:46%;  height: 20px"  type="number" >
+					<button type="submit" style="margin-left: 48px; margin-top: 10px;">sort</button>
+				</form>
+			</li>
+			
+			<?php } else { ?>
+				<h3>Category :</h3>
+				<?php foreach ($category as $item){ ?>
+				<li><a href="<?= $this->url($this->route, array('controller' => 'product', 'category' => $item->id)); ?>"><?= $item->name ?></a></li>
+				<?php } ?>
+			<?php }?>
+		</ul>
+	</div>
+
+	<div class="content col-sm-10">
+		<div class="rowC col-sm-12">
+		<?php $i=0;
+		foreach ($product as $key=>$prod) {	
+			$i++; ?>
+		<div class="product">
+			<div class="col-sm-6 col-md-4">
+			  <div class="thumbnail">
+				<img src="<?php echo $prod->avatars['140'] ?>" alt="...">
+				<div class="caption">
+				  <h3><?= $prod->name ?></h3>
+				  <h3>Price: <?= $prod->price ?> грн</h3>
+				  <p>
+					<a href="<?= $this->url('product', array('id' => $prod->id)); ?>" class="btn btn-primary" role="button">More info</a>
+				  </p>
+				</div>
+			  </div>
+			</div>
+		 </div>
+		<?php if ($i % 3 == 0) { ?>
+					</div>
+					<div class="rowN col-sm-12">
+				<?php } ?>
+		<?php } ?>
+	</div>
+	
+	<div class="pagination col-sm-12">
+		<?php  echo $this->paginationControl($product, null, 'application/paginator', ['route' => 'application', 'controller' => 'product', 'category' => $categoryId, 'sort'=>$sortBy]); ?>
+	</div>
+	
+
+
+<script>
+
+	var typingTimer;                //timer identifier
+	var doneTypingInterval = 1000;  //time in ms, 1 second
+	var input = $('#form-query');
+
+	//on keyup, start the countdown
+	input.on('keyup', function () {
+	  clearTimeout(typingTimer);
+	  typingTimer = setTimeout(doneTyping, doneTypingInterval);
+	});
+
+	//on keydown, clear the countdown
+	input.on('keydown', function () {
+	  clearTimeout(typingTimer);
+	});
+
+	//user is "finished typing," do something
+	function doneTyping () {
+		//console.log(input.val());
+		$('#search_result').html('');
+		if(input.val().length >= 2 && input.val().length !== null){
+            $.ajax({
+                type: 'post',
+                url: "http://dcodeit.net/trainee-borovoy/jackson/public/product/search",
+                data: {'inp': input.val()},
+                response: 'text',
+                success: function(data){
+					for (var el in data){
+						$("#search_result").append('<li><a href="http://dcodeit.net/trainee-borovoy/jackson/public/product/'+ data[el]['id'] +'" target="_blank">' + data[el]['name'] + '</a></li>').fadeIn();
+					}
+					delete data;
+                }
+            });
+        }
+	}
+
+//	$('#form-query').on("input", function() {
+////		setTimeout(function(){search()}, 2000);
+//		var inp = $(this).val();
+//		$('#search_result').html('');
+//		if(inp.length >= 2 && inp.length !== null){
+//            $.ajax({
+//                type: 'post',
+//                url: "http://dcodeit.net/trainee-borovoy/jackson/public/product/search",
+//                data: {'inp': inp},
+//                response: 'text',
+//                success: function(data){
+//					for (var el in data){
+//						$("#search_result").append('<li><a href="http://dcodeit.net/trainee-borovoy/jackson/public/product/'+ data[el]['id'] +'" target="_blank">' + data[el]['name'] + '</a></li>').fadeIn();
+//					}
+//                }
+//            });
+//        }
+//    });
+
+
+	$("#search_result").on("click", "li", function(){
+        s_user = $(this).text();
+        $("#form-query").val(s_user);
+        $("#search_result").fadeOut();
+    });
+
+</script>

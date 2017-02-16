@@ -14,17 +14,68 @@ return array(
 					),
 				),
 			),
+
+			'compare' => array(
+				'type' => 'segment',
+				'options' => array(
+					'route' => '/compare[/:action][/]',
+					'defaults' => array(
+						'__NAMESPACE__' => 'Application\Controller',
+						'controller' => 'Compare',
+						'action' => 'index',
+					),
+					'constraints' => array(
+						'action' => '[a-zA-Z][a-zA-Z0-9_-]*',
+					),
+				),
+				'may_terminate' => false,
+			),
+
+			'favourite' => array(
+				'type' => 'segment',
+				'options' => array(
+					'route' => '/favourite[/:action][/]',
+					'defaults' => array(
+						'__NAMESPACE__' => 'Application\Controller',
+						'controller' => 'Favourite',
+						'action' => 'index',
+					),
+					'constraints' => array(
+						'action' => '[a-zA-Z][a-zA-Z0-9_-]*',
+					),
+				),
+				'may_terminate' => false,
+			),
+
+			'search' => array(
+				'type' => 'segment',
+				'options' => array(
+					'route' => '/product[/:action][/]',
+					'defaults' => array(
+						'__NAMESPACE__' => 'Application\Controller',
+						'controller' => 'Product',
+						'action' => 'index',
+					),
+					'constraints' => array(
+						'action' => '[a-zA-Z][a-zA-Z0-9_-]*',
+					),
+				),
+				'may_terminate' => false,
+			),
+			
 			// The following is a route to simplify getting started creating
 			// new controllers and actions without needing to create a new
 			// module. Simply drop new controllers in, and you can access them
 			// using the path /application/:controller/:action
+			
+
 			'application' => array(
 				'type' => 'segment',
 				'options' => array(
-					'route' => '[/:controller[/:action]][/]',
+					'route' => '[/:controller][/category/:category][/sort/:sort][/page/:page][/]',
 					'defaults' => array(
 						'__NAMESPACE__' => 'Application\Controller',
-						'controller' => 'Index',
+						'controller' => 'Product',
 						'action' => 'index',
 					),
 					'constraints' => array(
@@ -32,7 +83,22 @@ return array(
 						'action' => '[a-zA-Z][a-zA-Z0-9_-]*',
 					),
 				),
-				'may_terminate' => true,
+				'may_terminate' => false,
+			),
+			'product' => array(
+				'type' => 'segment',
+				'options' => array(
+					'route' => '/product[/][:id][/]',
+					'defaults' => array(
+						'__NAMESPACE__' => 'Application\Controller',
+						'controller' => 'Product',
+						'action' => 'product',
+					),
+					'constraints' => array(
+						'id' => '[0-9]*',
+					),
+				),
+				'may_terminate' => false,
 			),
 		),
 	),

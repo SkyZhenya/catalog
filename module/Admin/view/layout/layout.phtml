@@ -31,6 +31,7 @@ $title = $titles[0];
 						->prependFile($this->basePath() . '/js/dhtmlxGrid/customscroll.js', 'text/javascript')
 						->prependFile($this->basePath() . '/js/dhtmlxGrid/dhtmlx.js?t=2014111301')
 						->prependFile($this->basePath() . '/js/jquery-2.1.1.min.js')
+						
 
 						->appendScript('dir = "'.$this->basePath().'"; deleteQuestion="'._('Are you sure you want to delete this item?').'"') 
 						->appendScript('closeQuestion="'._('Do you want to save changes before closing?').'"') 
@@ -51,6 +52,13 @@ $title = $titles[0];
 						<?php if ($this->getUser()->isAllowed($cpath.'User', 'index')) { ?>
 							<li class="<?php echo in_array($controller, array('User'))?"active ":''?>parent level0">
 								<a href="<?php echo $this->basepath('admin/user')?>" class=""><span><?= _('Manage Users');?></span></a>
+								<ul>
+									<?php if ($this->getUser()->isAllowed($cpath.'User', 'add')) { ?>
+									<li>
+										<a href="<?php echo $this->basepath('admin/user/add')?>"><span><?= _('Add New User');?></span></a>
+									</li>
+									<?php } ?>
+								</ul>
 							</li>
 						<?php } ?>
 						<?php if ($this->getUser()->isAllowed($cpath.'Category', 'index')) { ?>
@@ -65,11 +73,20 @@ $title = $titles[0];
 								</ul>
 							</li>
 						<?php } ?>
-						<?php if ($this->getUser()->isAllowed($cpath.'Template', 'index')) { ?>
-							<li class="<?=in_array($controller, array('Template'))?"active ":''?>parent level0">
-								<a href="<?php echo $this->basepath('admin/template')?>" class=""><span><?= _('Email templates');?></span></a>
+
+						<?php if ($this->getUser()->isAllowed($cpath.'Product', 'index')) { ?>
+							<li class="<?php echo in_array($controller, array('Product'))?"active ":''?>parent level0">
+								<a href="<?php echo $this->basepath('admin/product')?>" class=""><span><?= _('Manage product');?></span></a>
+								<ul>
+									<?php if ($this->getUser()->isAllowed($cpath.'Product', 'add')) { ?>
+									<li>
+										<a href="<?php echo $this->basepath('admin/product/add')?>"><span><?= _('Add New Product');?></span></a>
+									</li>
+									<?php } ?>
+								</ul>
 							</li>
 						<?php } ?>
+
 						<?php if ($this->getUser()->getId()) { ?>
 							<li class="parent level0 last"><a href="<?php echo URL.'auth/logout'; ?>" class=""><span><?= _('Log Out');?></span></a></li>
 						<?php } ?>

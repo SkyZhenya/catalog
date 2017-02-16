@@ -20,7 +20,8 @@
         "zendframework/zend-validator": "^2.8",
         "zendframework/zend-session": "^2.7",
         "zendframework/zend-i18n": "^2.7",
-        "intervention/image": "^2.3"
+        "intervention/image": "^2.3",
+		"zendframework/zend-paginator":"*"
     },
     "repositories" : [{
         "type" : "vcs",

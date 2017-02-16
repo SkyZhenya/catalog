@@ -1,0 +1,228 @@
+<style>
+	a, a:hover {
+		color: #003399;
+	}
+
+	.btn-primary, .btn-primary:hover {
+		background-image: linear-gradient(#003399, #003399 6%, #003399);
+		border-color: #003399;
+	}
+	table {
+	width: 300px;
+	padding: 3px; /* Поля вокруг содержимого таблицы */
+	}
+
+	TD, TH {
+    padding: 3px; /* Поля вокруг содержимого таблицы */
+    border: 1px solid grey; /* Параметры рамки */
+   }
+   
+   /* The Modal (background) */
+	.modal {
+		display: none; /* Hidden by default */
+		position: fixed; /* Stay in place */
+		z-index: 1; /* Sit on top */
+		left: 0;
+		top: 0;
+		width: 100%; /* Full width */
+		height: 100%; /* Full height */
+		overflow: auto; /* Enable scroll if needed */
+		background-color: rgb(0,0,0); /* Fallback color */
+		background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+	}
+	/* Modal Content/Box */
+	.modal-content {
+		width: 777px;
+		height: 170px;
+		background-color: #fefefe;
+		margin: 15% auto; /* 15% from the top and centered */
+		padding: 20px;
+		border: 1px solid #888;
+		/*width: 80%;*/
+		
+	}
+	/* The Close Button */
+	.close {
+		color: black;
+		float: right;
+		font-size: 50px;
+		font-weight: bold;
+	}
+
+</style>
+
+<div class="row">
+  <div class="col-sm-12 col-md-12 productInfo">
+    <div class="thumbnail">
+		<img src="<?php  if(isset($product->avatars[250])){ echo $product->avatars[140];} else { echo URL.'images/product/pic.jpg';}?> " alt="productImage" style="margin-bottom: 20px;">
+		<?php if(isset($product->image['image'])) {?>
+		<div class="album col-sm-12">
+			<?php foreach($product->image['image'][140] as $key=>$img){ ?>
+			<div class="col-sm-4" style="margin-bottom: 5px;">
+				<a class="fancybox" rel="group" href="<?=  $product->image['image']['origin'][$key] ?>" > <img src="<?= $img ?>"> </a>
+			</div>
+			<?php } ?>
+		</div>
+		<?php } ?>
+		<div class="caption">
+		  <h1 class="text-center productName"><?= $product->name; ?></h1>
+		  <p class="text-center"><?php echo $product->price.' грн'; ?></p>
+		  <h2 class="text-center">Description:</h2>
+		  <p class="text-center"><?= $product->description; ?></p>
+		  <h3>Characteristic: </h3>
+		  <table>
+		  <?php foreach($attribute as $item) {  ?>
+			  <?php if($item->attributeType == 'дюймы') {?>
+				<tr>
+					<td><?php echo $item->attributeName ?></td><td><?php echo $item->value.' \'\''; ?></td>
+				</tr>
+			  <?php } elseif($item->attributeType == 'см') {?>
+				<tr>
+					<td><?php echo $item->attributeName ?></td><td><?php echo $item->value.' см' ?></td>
+				</tr>
+		  <?php } elseif ($item->attributeType == 'кг') {?>
+				<tr>
+					<td><?php echo $item->attributeName ?></td><td><?php echo $item->value.' кг' ?></td>
+				</tr>
+		  <?php } elseif($item->attributeType == 'Гц') {?>
+				<tr>
+					<td><?php echo $item->attributeName ?></td><td><?php echo $item->value.' Гц' ?></td>
+				</tr>
+		  <?php } else {?>
+				<tr>
+					<td><?php echo $item->attributeName ?></td><td><?php echo $item->value ?></td>
+				</tr>
+		  <?php }} ?>
+		  </table>
+		  <p class="text-center">
+			<a id="addFavourite" class="btn btn-info" role="button">Add to favourite</a>
+			<a id="addCompare" class="btn btn-info" role="button" onclick="addCompare(<?= $product->id ?>, <?= $product->categoryId ?>)">Add to Compare</a>
+		  </p>
+			<!-- The Modal -->
+			<div id="myModal" class="modal">
+			  <!-- Modal content -->
+			  <div class="modal-content">
+				<span class="close">&times;</span>
+				<?php if(!empty($userId)) { ?>
+					<p class="updateList">
+						<?php if(!empty($list)) { ?>
+							<?php foreach($list as $item) { ?>
+							<a onclick="addFavourite(<?= $item->id ?>,<?= $product->id ?>)" class="listName btn btn-info" style="margin-left: 5px;"><?= $item->name ?></a>
+							<?php } ?>
+						</p>
+							<div>
+								<input type="text" placeholder="Новый список" id="newList">
+								<input name="" type="submit" value="+" onclick="addList(<?= $product->id ?>)" class="glyphicon glyphicon-plus">
+							</div>
+						<?php } else { ?>
+							<div>
+								<input type="text" placeholder="Новый список" id="newList">
+								<input name="" type="submit" value="+" onclick="addList(<?= $product->id ?>)" class="glyphicon glyphicon-plus">
+							</div>
+						<?php } ?>
+				<?php } else {?>
+					<p style="margin-top: 25px; margin-left: 325px;"><a href="<?php echo URL.'auth/registration'; ?>" class="btn btn-info"><span><?= _('Sign up');?></span></a></p>
+					<p style="margin-left: 325px;"><a href="<?php echo URL.'auth/login'; ?>" class="btn btn-info"><span><?= _('Log In');?></span></a></p>
+				<?php } ?>
+			  </div>
+			</div>
+		</div>
+    </div>
+  </div>
+</div>
+
+<script>
+	$(document).ready(function() {
+		// Get the modal
+		var modal = $('#myModal');
+		
+		// Get the button that opens the modal
+		var btn = $('#addFavourite');
+		// Get the <span> element that closes the modal
+		var span = $(".close")[0];
+		// When the user clicks on the button, open the modal
+		$(btn).on('click', function() {
+			modal.show();
+		});
+
+		$(span).on('click', function() {
+			modal.hide();
+		});
+
+		window.onclick = function(event){
+			if (event.target == modal) {
+				modal.style.display = "none";
+			}
+		};
+	});
+
+	function addCompare(productId, categoryId) {
+		$.ajax({
+			type:'post',
+			url: 'http://dcodeit.net/trainee-borovoy/jackson/public/compare/addCompare',
+			data: {'productId': productId, 'categoryId':categoryId},
+			success: function(data) {
+				if (data == '>5'){
+					alert("Всравнении не может быть больше 5-ти товаров");
+				} else {
+					alert("Success");
+				}
+			}
+		});
+	}
+
+	function addFavourite(listId, productId){
+		var modal = $('#myModal');
+		$.ajax({
+			type: 'POST',
+			url: 'http://dcodeit.net/trainee-borovoy/jackson/public/favourite/addFavourite',
+			data: {'listId':listId, 'productId':productId},
+			success: function(data){
+				if(data == 'is') {
+					modal.hide();
+					alert("You have already added this product");
+				} else {
+					modal.hide();
+					alert("You have successfully added product");
+				}
+				
+			}
+		});
+
+	};
+
+	function addList(productId){
+		var name = $('#newList').val();
+		$.ajax({
+			type: 'post',
+			url: 'http://dcodeit.net/trainee-borovoy/jackson/public/favourite/addList',
+			data: {'name':name},
+			success: function(data) {
+				$('.listName').remove();
+				$.each(data, function(key, value){
+					$('.updateList').append('<a onclick="addFavourite('+ value['id'] +','+ productId +')" class="listName btn btn-info" style="margin-left: 5px;">'+ value['name'] +'</a>');
+				});
+				
+			}
+		});
+	}
+
+	$(document).ready(function() {
+		$("a.fancybox").fancybox(
+			{
+			"padding" : 20, // отступ контента от краев окна
+			"imageScale" : false, // Принимает значение true - контент(изображения) масштабируется по размеру окна, или false - окно вытягивается по размеру контента. По умолчанию - TRUE
+			"zoomOpacity" : false,	// изменение прозрачности контента во время анимации (по умолчанию false)
+			"zoomSpeedIn" : 2000,	// скорость анимации в мс при увеличении фото (по умолчанию 0)
+			"zoomSpeedOut" : 2000,	// скорость анимации в мс при уменьшении фото (по умолчанию 0)
+			"zoomSpeedChange" : 1500, // скорость анимации в мс при смене фото (по умолчанию 0)
+			"frameWidth" : 1000,	 // ширина окна, px (425px - по умолчанию)
+			"frameHeight" : 600, // высота окна, px(355px - по умолчанию)
+			"overlayShow" : true, // если true затеняят страницу под всплывающим окном. (по умолчанию true). Цвет задается в jquery.fancybox.css - div#fancy_overlay
+			"overlayOpacity" : 0.8,	 // Прозрачность затенения 	(0.3 по умолчанию)
+			"hideOnContentClick" :true, // Если TRUE  закрывает окно по клику по любой его точке (кроме элементов навигации). Поумолчанию TRUE
+			"centerOnScroll" : false // Если TRUE окно центрируется на экране, когда пользователь прокручивает страницу
+			});
+	});
+</script>
+

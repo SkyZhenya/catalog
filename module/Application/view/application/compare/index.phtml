@@ -1,0 +1,90 @@
+<style>
+	table, th, td {
+		border: 1px solid black;
+		border-collapse: collapse;
+	}
+	p {
+		text-align: center;
+	}
+	ul {
+		list-style-type: none;
+	}
+	div.prod {
+
+		display: block;
+	}
+	p.name {
+		display: block;
+		height: 35px;
+		overflow: hidden;
+	}
+	li {
+		height: 50px;
+		
+	}
+	
+</style>
+
+<?php if(!empty($category)) {
+	foreach ($category as $item) { ?>
+<div class="col-lg-2" style="margin-top: 20px;" onclick="compareProduct(<?= $item->id ?>)"><a class="btn btn-danger"><?= $item->name ?></a></div>
+<?php	}
+?>
+
+<div class="cont col-lg-12">
+	<div class="attribute col-lg-2" style="margin-top: 276px;  padding-left: 0px; padding-right: 0px;">
+		<ul class="attrName"></ul>
+	</div>
+	<div class="product col-lg-10">
+
+	</div>
+</div>		
+
+<?php } else { ?>
+	<h1 style="margin-left: 155px; margin-top: 35px;"> Yo,nigga! Вы не добавили ни одного товара в сравнение!</h1>
+<?php } ?>
+</div>
+
+<script>
+	function compareProduct(categoryId) {
+		$.ajax({
+			type: 'post',
+			url: 'http://dcodeit.net/trainee-borovoy/jackson/public/compare/getProduct',
+			data: {'categoryId':categoryId},
+			success: function(data) {
+				console.log(data);
+				var attributeName = data['attributeName'];
+				$('.attr_name').remove();
+				$.each(attributeName, function( index, value ) {
+					$('.attrName').prepend('<li class="attr_name" style="font-size: small;">'+ value +'</li>');
+				});
+				
+				$('.prod').remove();
+
+				$.each(data, function(key, value) {
+					var attributeValue = value['value'];
+					$('.product').append('<div class="prod col-lg-2"><ul style="padding-left: 0px;"><li><div class="desc"><p class="name">'+ value['name'] +'</p><img src="'+ value['avatars'][140] +'"><p>Price: '+ value['price'] +' $</p><p>'+ value['manufacturer'] +'</p></div><a class="btn btn-info" style="margin-left: 18px;" onclick="deleteProduct('+ value['id'] +', '+ categoryId +')">DELETE</a><div class="attr_value"><ul class="value'+ value['id'] +'" style="padding-left: 0px;"></ul></div></li></ul></div>');
+					$.each(attributeValue, function(id, name) {
+						$('.value'+ value['id'] +'').prepend('<li style="font-size: small;">'+ name +'</li>');
+					});
+				});
+			}
+		});
+	}
+
+	function deleteProduct(productId, categoryId) {
+		$.ajax({
+			type: 'post',
+			url: 'http://dcodeit.net/trainee-borovoy/jackson/public/compare/deleteProduct',
+			data: {'productId':productId, 'categoryId':categoryId},
+			success: function(data) {
+				console.log(data);
+				if (data == 'emptyCategory') {
+					window.location.reload();
+				} else {
+					compareProduct(categoryId);
+				}
+			}
+		});
+	}
+</script>

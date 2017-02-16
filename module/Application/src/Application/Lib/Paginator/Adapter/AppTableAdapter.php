@@ -3,7 +3,8 @@
 namespace Application\Lib\Paginator\Adapter;
 
 use Zend\Paginator\Adapter\AdapterInterface;
-use Application\Model\AppTable;
+use CodeIT\Model\AppTable;
+//use Application\Model\AppTable;
 
 class AppTableAdapter implements AdapterInterface
 {

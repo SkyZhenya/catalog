@@ -7,17 +7,20 @@ use Application\Model\AttributeTable;
 use Application\Lib\AppController;
 use Application\Lib\User as UserLib;
 use Zend\View\Model\ViewModel;
+use Zend\Filter\StripTags;
 
 class Category extends AbstractController {
 
 	var $form;
 	var $categoryTable;
 	var $attributeTable;
+	var $filter;
 
 	public function ready() {
 		parent::ready();
 		$this->categoryTable = new CategoryTable();
 		$this->attributeTable = new AttributeTable();
+		$this->filter = new StripTags();
 	}
 
 	public function indexAction() {
@@ -46,18 +49,24 @@ class Category extends AbstractController {
 		$form = $this->getForm('add');
 
 		if($this->request->isPost()) {
-			$data = array_merge_recursive($this->request->getPost()->toArray(), $this->request->getFiles()->toArray());
+			$data = $this->request->getPost()->toArray();
 			$form->setData($data);
 			if ($form->isValid()) {
 				$data = $form->getData();
-				$attribute['name'] = $data['attributeName'];
 				$id = $this->categoryTable->insert($data);
-				$attribute['categoryId'] = $id;
-				foreach ($attribute['name'] as $item){
-					$dataAtr=[];
-					$dataAtr['name'] = $item;
-					$dataAtr['categoryId'] = $id;
-					$attr = $this->attributeTable->insert($dataAtr);
+				if(!empty($data['attributeName'])){
+					$attribute['name'] = $data['attributeName'];
+					$attribute['type'] = $data['attributeType'];
+					$attribute['categoryId'] = $id;
+					foreach ($attribute['name'] as $key => $item){
+						htmlspecialchars($item);
+						$this->filter->filter($item);
+						$dataAtr=[];
+						$dataAtr['type'] = $attribute['type'][$key];
+						$dataAtr['name'] = $item;
+						$dataAtr['categoryId'] = $id;
+						$attr = $this->attributeTable->insert($dataAtr);
+					}
 				}
 			}
 			$this->redirect()->toUrl(URL.'admin/category/');
@@ -78,7 +87,6 @@ class Category extends AbstractController {
 		$form = $this->getForm('edit', $id);
 		$canEdit = $this->user->isAllowed('Admin\Controller\Category', 'save');
 		$attribute = $this->getAttribute($id);
-		//var_dump($attribute); die;
 		try {
 			$category = $this->categoryTable->setId($id);
 			$form->setData($category);
@@ -93,24 +101,27 @@ class Category extends AbstractController {
 				$form->setData($data);
 				if ($form->isValid()) {
 					$data = $form->getData();
-					//var_dump($data); die;
-					$attribute['name'] = $data['attributeName'];
-					$rez = $this->categoryTable->set($data);
-					foreach ($attribute['name'] as $key => $item){
-						$dataAtr=[];
-						$dataAtr['name'] = $item;
-						$dataAtr['categoryId'] = $id;
-						//var_dump($key);
-						if($key > 0) {
-							$this->attributeTable->setId($key);
-							$this->attributeTable->set($dataAtr);
-						} else {
-							$this->attributeTable->insert($dataAtr);
+					if(!empty($data['attributeName'])){
+						$attribute['name'] = $data['attributeName'];
+						$attribute['type'] = $data['attributeType'];
+						foreach ($attribute['name'] as $key => $item){
+							htmlspecialchars($item);
+							$this->filter->filter($item);
+							$dataAtr=[];
+							$dataAtr['name'] = $item;
+							$dataAtr['categoryId'] = $id;
+							$dataAtr['type'] = $attribute['type'][$key];
+							if($key > 0) {
+								$this->attributeTable->setId($key);
+								$this->attributeTable->set($dataAtr);
+							} else {
+								$this->attributeTable->insert($dataAtr);
+							}
 						}
 					}
+					$rez = $this->categoryTable->set($data);
 					$this->redirect()->toUrl(URL.'admin/category/');
 				}
-				
 			}
 			else {
 				$this->error = _('You do not have enough permissions to make changes');
@@ -140,8 +151,10 @@ class Category extends AbstractController {
 	public function listAction() {
 		$count = (int)$this->params()->fromQuery('count', 50);
 		$pos = (int)$this->params()->fromQuery('posStart', 0);
+		$params = $this->resolveParams();
+		$orderby = $this->resolveOrderby();
 		$total = 0;
-		$list = $this->categoryTable->find([], $count, $pos, false, $total);
+		$list = $this->categoryTable->find($params, $count, $pos, $orderby, $total);
 		$result = new ViewModel(array(
 			'pos' => $pos,
 			'list' => $list,
@@ -156,5 +169,40 @@ class Category extends AbstractController {
 		$params = ["categoryId=$id"];
 		$attribute = $this->attributeTable->find($params);
 		return $attribute;
+	}
+
+	protected function resolveParams() {
+		$params = array();
+
+		$flName = $this->params()->fromQuery('flName');
+		if(trim($flName) !== '') {
+			$params []= array('name', 'LIKE', "{$flName}%");
+		}
+
+		return $params;
+	}
+
+	/**
+	 * return orderby rule for list ordering
+	 *
+	 * @return string
+	 */
+	protected function resolveOrderby() {
+		$orderby='id';
+
+		if(isset($_GET['orderby'])) {
+			switch($_GET['order']) {
+				case 'asc': $orderdir='asc'; break;
+				default: $orderdir='desc';
+			}
+			switch($_GET['orderby']) {
+				case 1: $orderby="id"; break;
+				case 2: $orderby="name"; break;
+				default: $orderby="id"; break;
+			}
+			$orderby.=' '.$orderdir;
+		}
+
+		return $orderby;
 	}
 }

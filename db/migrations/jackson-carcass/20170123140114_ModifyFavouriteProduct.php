@@ -1,0 +1,17 @@
+<?php
+
+class ModifyFavouriteProduct extends Ruckusing_Migration_Base
+{
+    public function up()
+    {
+		$query = <<<'QUERY'
+		ALTER TABLE `favouriteProduct`
+			ADD COLUMN `listId` INT(11) NOT NULL;
+QUERY;
+		$this->query($query);
+    }//up()
+
+    public function down()
+    {
+    }//down()
+}

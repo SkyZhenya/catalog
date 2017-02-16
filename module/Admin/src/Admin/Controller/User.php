@@ -4,6 +4,9 @@ namespace Admin\Controller;
 use CodeIT\Controller\AbstractController;
 use Application\Lib\AppController;
 use Application\Lib\User as UserLib;
+use Application\Model\FavouriteProductTable;
+use Application\Model\ProductTable;
+use Application\Model\ListTable;
 use Zend\View\Model\ViewModel;
 
 class User extends AbstractController {
@@ -17,12 +20,18 @@ class User extends AbstractController {
 	 * @var \Application\Lib\User
 	 */
 	var $userTable;
+	var $favouriteProductTable;
+	var $productTable;
+	var $listTable;
 
 
 	public function ready() {
 		parent::ready();
 
 		$this->userTable = new UserLib();
+		$this->listTable = new ListTable();
+		$this->favouriteProductTable = new FavouriteProductTable();
+		$this->productTable = new ProductTable();
 	}
 
 	/**
@@ -55,8 +64,9 @@ class User extends AbstractController {
 
 	public function editAction() {
 		$id = $this->params('id',0);
-
+		
 		$this->setBreadcrumbs(['user' => 'Users',], true);
+		$product = $this->getContent($id);
 		$form = $this->getForm('edit', $id);
 		$canEdit = $this->user->isAllowed('Admin\Controller\User', 'save');
 		try {
@@ -74,6 +84,7 @@ class User extends AbstractController {
 				$form->setData($data);
 				if ($form->isValid()) {
 					$data = $form->getData();
+					$dataProduct = $this->request->getPost('favouriteProduct');
 					$data['updated'] = TIME;
 					$data['created'] = TIME;
 					$data['code'] = \Application\Lib\Utils::generatePassword(32);
@@ -89,7 +100,7 @@ class User extends AbstractController {
 					if (!empty($data['avatar']['tmp_name'])) {
 						$this->userTable->setAvatar($data['avatar']['tmp_name'], $id);
 					}
-
+					
 					$this->redirect()->toUrl(URL.'admin/user/');
 				}
 			}
@@ -104,6 +115,7 @@ class User extends AbstractController {
 			'error' => $this->error,
 			'title' => _('Edit User'),
 			'item' => $user,
+			'favouriteProduct' => $product,
 		));
 	}
 
@@ -166,6 +178,27 @@ class User extends AbstractController {
 		));
 		$xmlResult->setTerminal(true);
 		return $xmlResult;
+	}
+
+	public function getContent($userId) {
+		$params = [];
+		$product = [];
+		if(isset($userId)) {
+			$params[] = "userId=$userId";
+		}
+		$list = $this->listTable->find($params);
+		foreach ($list as $item){
+			$id = $item->id;
+			$productId = $this->favouriteProductTable->find(["listId=$id"]);
+		}
+		if(isset($productId)){
+			foreach ($productId as $value){
+				$prodId = $value->productId;
+				$products = $this->productTable->find(["id=$prodId"]);
+				$product[] = array_shift($products);
+			}
+		}
+		return $product;
 	}
 
 	/**
